@@ -29,52 +29,10 @@ public class ExampleJCanvas extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
 		this.setUndecorated(false);
-		this.setSize(300, 300);
+		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
 		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.red, new Dimension(400,400));
-		
-		
-		
-		myCanvas.addPainterListenerToPrimary(new PainterListener(){
-			@Override
-			public void paint(JPanel canvas, Graphics2D g2) {
-				for( int j=1; j<200; j++){
-					
-					g2.setColor(new Color(j, 70, 150));
-					int x = (int)(Math.random()*canvas.getWidth());
-					int y = (int)(Math.random()*canvas.getHeight());
-					int width = (int)(Math.random()*50);
-					int height = (int)(Math.random()*50);
-//					g2.fillOval(x, y, width, height);
-				}
-			}			
-		}, JCanvas.POSITION.DEEPEST);
-	
-		myCanvas.addPainterListenerToSecondary(new PainterListener(){
-			@Override
-			public void paint(JPanel canvas, Graphics2D g2) {
-				for( int j=1; j<200; j++){
-					
-					g2.setColor(new Color(j, j+20, 50));
-					int x = (int)(Math.random()*canvas.getWidth());
-					int y = (int)(Math.random()*canvas.getHeight());
-					int width = (int)(Math.random()*50);
-					int height = (int)(Math.random()*50);
-//					g2.fillOval(x, y, width, height);
-				}
-			}			
-		}, JCanvas.POSITION.DEEPEST);
-		
-		myCanvas.addPainterListenerToSecondary(new PainterListener(){
-			@Override
-			public void paint(JPanel canvas, Graphics2D g2) {
-				g2.setColor(Color.black);
-//				g2.drawLine(0, 0, canvas.getWidth() - 1, canvas.getHeight() - 1);
-//				g2.drawLine(canvas.getWidth() - 1, 0, 0, canvas.getHeight() - 1);
-				g2.drawLine(canvas.getWidth()-1, canvas.getHeight() - 20, 395, canvas.getHeight());
-			}			
-		}, JCanvas.POSITION.HIGHEST);
 
 		//
 		//Ujra rajzol minden statikus rajzi elemet
@@ -86,19 +44,20 @@ public class ExampleJCanvas extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				myCanvas.repaint();				
 			}			
-		});		
+		});	
 		
 		//
-		//Bazis kirajzolasa
+		//Kirajzolja eloterbe a falat
 		//
-		JButton drawBaseButton = new JButton("draw base");
-		drawBaseButton.addActionListener(new ActionListener(){
-			
+		JButton drawWallButton = new JButton("draw Wall");
+		drawWallButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				myCanvas.removePainterListenersFromPrimary();
-				myCanvas.addPainterListenerToPrimary(new PainterListener(){
+				myCanvas.removePainterListenersFromTemporary();
+				myCanvas.removePainterListenersFromAbove();
+				myCanvas.addPainterListenerToAbove(new PainterListener(){
+					
 					@Override
 					public void paint(JPanel canvas, Graphics2D g2) {
 						
@@ -106,54 +65,88 @@ public class ExampleJCanvas extends JFrame {
 							g2.setColor(new Color(i, 100, 100));
 							g2.drawLine(0, 0, canvas.getWidth() - i, canvas.getHeight() - i);
 							g2.drawLine(canvas.getWidth() - i, 0, 0, canvas.getHeight() - i);
-						}				
+						}
 					}			
-				});				
-				
-				myCanvas.repaint();				
+				});	
+				myCanvas.repaint();
 			}			
 		});
 		
-		JButton drawTemporaryButton = new JButton("draw temporary");
-
-		
-		
-		drawTemporaryButton.addActionListener(new ActionListener(){
+		//
+		//Hatterbe kirajzol 200 db ovalist
+		//
+		JButton drawOvalsButton = new JButton("draw Wall");
+		drawOvalsButton.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
 			
+				myCanvas.removePainterListenersFromTemporary();
+				myCanvas.removePainterListenersFromUnder();
+				myCanvas.addPainterListenerToUnder(new PainterListener(){
+					@Override
+					public void paint(JPanel canvas, Graphics2D g2) {
+						for( int j=1; j<200; j++){
+							
+							g2.setColor(new Color(j, 70, 150));
+							int x = (int)(Math.random()*canvas.getWidth());
+							int y = (int)(Math.random()*canvas.getHeight());
+							int width = (int)(Math.random()*50);
+							int height = (int)(Math.random()*50);
+							g2.fillOval(x, y, width, height);
+						}					
+					}			
+				}, JCanvas.POSITION.DEEPEST);
+				myCanvas.repaint();
+			}
+			
+		});
+		
+		//
+		//Kirajzol egy piros kort veletlen pozicioba atmeneti jelleggel
+		//
+		JButton drawTempButton = new JButton("draw Temp");
+		drawTempButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				BufferStrategy bf = this.getBufferStrategy();
-				Graphics g = null;
-			 
-				try {
-					g = bf.getDrawGraphics();
-			 
-					// It is assumed that mySprite is created somewhere else.
-					// This is just an example for passing off the Graphics object.
-					mySprite.draw(g);
-			 
-				} finally {
-					// It is best to dispose() a Graphics object when done with it.
-					g.dispose();
-				}
-			 
-				// Shows the contents of the backbuffer on the screen.
-				bf.show();
-			 
-				//Tell the System to do the Drawing now, otherwise it can take a few extra ms until 
-				//Drawing is done which looks very jerky
-				Toolkit.getDefaultToolkit().sync();				
-			}			
+				myCanvas.removePainterListenersFromTemporary();
+				myCanvas.addPainterListenerToTemporary(new PainterListener(){
+					@Override
+					public void paint(JPanel canvas, Graphics2D g2) {					
+						g2.setColor(new Color(250, 0, 0));
+						int x = (int)(Math.random()*canvas.getWidth());
+						int y = (int)(Math.random()*canvas.getHeight());
+						int width = 50;
+						int height = 50;
+						g2.fillOval(x, y, width, height);						
+					}			
+				}, JCanvas.POSITION.DEEPEST);		
+				myCanvas.repaint();
+			}
+			
 		});
+
 		
 		
-		
+	
+/*		
+		myCanvas.addPainterListenerToAbove(new PainterListener(){
+			@Override
+			public void paint(JPanel canvas, Graphics2D g2) {
+				g2.setColor(Color.black);
+//				g2.drawLine(0, 0, canvas.getWidth() - 1, canvas.getHeight() - 1);
+//				g2.drawLine(canvas.getWidth() - 1, 0, 0, canvas.getHeight() - 1);
+				g2.drawLine(canvas.getWidth()-1, canvas.getHeight() - 20, 395, canvas.getHeight());
+			}			
+		}, JCanvas.POSITION.HIGHEST);
+*/
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 2, 2));
 		
 		buttonPanel.add(reprintButton);
-		buttonPanel.add(drawBaseButton);
+		buttonPanel.add(drawWallButton);
+		buttonPanel.add(drawOvalsButton);
+		buttonPanel.add(drawTempButton);
 		
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
@@ -162,7 +155,6 @@ public class ExampleJCanvas extends JFrame {
 		this.getContentPane().add(new JLabel(), BorderLayout.EAST);
 		this.getContentPane().add(new JLabel(), BorderLayout.WEST);
 
-		this.setSize(300, 300);
 		this.setVisible(true);
 
 	}
