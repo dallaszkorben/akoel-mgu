@@ -32,7 +32,7 @@ public class ExampleJCanvas extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.red, new Dimension(400,400));
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, new Dimension(4000,4000));
 
 		//
 		//Ujra rajzol minden statikus rajzi elemet
@@ -75,7 +75,7 @@ public class ExampleJCanvas extends JFrame {
 		//
 		//Hatterbe kirajzol 200 db ovalist
 		//
-		JButton drawOvalsButton = new JButton("draw Wall");
+		JButton drawOvalsButton = new JButton("draw Ovals");
 		drawOvalsButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -85,9 +85,9 @@ public class ExampleJCanvas extends JFrame {
 				myCanvas.addPainterListenerToUnder(new PainterListener(){
 					@Override
 					public void paint(JPanel canvas, Graphics2D g2) {
-						for( int j=1; j<200; j++){
+						for( int j=1; j<2000; j++){
 							
-							g2.setColor(new Color(j, 70, 150));
+							g2.setColor(new Color(33, 70, 150));
 							int x = (int)(Math.random()*canvas.getWidth());
 							int y = (int)(Math.random()*canvas.getHeight());
 							int width = (int)(Math.random()*50);
