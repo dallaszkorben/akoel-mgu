@@ -1,6 +1,5 @@
 package hu.akoel.mgu.jcanvas;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -11,6 +10,7 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.border.Border;
+
 
 class JCanvas extends JPanel {
 
@@ -23,12 +23,12 @@ class JCanvas extends JPanel {
 	private Dimension size;
 	
 	//PERMANENT listak
-	private ArrayList<PainterListener> aboveList = new ArrayList<PainterListener>();
-	private ArrayList<PainterListener> middleList = new ArrayList<PainterListener>();
-	private ArrayList<PainterListener> underList = new ArrayList<PainterListener>();
+	ArrayList<PainterListener> aboveList = new ArrayList<PainterListener>();
+	ArrayList<PainterListener> middleList = new ArrayList<PainterListener>();
+	ArrayList<PainterListener> underList = new ArrayList<PainterListener>();
 	
 	//TEMPORARY lista
-	private ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
+	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
 
 	CoreCanvas coreCanvas;
 
@@ -45,10 +45,17 @@ class JCanvas extends JPanel {
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.size = size;
 
-		coreCanvas = new CoreCanvas(this, background);
+//		coreCanvas = new CoreCanvas(this, background);
+//		this.add(coreCanvas);
 
-		this.add(coreCanvas);
-
+		this.add( getCoreCanvas( this, background ) );
+	}
+	
+	CoreCanvas getCoreCanvas(JCanvas canvas, Color background ){
+		if( null == coreCanvas ){
+			coreCanvas = new CoreCanvas( this, background );
+		}
+		return coreCanvas;
 	}
 	
 	//
@@ -162,7 +169,7 @@ class JCanvas extends JPanel {
 
 		private static final long serialVersionUID = 5336269435310911828L;
 
-		private JCanvas parent;
+		JCanvas parent;
 		private BufferedImage offImage;
 
 		public CoreCanvas(JCanvas parent, Color background) {
@@ -239,6 +246,7 @@ class JCanvas extends JPanel {
 			}
 		}
 
+		//TODO ez meg hatra van. Meg kell oldani az aranytartast
 		public Dimension getPreferredSize() {
 			double mH = 0, wH;
 			int pixelWidth, pixelHeight;
