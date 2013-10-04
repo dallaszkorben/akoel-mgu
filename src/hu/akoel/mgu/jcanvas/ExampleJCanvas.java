@@ -21,18 +21,21 @@ public class ExampleJCanvas extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
+	Dimension worldSize;
+	
 	public static void main(String[] args) {
 		new ExampleJCanvas();
 	}
 
 	public ExampleJCanvas() {
+		worldSize = new Dimension(900, 700);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
 		this.setUndecorated(false);
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, new Dimension(4000,4000));
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, JCanvas.SIDES_TYPE.FREE_PORTION	);
 
 		//
 		//Ujra rajzol minden statikus rajzi elemet
