@@ -17,22 +17,7 @@ class JCoordCanvas extends JCanvas {
 
 	private static final long serialVersionUID = -2394129144233207776L;
 
-	//Az oldalak aranyara vonatkozo szabaly a befoglalo kontener meretvaltozasanak fuggvenyeben
-	public enum SIDES_TYPE{
-		
-		  //Az ablakban latszik a teljes definialt vilag. Ez egyben azt jelenti, hogy
-		  //a meretarany az ablak meretenek valtoztatasaval valtozik, es az ablak
-		  //oldalainak aranya nem kotott
-		  SHOW_WHOLE_WORLD,
-		  
-		  //Az ablak merete szabadon valtozhat
-		  //a meretarany nem valtozik
-		  FREE_WINDOW_PORTION,
-		  
-		  //Az ablak oldalainak aranya a definialt vilag oldalainak aranyaval egyezik meg
-		  SETTLED_WINDOW_PORTION,
-		
-	}
+
 	
 	/**
 	 * 
@@ -40,8 +25,8 @@ class JCoordCanvas extends JCanvas {
 	 * @param background A Canvas hatterszine. null eseten az eredeti szurke
 	 * @param size A Canvas maximalis merete. null eseten barmekkorara bovitheto
 	 */
-	public JCoordCanvas(Border borderType, Color background, Dimension size) {
-		super(borderType, background, size);
+	public JCoordCanvas(Border borderType, Color background, Dimension size, SIDES_TYPE sideType) {
+		super(borderType, background, size, sideType);
 
 	}
 

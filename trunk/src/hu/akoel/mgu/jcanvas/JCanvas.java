@@ -18,9 +18,25 @@ class JCanvas extends JPanel {
 		DEEPEST, HIGHEST
 	}
 
+	//Az oldalak aranyara vonatkozo szabaly a befoglalo kontener meretvaltozasanak fuggvenyeben
+	public enum SIDES_TYPE{
+		
+		//Az ablakban latszik a teljes definialt vilag. Ez egyben azt jelenti, hogy
+		//a meretarany az ablak meretenek valtoztatasaval valtozik, es az ablak
+		//oldalainak aranya nem kotott
+		//SHOW_WHOLE_WORLD,
+		FIX_PORTION,
+		  
+		//Az ablak merete szabadon valtozhat
+		//a meretarany nem valtozik
+		//Nem feltetlenullatom a teljes meretet
+		FREE_PORTION,		  
+		
+	}
+	
 	private static final long serialVersionUID = 44576557802932936L;
 
-	private Dimension size;
+	private Dimension worldSize;
 	
 	//PERMANENT listak
 	ArrayList<PainterListener> aboveList = new ArrayList<PainterListener>();
@@ -31,19 +47,21 @@ class JCanvas extends JPanel {
 	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
 
 	CoreCanvas coreCanvas;
+	SIDES_TYPE sideType;
 
 	/**
 	 * 
 	 * @param borderType A Canvas kore rajzoladno keret tipuse. null eseten nincs keret
 	 * @param background A Canvas hatterszine. null eseten az eredeti szurke
-	 * @param size A Canvas maximalis merete. null eseten barmekkorara bovitheto
+	 * @param worldSize A Canvas maximalis merete. null eseten barmekkorara bovitheto
 	 */
-	public JCanvas(Border borderType, Color background, Dimension size) {
+	public JCanvas(Border borderType, Color background, Dimension worldSize, SIDES_TYPE sideType ) {
 		super();
 
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		this.size = size;
+		this.worldSize = worldSize;
+		this.sideType = sideType;
 
 //		coreCanvas = new CoreCanvas(this, background);
 //		this.add(coreCanvas);
@@ -141,25 +159,49 @@ class JCanvas extends JPanel {
 	}
 	
 	public int getWidth() {
+/*		int possibleWidth = super.getWidth();
+		int maxWidth = worldSize.width + getInsets().right + getInsets().left;
+		if (null == worldSize || possibleWidth <= maxWidth) {
+			return possibleWidth;
+		} else {
+			return maxWidth;
+		}
+ */
+		return getPreferredSize().width;
+	}
+
+	public int getHeight() {
+/*		int possibleHeight = super.getHeight();
+		int maxHeight = worldSize.height + getInsets().top + getInsets().bottom;
+		if (null == worldSize || possibleHeight <= maxHeight) {
+			return possibleHeight;
+		} else {
+			return maxHeight;
+		}
+*/
+		return getPreferredSize().height;
+	}
+
+	int getOriginalWidth() {
 		int possibleWidth = super.getWidth();
-		int maxWidth = size.width + getInsets().right + getInsets().left;
-		if (null == size || possibleWidth <= maxWidth) {
+		int maxWidth = worldSize.width + getInsets().right + getInsets().left;
+		if (null == worldSize || possibleWidth <= maxWidth) {
 			return possibleWidth;
 		} else {
 			return maxWidth;
 		}
 	}
-
-	public int getHeight() {
+	
+	int getOriginalHeight() {
 		int possibleHeight = super.getHeight();
-		int maxHeight = size.height + getInsets().top + getInsets().bottom;
-		if (null == size || possibleHeight <= maxHeight) {
+		int maxHeight = worldSize.height + getInsets().top + getInsets().bottom;
+		if (null == worldSize || possibleHeight <= maxHeight) {
 			return possibleHeight;
 		} else {
 			return maxHeight;
 		}
 	}
-
+	
 	/**
 	 * 
 	 * @author akoel
@@ -253,16 +295,50 @@ class JCanvas extends JPanel {
 			int worldWidth, worldHeight;
 
 			// Felveszi a szulo ablak meretet csokkentve a keret meretevel
-			pixelWidth = parent.getWidth() - ( parent.getInsets().right + parent.getInsets().left );
-			pixelHeight = parent.getHeight() - ( parent.getInsets().top + parent.getInsets().bottom );
+			pixelWidth = parent.getOriginalWidth() - ( parent.getInsets().right + parent.getInsets().left );
+			pixelHeight = parent.getOriginalHeight() - ( parent.getInsets().top + parent.getInsets().bottom );
 
 			/**
-			 * Csak akkor szamol tovabb, ha a szulo-ablak mar megjelent
+			 * Ha a lathato teruelt oldalainak aranyanak meg kell egyeznie az eredeti
+			 * terulet oldalainak aranyaval
+			 * Beallitja a rajzolhato feluletet az oldalaranyoknak megfeleloen
+			 * a szulo-ablak aktualis merete alapjan.
 			 */
-			if (pixelWidth != 0 && pixelHeight != 0) {
+			if( sideType == SIDES_TYPE.FIX_PORTION ){
+			
+				 /**
+		         * A szulo ablak oldalainak aranya(model meret)
+		         */
+		        mH = pixelWidth/pixelHeight;
 
+		        /**
+		         * Az abrazolando vilag oldalainak aranya (world meret)
+		         */
+		        wH = worldSize.getWidth()/worldSize.getHeight();
+
+		        /**
+		         * Ha a vilag tomzsibb mint a modell
+		         */
+		        if(wH > mH){
+
+		          /**
+		           * Akkor a model magassagat kell csokkenteni
+		           */
+		          pixelHeight = (int)(pixelWidth / wH);
+
+		          /**
+		           * Ha a vilag elnyujtottabb (magassagban) mint a modell
+		           */
+		        }else{
+
+		          /**
+		           * Akkor a modell szelesseget kell csokkenteni
+		           */
+		          pixelWidth = (int)(wH * pixelHeight);
+		        }
+				
 			}
-			return new Dimension(pixelWidth, pixelHeight);
+						return new Dimension(pixelWidth, pixelHeight);
 
 		}
 
