@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -37,6 +38,8 @@ class JCanvas extends JPanel {
 	private static final long serialVersionUID = 44576557802932936L;
 
 	private Dimension worldSize;
+	private double pixelPortion;
+	private Point worldTranslate = new Point(-5,-20);
 	
 	//PERMANENT listak
 	ArrayList<PainterListener> aboveList = new ArrayList<PainterListener>();
@@ -54,13 +57,16 @@ class JCanvas extends JPanel {
 	 * @param borderType A Canvas kore rajzoladno keret tipuse. null eseten nincs keret
 	 * @param background A Canvas hatterszine. null eseten az eredeti szurke
 	 * @param worldSize A Canvas maximalis merete. null eseten barmekkorara bovitheto
+	 * @param pixelPortion Megadja, hogy 1 kepernyo pixel hany egysegnek felel meg a vilagban. Alapertelmezetten 1:1
+	 * @param sideType
 	 */
-	public JCanvas(Border borderType, Color background, Dimension worldSize, SIDES_TYPE sideType ) {
+	public JCanvas(Border borderType, Color background, Dimension worldSize, double pixelPortion, SIDES_TYPE sideType ) {
 		super();
 
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.worldSize = worldSize;
+		this.pixelPortion = pixelPortion;
 		this.sideType = sideType;
 
 //		coreCanvas = new CoreCanvas(this, background);
@@ -158,46 +164,133 @@ class JCanvas extends JPanel {
 		temporaryList.clear();
 	}
 	
-	public int getWidth() {
-/*		int possibleWidth = super.getWidth();
-		int maxWidth = worldSize.width + getInsets().right + getInsets().left;
-		if (null == worldSize || possibleWidth <= maxWidth) {
-			return possibleWidth;
-		} else {
-			return maxWidth;
+	public void moveUp(int pixel){		
+		worldTranslate.setLocation( worldTranslate.x, Math.min(0, worldTranslate.y + pixel));
+		coreCanvas.invalidate();
+		coreCanvas.repaint();		 
+	}
+
+	public void moveDown(int pixel){
+		if( coreCanvas.getHeight() - worldTranslate.y + pixel <= worldSize.height ){ 
+			worldTranslate.setLocation( worldTranslate.x, worldTranslate.y - pixel);
+			coreCanvas.invalidate();
+			coreCanvas.repaint();
 		}
- */
-		return getPreferredSize().width;
+	}
+
+	public void moveRight(int pixel){
+		if( coreCanvas.getWidth() - worldTranslate.x + pixel <= worldSize.width ){
+			worldTranslate.setLocation( Math.min(0, worldTranslate.x - pixel), worldTranslate.y );
+			coreCanvas.invalidate();
+			coreCanvas.repaint();
+		}
+	}
+	
+	public void moveLeft(int pixel){
+		worldTranslate.setLocation( Math.min(0, worldTranslate.x + pixel), worldTranslate.y );
+		coreCanvas.invalidate();
+		coreCanvas.repaint();
+	}
+
+	/**
+	 * Visszaadja teljes vilag meretet
+	 * @return
+	 */
+	public Dimension getWorldSize(){
+		return worldSize;
+	}
+
+	/**
+	 * Visszaadja a teljes vilagbol lathato resz meretet
+	 * @return
+	 */
+	public Dimension getViewableSize(){
+		return getPreferredSize();
+	}
+	
+	public int getWidth() {
+		return getPreferredSize().width;		
 	}
 
 	public int getHeight() {
-/*		int possibleHeight = super.getHeight();
-		int maxHeight = worldSize.height + getInsets().top + getInsets().bottom;
-		if (null == worldSize || possibleHeight <= maxHeight) {
-			return possibleHeight;
-		} else {
-			return maxHeight;
-		}
-*/
 		return getPreferredSize().height;
 	}
 
-	int getOriginalWidth() {
+
+	/**
+	 * Visszaadja a lathato vilag border vastagsaggal novelt szelesseget
+	 * Ha a vilag kilog a befoglalo panel szelessegebol, akkor a befoglalo panel
+	 * szelessege a meghatarozo
+	 * Ha a vilag lotyogne a befoglalo panel szelessegeben, akkor a vilag
+	 * szelessege a meghatarozo
+	 * @return
+	 */
+	int getBorderWidth() {
+		
+		//Ez a szelesseg lehetne a befoglalo panel szelessege (ha nem korlatoznank)
 		int possibleWidth = super.getWidth();
-		int maxWidth = worldSize.width + getInsets().right + getInsets().left;
-		if (null == worldSize || possibleWidth <= maxWidth) {
+		
+		//Ha nincs megadva a vilag merete
+		if (null == worldSize ){
+
+			//Akkor a befoglalo panel szelessege a mervado
 			return possibleWidth;
+
+		}
+		
+		//Ez a szelesseg a teljes vilag szelessege plusz a keret
+		int maxWidth = worldSize.width + getInsets().right + getInsets().left;
+		
+		//Ha a befoglalo panel szelessege kisebb mint a vilag szelessege
+		//Vagyis a befoglalo panel teljes szelessegeben elnyulik a valo vilag
+		if (possibleWidth <= maxWidth) {
+			
+			//Akkor a befoglalo panel szelessege a mervado
+			return possibleWidth;
+		
+		//Ha a vilag szelessege kisebb mint a befoglalo panele
 		} else {
+			
+			//Akkor a vilag szelessege lesz a mervado
 			return maxWidth;
 		}
 	}
 	
-	int getOriginalHeight() {
+	/**
+	 * Visszaadja a lathato vilag border vastagsaggal novelt magassagat
+	 * Ha a vilag kilog a befoglalo panel magassagabol, akkor a befoglalo panel
+	 * magassaga a meghatarozo
+	 * Ha a vilag lotyogne a befoglalo panel magassagaban, akkor a vilag
+	 * magassaga a meghatarozo
+	 * @return
+	 */
+	int getBorderHeight() {
+		
+		//Ez a magassag lehetne a befoglalo panel magassaga (ha nem korlatoznank)
 		int possibleHeight = super.getHeight();
-		int maxHeight = worldSize.height + getInsets().top + getInsets().bottom;
-		if (null == worldSize || possibleHeight <= maxHeight) {
+	
+		//Ha nincs megadva a vilag merete
+		if (null == worldSize ){
+
+			//Akkor a befoglalo panel magassaga a mervado
 			return possibleHeight;
+
+		}
+		
+		//Ez a magassag a teljes vilag magassag plusz a keret
+		int maxHeight = worldSize.height + getInsets().top + getInsets().bottom;
+		
+		//Ha a befoglalo panel magassaga kisebb mint a vilag magassaga
+		//Vagyis a befoglalo panel teljes magassagaban elnyulik a valo vilag
+		if ( possibleHeight <= maxHeight) {
+			
+			//Akkor a befoglalo panel magassaga a mervado
+			return possibleHeight;
+			
+		//Ha a vilag magassaga kisebb mint a befoglalo panele
 		} else {
+			
+			//Akkor a vilag magassaga lesz a mervado
 			return maxHeight;
 		}
 	}
@@ -243,7 +336,7 @@ class JCanvas extends JPanel {
 		    int width = this.getWidth();
 		    int height = this.getHeight();
 
-			super.paintComponent(g);
+		    super.paintComponent(g);
 			
 //System.err.println("width: " + this.getWidth() + " height: " + this.getHeight());
 
@@ -255,6 +348,8 @@ class JCanvas extends JPanel {
 				//Az uj canvas grafikai objektumanak elkerese
 				offg2 = (Graphics2D) offImage.getGraphics();
     
+				offg2.translate(worldTranslate.x, worldTranslate.y);
+//System.err.println("ujrarajzolva " + worldTranslate);				
 				if (null != underList) {
 					for (PainterListener painter : underList) {
 						painter.paint(this, offg2);
@@ -272,10 +367,10 @@ class JCanvas extends JPanel {
 						painter.paint(this, offg2);
 					}
 				}
+				
 			}
-			
 			if (offImage != null) {
-
+				
 				//Kirajzolja  a bufferelt kepet
 				g2.drawImage(offImage, 0, 0, this);
 				
@@ -285,22 +380,26 @@ class JCanvas extends JPanel {
 					}
 					temporaryList.clear();
 				}
+				
 			}
+		
 		}
 
-		//TODO ez meg hatra van. Meg kell oldani az aranytartast
+		/**
+		 * Az igazi lathato vilag merete
+		 */
 		public Dimension getPreferredSize() {
-			double mH = 0, wH;
+			double mH = 0, wH = 0;
 			int pixelWidth, pixelHeight;
-			int worldWidth, worldHeight;
 
 			// Felveszi a szulo ablak meretet csokkentve a keret meretevel
-			pixelWidth = parent.getOriginalWidth() - ( parent.getInsets().right + parent.getInsets().left );
-			pixelHeight = parent.getOriginalHeight() - ( parent.getInsets().top + parent.getInsets().bottom );
-
+			pixelWidth = parent.getBorderWidth() - ( parent.getInsets().right + parent.getInsets().left );
+			pixelHeight = parent.getBorderHeight() - ( parent.getInsets().top + parent.getInsets().bottom );
+			
 			/**
 			 * Ha a lathato teruelt oldalainak aranyanak meg kell egyeznie az eredeti
-			 * terulet oldalainak aranyaval
+			 * terulet oldalainak aranyaval.
+			 * A teljes vilag latszik a rajzolofeluleten
 			 * Beallitja a rajzolhato feluletet az oldalaranyoknak megfeleloen
 			 * a szulo-ablak aktualis merete alapjan.
 			 */
@@ -309,7 +408,7 @@ class JCanvas extends JPanel {
 				 /**
 		         * A szulo ablak oldalainak aranya(model meret)
 		         */
-		        mH = pixelWidth/pixelHeight;
+		        mH = (double)pixelWidth/(double)pixelHeight;
 
 		        /**
 		         * Az abrazolando vilag oldalainak aranya (world meret)
@@ -337,8 +436,11 @@ class JCanvas extends JPanel {
 		          pixelWidth = (int)(wH * pixelHeight);
 		        }
 				
+			}else{
+				pixelWidth += worldTranslate.x;
+				pixelHeight += worldTranslate.y;
 			}
-						return new Dimension(pixelWidth, pixelHeight);
+				return new Dimension(pixelWidth, pixelHeight);
 
 		}
 
