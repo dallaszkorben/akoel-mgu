@@ -1,5 +1,9 @@
 package hu.akoel.mgu.jcanvas;
 
+import hu.akoel.mgu.jcanvas.own.JGraphics;
+import hu.akoel.mgu.jcanvas.own.Offset;
+import hu.akoel.mgu.jcanvas.own.Size;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -12,6 +16,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferStrategy;
+import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -23,22 +28,24 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	Dimension worldSize;
+	Size worldSize;
 	
 	public static void main(String[] args) {
+		
 		new ExampleJCanvasWithTranslate();
 	}
 
 	public ExampleJCanvasWithTranslate() {
-		worldSize = new Dimension(300, 300);
+		worldSize = new Size(10.0, 30.0);
 		//worldSize = null;
+		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
 		this.setUndecorated(false);
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 1.0, JCanvas.SIDES_TYPE.FREE_PORTION	);
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, BigDecimal.valueOf(20), JCanvas.SIDES_PORTION.FIX_PORTION	);
 
 		//
 		//Ujra rajzol minden statikus rajzi elemet
@@ -53,7 +60,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 		});	
 		
 		//
-		//Kirajzolja eloterbe a falat
+		//Kirajzol eloterbe egy egyenes vonalat
 		//
 		JButton drawLineButton = new JButton("draw Line");
 		drawLineButton.addActionListener(new ActionListener(){
@@ -65,24 +72,25 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 				myCanvas.addPainterListenerToAbove(new PainterListener(){
 					
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {
+					public void paint(JPanel canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
-						g2.drawLine(0, 0, worldSize.width, worldSize.height );
-						g2.fillOval(worldSize.width-8, worldSize.height-8, 17, 17);
-						g2.fillOval(-8, -8, 17, 17);
-						
-						g2.setColor(Color.black);
-						g2.setStroke(new BasicStroke(3));
+						g2.drawLine(BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0), worldSize.getWidth(), worldSize.getHeight() );
+//						g2.fillOval(worldSize.getWidth().subtract(BigDecimal.valueOf(8)), worldSize.getHeight().subtract(BigDecimal.valueOf(8)), BigDecimal.valueOf(17), BigDecimal.valueOf(17));
+//						g2.fillOval(-8, -8, 17, 17);
+
+						g2.setColor(Color.red);
+						g2.setStroke(new BasicStroke(1));
 						g2.drawLine(0, 0, 10, 0 );
 						g2.drawLine(0, 0, 0, 10 );
-						g2.drawLine(worldSize.width-10, worldSize.height-1, worldSize.width, worldSize.height-1);
-						g2.drawLine(worldSize.width-1, worldSize.height-10, worldSize.width-1, worldSize.height);
+						g2.drawLine(worldSize.getWidth().doubleValue()-10, worldSize.getHeight().doubleValue(), worldSize.getWidth().doubleValue(), worldSize.getHeight().doubleValue());
+						g2.drawLine(worldSize.getWidth().doubleValue(), worldSize.getHeight().doubleValue()-10, worldSize.getWidth().doubleValue(), worldSize.getHeight().doubleValue());
+//System.err.println(myCanvas.getPixelYPositionByWorld(BigDecimal.valueOf(0)));						
+//System.err.println(myCanvas.getWorldLengthByPixel(1) + " - " + myCanvas.getWorldLengthByPixel(1).multiply(worldSize.getWidth()));
+//System.err.println(myCanvas.getWorldTranslate().getY() + " - " + myCanvas.getPixelLengthByWorld(myCanvas.getWorldTranslate().getY()));						
 						
-						//g2.fillOval(290, 290, 17, 17);
-//						g2.drawLine(canvas.getWidth() - i, 0, 0, canvas.getHeight() - i);
 						
-					}			
+					}			 
 				});	
 				myCanvas.repaint();
 			}			
@@ -91,7 +99,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 
 		
 		//
-		//Kirajzol egy piros kort veletlen pozicioba atmeneti jelleggel
+		//Kirajzol atmeneti jelleggel egy x^2 fuggvenyt
 		//
 		JButton drawTempButton = new JButton("draw Temp");
 		drawTempButton.addActionListener(new ActionListener(){
@@ -100,14 +108,26 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 				
 				myCanvas.removePainterListenersFromTemporary();
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
+					
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {					
-						g2.setColor(new Color(250, 0, 0));
-						int x = (int)(Math.random()*canvas.getWidth());
-						int y = (int)(Math.random()*canvas.getHeight());
-						int width = 50;
-						int height = 50;
-						g2.fillOval(x, y, width, height);						
+					public void paint(JPanel canvas, JGraphics g2) {					
+						g2.setColor(new Color(250, 200, 0));
+						g2.setStroke(new BasicStroke(1));
+						
+						Offset previous = null;
+						double increment = myCanvas.getWorldLengthByPixel(1).doubleValue();
+						for( double x=0; x<=worldSize.getWidth().doubleValue(); x+=increment ){
+							double y = x * x;
+							if( null == previous ){
+								previous = new Offset(x, y);
+							}
+							g2.drawLine(previous.getXDouble(), previous.getYDouble(), x, y);
+							previous = new Offset(x, y);
+						}
+						
+						g2.setColor(Color.blue);
+						g2.drawLine(0, 0, 0, 0);
+
 					}			
 				}, JCanvas.POSITION.DEEPEST);		
 				myCanvas.repaint();

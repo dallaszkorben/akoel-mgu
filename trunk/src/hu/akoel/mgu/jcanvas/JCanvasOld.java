@@ -10,7 +10,6 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -20,14 +19,14 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 
-public class JCanvas extends JPanel {
+public class JCanvasOld extends JPanel {
 
 	public enum POSITION {
 		DEEPEST, HIGHEST
 	}
 
 	//Az oldalak aranyara vonatkozo szabaly a befoglalo kontener meretvaltozasanak fuggvenyeben
-	public enum SIDES_PORTION{
+	public enum SIDES_TYPE{
 		
 		//Az ablakban latszik a teljes definialt vilag. Ez egyben azt jelenti, hogy
 		//a meretarany az ablak meretenek valtoztatasaval valtozik, es az ablak
@@ -47,7 +46,8 @@ public class JCanvas extends JPanel {
 	private Size worldSize;
 	private BigDecimal unitToPixelPortion;
 //	private Point worldPixelTranslate = new Point(0,0); //pixelben adott eltolas
-	private Offset worldTranslate = new Offset( 0.0, 0.0 );
+//	private Offset worldTranslate = null; //new Offset( 0.0, 0.0 );
+	private Point pixelTranslate = new Point(0, 0);
 	
 	//PERMANENT listak
 	ArrayList<PainterListener> aboveList = new ArrayList<PainterListener>();
@@ -58,7 +58,7 @@ public class JCanvas extends JPanel {
 	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
 
 	CoreCanvas coreCanvas;
-	SIDES_PORTION sidePortion;
+	SIDES_TYPE sideType;
 
 	/**
 	 * 
@@ -66,16 +66,16 @@ public class JCanvas extends JPanel {
 	 * @param background A Canvas hatterszine. null eseten az eredeti szurke
 	 * @param worldSize A Canvas maximalis merete. null eseten barmekkorara bovitheto
 	 * @param unitToPixelPortion Megadja, hogy a valo vilag 1 egysege hany kepernyo pixelnek felel meg. Alapertelmezetten 1:1
-	 * @param sidePortion
+	 * @param sideType
 	 */
-	public JCanvas(Border borderType, Color background, Size worldSize, BigDecimal unitToPixelPortion, SIDES_PORTION sidePortion ) {
+	public JCanvasOld(Border borderType, Color background, Size worldSize, BigDecimal unitToPixelPortion, SIDES_TYPE sideType ) {
 		super();
 
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.worldSize = worldSize;
 		this.unitToPixelPortion = unitToPixelPortion;
-		this.sidePortion = sidePortion;
+		this.sideType = sideType;
 
 //		coreCanvas = new CoreCanvas(this, background);
 //		this.add(coreCanvas);
@@ -83,15 +83,11 @@ public class JCanvas extends JPanel {
 		this.add( getCoreCanvas( this, background ) );
 	}
 	
-	public Offset getWorldTranslate(){
-		return worldTranslate;
-	}
-	
 	public BigDecimal getUnitToPixelPortion(){
 		return unitToPixelPortion;
 	}
 	
-	public CoreCanvas getCoreCanvas(JCanvas canvas, Color background ){
+	public CoreCanvas getCoreCanvas(JCanvasOld canvas, Color background ){
 		if( null == coreCanvas ){
 			coreCanvas = new CoreCanvas( this, background );
 		}
@@ -180,20 +176,24 @@ public class JCanvas extends JPanel {
 		temporaryList.clear();
 	}
 	
-	public void moveDown(int pixel){		
-		//worldPixelTranslate.setLocation( worldPixelTranslate.x, Math.min(0, worldPixelTranslate.y + pixel ) );
-		BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
+	public void moveUp(int pixel){		
+		pixelTranslate.setLocation( pixelTranslate.x, Math.min(0, pixelTranslate.y + pixel ) );
+		worldTranslate = null;
+/*		BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
 		worldTranslate.setY(worldTranslate.getY().add(lengthByPixel).min(BigDecimal.valueOf(0)));
+*/		
 		coreCanvas.invalidate();
 		coreCanvas.repaint();		 
 	}
 
-	public void moveUp(int pixel){
+	public void moveDown(int pixel){
 //TODO		
 //		if( coreCanvas.getHeight() - worldTranslate.y + pixel <= worldSize.height ){ 
-			//worldPixelTranslate.setLocation( worldPixelTranslate.x, worldPixelTranslate.y - pixel);
-		BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
+		pixelTranslate.setLocation( pixelTranslate.x, pixelTranslate.y - pixel);
+		worldTranslate = null;
+/*		BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
 		worldTranslate.setY(worldTranslate.getY().subtract(lengthByPixel));
+*/		
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
 //		}
@@ -201,18 +201,22 @@ public class JCanvas extends JPanel {
 
 	public void moveRight(int pixel){
 //		if( coreCanvas.getWidth() - worldPixelTranslate.x + pixel <= worldSize.width ){
-			//worldPixelTranslate.setLocation( Math.min(0, worldPixelTranslate.x - pixel), worldPixelTranslate.y );
-			BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
+			pixelTranslate.setLocation( Math.min(0, pixelTranslate.x - pixel), pixelTranslate.y );
+			worldTranslate = null;;
+/*			BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
 			worldTranslate.setX(worldTranslate.getX().subtract(lengthByPixel));
+*/
 			coreCanvas.invalidate();
 			coreCanvas.repaint();
 //		}
 	}
 	
 	public void moveLeft(int pixel){
-		//worldPixelTranslate.setLocation( Math.min(0, worldPixelTranslate.x + pixel), worldPixelTranslate.y );
-		BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
+		pixelTranslate.setLocation( Math.min(0, pixelTranslate.x + pixel), pixelTranslate.y );
+/*		BigDecimal lengthByPixel = getWorldLengthByPixel(pixel);
 		worldTranslate.setX(worldTranslate.getX().add(lengthByPixel).min(BigDecimal.valueOf(0)));
+*/		
+		worldTranslate = null;
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
 	}
@@ -226,13 +230,11 @@ public class JCanvas extends JPanel {
 	}
 	
 	public int getPixelXPositionByWorld( BigDecimal xPosition ){
-		//return (getUnitToPixelPortion().multiply(xPosition).add(worldTranslate.getX())).intValue();
-		return (getUnitToPixelPortion().multiply(xPosition)).intValue();
+		return (getUnitToPixelPortion().multiply(xPosition).add(worldTranslate.getX())).intValue();
 	}
 	
 	public int getPixelYPositionByWorld( BigDecimal yPosition ){
-		//return (getUnitToPixelPortion().multiply(yPosition).add(worldTranslate.getY())).intValue();
-		return (getUnitToPixelPortion().multiply(yPosition)).intValue();
+		return (getUnitToPixelPortion().multiply(yPosition).add(worldTranslate.getY())).intValue();
 	}
 	
 	/**
@@ -273,8 +275,8 @@ public class JCanvas extends JPanel {
 		//Ez a szelesseg lehetne a befoglalo panel szelessege (ha nem korlatoznank)
 		BigDecimal possibleWidth = BigDecimal.valueOf( super.getWidth() );
 			
-		//Ha nincs megadva a vilag merete vagy adott oldalaranyt kell tartani
-		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
+		//Ha nincs megadva a vilag merete
+		if (null == worldSize ){
 
 			//Akkor a befoglalo panel szelessege a mervado
 			return possibleWidth;
@@ -313,16 +315,16 @@ public class JCanvas extends JPanel {
 		BigDecimal possibleHeight = BigDecimal.valueOf( super.getHeight() );
 	
 		//Ha nincs megadva a vilag merete
-		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
+		if (null == worldSize ){
 
 			//Akkor a befoglalo panel magassaga a mervado
 			return possibleHeight;
 
 		}
-	
+		
 		//Ez a magassag a teljes vilag magassag plusz a keret
 		BigDecimal maxHeight = (worldSize.getHeight().multiply( unitToPixelPortion ).add( BigDecimal.valueOf(getInsets().top + getInsets().bottom)));				
-			
+		
 		//Ha a befoglalo panel magassaga kisebb mint a vilag magassaga
 		//Vagyis a befoglalo panel teljes magassagaban elnyulik a valo vilag
 		if ( possibleHeight.compareTo( maxHeight) == -1 ) {
@@ -347,10 +349,10 @@ public class JCanvas extends JPanel {
 
 		private static final long serialVersionUID = 5336269435310911828L;
 
-		JCanvas parent;
+		JCanvasOld parent;
 		private BufferedImage offImage;
 
-		public CoreCanvas(JCanvas parent, Color background) {
+		public CoreCanvas(JCanvasOld parent, Color background) {
 			super();
 			this.parent = parent;
 			this.setBackground(background);
@@ -390,13 +392,8 @@ public class JCanvas extends JPanel {
 
 				//Az uj canvas grafikai objektumanak elkerese
 				offg2 = (Graphics2D) offImage.getGraphics();
-				
-				offg2.scale(1,-1);
-
 //TODO    
-				//Most tolom el a koordinatarendszert
-				offg2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);
-//System.err.println(getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);				
+//				offg2.translate(worldPixelTranslate.getXDouble(), worldPixelTranslate.getYDouble());
 		
 				if (null != underList) {
 					for (PainterListener painter : underList) {
@@ -422,10 +419,6 @@ public class JCanvas extends JPanel {
 				//Kirajzolja  a bufferelt kepet
 				g2.drawImage(offImage, 0, 0, this);
 				
-				g2.scale(1,-1);
-//				g2.translate(0,getHeight());
-				g2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);
-				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
 						painter.paint(this, new JGraphics(parent, g2));
@@ -433,13 +426,12 @@ public class JCanvas extends JPanel {
 					temporaryList.clear();
 				}
 				
-				
 			}
 		
 		}
 
 		/**
-		 * A lathato vilag merete
+		 * Az igazi lathato vilag merete
 		 */
 		public Dimension getPreferredSize() {
 			BigDecimal mH, wH;
@@ -448,7 +440,7 @@ public class JCanvas extends JPanel {
 			// Felveszi a szulo ablak meretet csokkentve a keret meretevel
 			pixelWidth = parent.getViewerWidthWithBorder().subtract( BigDecimal.valueOf( parent.getInsets().right + parent.getInsets().left ) );
 			pixelHeight = parent.getViewerHeightWithBorder().subtract( BigDecimal.valueOf( parent.getInsets().top + parent.getInsets().bottom ) );
-	
+			
 			/**
 			 * Ha a lathato teruelt oldalainak aranyanak meg kell egyeznie az eredeti
 			 * terulet oldalainak aranyaval.
@@ -456,17 +448,17 @@ public class JCanvas extends JPanel {
 			 * Beallitja a rajzolhato feluletet az oldalaranyoknak megfeleloen
 			 * a szulo-ablak aktualis merete alapjan.
 			 */
-			if( sidePortion == SIDES_PORTION.FIX_PORTION ){
+			if( sideType == SIDES_TYPE.FIX_PORTION ){
 			
 				 /**
 		         * A szulo ablak oldalainak aranya(model meret)
 		         */
-		        mH = pixelWidth.divide( pixelHeight, MathContext.DECIMAL128 );
+		        mH = pixelWidth.divide( pixelHeight );
 
 		        /**
 		         * Az abrazolando vilag oldalainak aranya (world meret)
 		         */
-		        wH = worldSize.getWidth().divide(worldSize.getHeight(), MathContext.DECIMAL128);
+		        wH = worldSize.getWidth().divide(worldSize.getHeight());
 
 		        /**
 		         * Ha a vilag tomzsibb mint a modell
@@ -489,9 +481,6 @@ public class JCanvas extends JPanel {
 		          pixelWidth = wH.multiply( pixelHeight );
 		        }
 				
-		        unitToPixelPortion = pixelWidth.divide(worldSize.getWidth(), MathContext.DECIMAL128);
-//System.err.println(pixelWidth.intValue() + " = " + pixelHeight.intValue() );		        
-		        
 /*			}else{
 				pixelWidth.add( worldTranslate.getX() );
 				pixelHeight.add( worldTranslate.getY() );

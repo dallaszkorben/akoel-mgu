@@ -25,7 +25,7 @@ class JCoordCanvas extends JCanvas {
 	 * @param background A Canvas hatterszine. null eseten az eredeti szurke
 	 * @param size A Canvas maximalis merete. null eseten barmekkorara bovitheto
 	 */
-	public JCoordCanvas(Border borderType, Color background, Dimension size, SIDES_TYPE sideType) {
+	public JCoordCanvas(Border borderType, Color background, Dimension size, SIDES_PORTION sideType) {
 		super(borderType, background, size, sideType);
 
 	}
