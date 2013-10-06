@@ -28,14 +28,15 @@ public class ExampleJCanvas extends JFrame {
 	}
 
 	public ExampleJCanvas() {
-		worldSize = new Dimension(900, 700);
+		worldSize = new Dimension(900, 400);
+		//worldSize = null;
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
 		this.setUndecorated(false);
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, JCanvas.SIDES_TYPE.FREE_PORTION	);
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, JCanvas.SIDES_TYPE.FIX_PORTION	);
 
 		//
 		//Ujra rajzol minden statikus rajzi elemet
