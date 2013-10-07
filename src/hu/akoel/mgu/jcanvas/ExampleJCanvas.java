@@ -66,7 +66,7 @@ public class ExampleJCanvas extends JFrame {
 				myCanvas.addPainterListenerToAbove(new PainterListener(){
 					
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {
+					public void paintByViewer(JPanel canvas, Graphics2D g2) {
 						
 						for (int i = 2; i < 200; i++) {
 							g2.setColor(new Color(i, 100, 100));
@@ -91,7 +91,7 @@ public class ExampleJCanvas extends JFrame {
 				myCanvas.removePainterListenersFromUnder();
 				myCanvas.addPainterListenerToUnder(new PainterListener(){
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {
+					public void paintByViewer(JPanel canvas, Graphics2D g2) {
 						for( int j=1; j<2000; j++){
 							
 							g2.setColor(new Color(33, 70, 150));
@@ -119,7 +119,7 @@ public class ExampleJCanvas extends JFrame {
 				myCanvas.removePainterListenersFromTemporary();
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {					
+					public void paintByViewer(JPanel canvas, Graphics2D g2) {					
 						g2.setColor(new Color(250, 0, 0));
 						int x = (int)(Math.random()*canvas.getWidth());
 						int y = (int)(Math.random()*canvas.getHeight());
