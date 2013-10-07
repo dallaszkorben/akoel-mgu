@@ -1,7 +1,9 @@
 package hu.akoel.mgu.jcanvas;
 
+import hu.akoel.mgu.jcanvas.own.JCanvas;
 import hu.akoel.mgu.jcanvas.own.JGraphics;
 import hu.akoel.mgu.jcanvas.own.Offset;
+import hu.akoel.mgu.jcanvas.own.PainterListener;
 import hu.akoel.mgu.jcanvas.own.Size;
 
 import java.awt.BasicStroke;
@@ -117,7 +119,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 						Offset previous = null;
 						double increment = myCanvas.getWorldLengthByPixel(1).doubleValue();
 						for( double x=0; x<=worldSize.getWidth().doubleValue(); x+=increment ){
-							double y = x * x;
+							double y = 0.3*x * x;
 							if( null == previous ){
 								previous = new Offset(x, y);
 							}

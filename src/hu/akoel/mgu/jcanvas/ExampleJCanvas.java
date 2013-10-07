@@ -1,5 +1,8 @@
 package hu.akoel.mgu.jcanvas;
 
+import hu.akoel.mgu.jcanvas.own.JCanvas;
+import hu.akoel.mgu.jcanvas.own.PainterListener;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

@@ -1,6 +1,7 @@
 package hu.akoel.mgu.jcanvas;
 
-import hu.akoel.mgu.jcanvas.JCanvas.CoreCanvas;
+import hu.akoel.mgu.jcanvas.own.JCanvas;
+import hu.akoel.mgu.jcanvas.own.JCanvas.CoreCanvas;
 
 import java.awt.Color;
 import java.awt.Dimension;
