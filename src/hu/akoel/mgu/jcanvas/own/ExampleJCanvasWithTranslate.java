@@ -1,10 +1,5 @@
-package hu.akoel.mgu.jcanvas;
+package hu.akoel.mgu.jcanvas.own;
 
-import hu.akoel.mgu.jcanvas.own.JCanvas;
-import hu.akoel.mgu.jcanvas.own.JGraphics;
-import hu.akoel.mgu.jcanvas.own.Offset;
-import hu.akoel.mgu.jcanvas.own.PainterListener;
-import hu.akoel.mgu.jcanvas.own.Size;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -39,7 +34,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 
 	public ExampleJCanvasWithTranslate() {
 		worldSize = new Size(10.0, 30.0);
-		//worldSize = null;
+		worldSize = null;
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -47,8 +42,26 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, BigDecimal.valueOf(20), JCanvas.SIDES_PORTION.FIX_PORTION	);
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 20, JCanvas.SIDES_PORTION.FREE_PORTION	);
 
+			//Eloszorre kirajzolja az origot
+			myCanvas.addPainterListenerToUnder(new PainterListener(){
+			
+			@Override
+			public void paint(JPanel canvas, JGraphics g2) {}
+
+			@Override
+			public void paint(JPanel canvas, Graphics2D g2) {
+				g2.setColor(Color.yellow);
+				g2.setStroke(new BasicStroke(3));
+				g2.drawLine(-20, 0, 20, 0);
+				g2.drawLine(0, -20, 0, 20);
+			}	
+			
+		}, JCanvas.POSITION.DEEPEST);		
+		myCanvas.repaint();
+		
+		
 		//
 		//Ujra rajzol minden statikus rajzi elemet
 		//
@@ -77,22 +90,27 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 					public void paint(JPanel canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
-						g2.drawLine(BigDecimal.valueOf(0.0), BigDecimal.valueOf(0.0), worldSize.getWidth(), worldSize.getHeight() );
-//						g2.fillOval(worldSize.getWidth().subtract(BigDecimal.valueOf(8)), worldSize.getHeight().subtract(BigDecimal.valueOf(8)), BigDecimal.valueOf(17), BigDecimal.valueOf(17));
-//						g2.fillOval(-8, -8, 17, 17);
+						if( null == worldSize ){
+							g2.drawLine((0.0), (0.0), 80, 80 );
+						}else{
+							g2.drawLine((0.0), (0.0), worldSize.getWidth(), worldSize.getHeight() );
+						}
 
 						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(1));
+
 						g2.drawLine(0, 0, 10, 0 );
 						g2.drawLine(0, 0, 0, 10 );
-						g2.drawLine(worldSize.getWidth().doubleValue()-10, worldSize.getHeight().doubleValue(), worldSize.getWidth().doubleValue(), worldSize.getHeight().doubleValue());
-						g2.drawLine(worldSize.getWidth().doubleValue(), worldSize.getHeight().doubleValue()-10, worldSize.getWidth().doubleValue(), worldSize.getHeight().doubleValue());
-//System.err.println(myCanvas.getPixelYPositionByWorld(BigDecimal.valueOf(0)));						
-//System.err.println(myCanvas.getWorldLengthByPixel(1) + " - " + myCanvas.getWorldLengthByPixel(1).multiply(worldSize.getWidth()));
-//System.err.println(myCanvas.getWorldTranslate().getY() + " - " + myCanvas.getPixelLengthByWorld(myCanvas.getWorldTranslate().getY()));						
+
+						if( null != worldSize ){
+							g2.drawLine(worldSize.getWidth()-10, worldSize.getHeight(), worldSize.getWidth(), worldSize.getHeight());
+							g2.drawLine(worldSize.getWidth(), worldSize.getHeight()-10, worldSize.getWidth(), worldSize.getHeight());
+						}
 						
-						
-					}			 
+					}
+
+					@Override
+					public void paint(JPanel canvas, Graphics2D g2) {}			 
 				});	
 				myCanvas.repaint();
 			}			
@@ -116,21 +134,25 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(1));
 						
-						Offset previous = null;
-						double increment = myCanvas.getWorldLengthByPixel(1).doubleValue();
-						for( double x=0; x<=worldSize.getWidth().doubleValue(); x+=increment ){
+						Position previous = null;
+						double increment = myCanvas.getWorldLengthByPixel(1);
+						for( double x=0; x<=worldSize.getWidth(); x+=increment ){
 							double y = 0.3*x * x;
 							if( null == previous ){
-								previous = new Offset(x, y);
+								previous = new Position(x, y);
 							}
-							g2.drawLine(previous.getXDouble(), previous.getYDouble(), x, y);
-							previous = new Offset(x, y);
+							g2.drawLine(previous.getX(), previous.getY(), x, y);
+							previous = new Position(x, y);
 						}
 						
 						g2.setColor(Color.blue);
 						g2.drawLine(0, 0, 0, 0);
 
-					}			
+					}
+
+					@Override
+					public void paint(JPanel canvas, Graphics2D g2) {}	
+					
 				}, JCanvas.POSITION.DEEPEST);		
 				myCanvas.repaint();
 			}

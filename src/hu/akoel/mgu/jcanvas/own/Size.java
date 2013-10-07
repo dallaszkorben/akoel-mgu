@@ -1,35 +1,28 @@
 package hu.akoel.mgu.jcanvas.own;
 
-import java.math.BigDecimal;
-
 public class Size {
 
-	private BigDecimal width;
-	private BigDecimal height;
+	private double width;
+	private double height;
 	
-	public Size( BigDecimal width, BigDecimal height ){
+	public Size( double width, double height ){
 		this.width = width;
 		this.height = height;
 	}
 	
-	public Size( double width, double height ){
-		this.width = BigDecimal.valueOf(width);
-		this.height = BigDecimal.valueOf(height);
-	}
-
-	public BigDecimal getWidth() {
+	public double getWidth() {
 		return width;
 	}
 
-	public void setWidth(BigDecimal width) {
+	public void setWidth(double width) {
 		this.width = width;
 	}
 
-	public BigDecimal getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
-	public void setHeight(BigDecimal height) {
+	public void setHeight(double height) {
 		this.height = height;
 	}
 }
