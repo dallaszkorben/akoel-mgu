@@ -2,27 +2,40 @@ package hu.akoel.mgu.jcanvas.own;
 
 public class Size {
 
-	private double width;
-	private double height;
+	double xMin;
+	double yMin;
+	double xMax;
+	double yMax;
 	
-	public Size( double width, double height ){
-		this.width = width;
-		this.height = height;
+	public Size( double xMin, double yMin, double xMax, double yMax ){
+		this.xMin = xMin;
+		this.yMin = yMin;
+		this.xMax = xMax;
+		this.yMax = yMax;
 	}
 	
 	public double getWidth() {
-		return width;
-	}
-
-	public void setWidth(double width) {
-		this.width = width;
+		return xMax - xMin;
 	}
 
 	public double getHeight() {
-		return height;
+		return yMax - yMin;
+	}
+	
+	public double getXMin(){
+		return xMin;
+	}
+	
+	public double getYMin(){
+		return yMin;
+	}
+	
+	public double getXMax(){
+		return xMax;
+	}
+	
+	public double getYMax(){
+		return yMax;
 	}
 
-	public void setHeight(double height) {
-		this.height = height;
-	}
 }

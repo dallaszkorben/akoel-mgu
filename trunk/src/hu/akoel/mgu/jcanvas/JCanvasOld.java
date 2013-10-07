@@ -398,19 +398,19 @@ public class JCanvasOld extends JPanel {
 		
 				if (null != underList) {
 					for (PainterListener painter : underList) {
-						painter.paint(this, new JGraphics(parent, offg2));
+						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));
 					}
 				}
 
 				if (null != middleList) {
 					for (PainterListener painter : middleList) {
-						painter.paint(this, new JGraphics(parent, offg2));
+						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));
 					}
 				}
 
 				if (null != aboveList) {
 					for (PainterListener painter : aboveList) {
-						painter.paint(this, new JGraphics(parent, offg2));
+						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));
 					}
 				}
 				
@@ -422,7 +422,7 @@ public class JCanvasOld extends JPanel {
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
-						painter.paint(this, new JGraphics(parent, g2));
+						painter.paintByWorldPosition(this, new JGraphics(parent, g2));
 					}
 					temporaryList.clear();
 				}

@@ -178,27 +178,55 @@ public class JCanvas extends JPanel {
 	}
 	
 	public void moveDown(int pixel){		
-		//worldPixelTranslate.setLocation( worldPixelTranslate.x, Math.min(0, worldPixelTranslate.y + pixel ) );
 		double lengthByPixel = getWorldLengthByPixel(pixel);
-		worldTranslate.setY(worldTranslate.getY() + lengthByPixel );
+		double possibleYTranslate = worldTranslate.getY() + lengthByPixel;
+		
+		if( possibleYTranslate <= 0 ){
+			worldTranslate.setY( possibleYTranslate );
+		}else{
+			worldTranslate.setY(0);
+		}
 		coreCanvas.invalidate();
-		coreCanvas.repaint();		 
+		coreCanvas.repaint();
+		
 	}
 
 	public void moveUp(int pixel){
-		worldTranslate.setY(worldTranslate.getY() - getWorldLengthByPixel(pixel) );
+		double possibleYTranslate = worldTranslate.getY() - getWorldLengthByPixel(pixel);
+		double possibleYMax = worldSize.getYMin() + getWorldLengthByPixel(getViewableSize().height) - possibleYTranslate;
+
+		if( possibleYMax <= worldSize.getYMax() ){		
+			worldTranslate.setY( possibleYTranslate );
+		}else{
+			worldTranslate.setY(-(worldSize.getHeight()-getWorldLengthByPixel(getViewableSize().height-1)));
+		}
+		coreCanvas.invalidate();
+		coreCanvas.repaint();
+		
+	}
+
+	public void moveRight(int pixel){	
+		double possibleXTranslate = worldTranslate.getX() - getWorldLengthByPixel(pixel);
+		double possibleXMax = worldSize.getXMin() + getWorldLengthByPixel(getViewableSize().width) - possibleXTranslate;
+		
+		if( possibleXMax <= worldSize.getXMax() ){
+			worldTranslate.setX( possibleXTranslate );
+		}else{
+			worldTranslate.setX(-(worldSize.getWidth()-getWorldLengthByPixel(getViewableSize().width-1)));
+		}
+		
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
 	}
-
-	public void moveRight(int pixel){			
-			worldTranslate.setX( worldTranslate.getX() - getWorldLengthByPixel(pixel) );
-			coreCanvas.invalidate();
-			coreCanvas.repaint();
-	}
 	
 	public void moveLeft(int pixel){
-		worldTranslate.setX( worldTranslate.getX() + getWorldLengthByPixel(pixel) );
+		double possibleXTranslate = worldTranslate.getX() + getWorldLengthByPixel(pixel);
+		
+		if( possibleXTranslate <= 0){
+			worldTranslate.setX( possibleXTranslate );
+		}else{
+			worldTranslate.setX( 0 );
+		}
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
 	}
@@ -212,13 +240,13 @@ public class JCanvas extends JPanel {
 	}
 	
 	public int getPixelXPositionByWorld( double xPosition ){
-		//return (getUnitToPixelPortion().multiply(xPosition).add(worldTranslate.getX())).intValue();
-		return (int)Math.round( getUnitToPixelPortion() * xPosition );
+
+		return (int)Math.round( getUnitToPixelPortion() * ( xPosition - worldSize.getXMin() ) );
 	}
 	
 	public int getPixelYPositionByWorld( double yPosition ){
-		//return (getUnitToPixelPortion().multiply(yPosition).add(worldTranslate.getY())).intValue();
-		return (int)Math.round( getUnitToPixelPortion() * yPosition);
+
+		return (int)Math.round( getUnitToPixelPortion() * ( yPosition - worldSize.getYMin() ) );
 	}
 	
 	/**
@@ -234,7 +262,7 @@ public class JCanvas extends JPanel {
 	 * @return
 	 */
 	public Dimension getViewableSize(){
-		return getPreferredSize();
+		return coreCanvas.getPreferredSize();
 	}
 	
 	public int getWidth() {
@@ -386,22 +414,22 @@ public class JCanvas extends JPanel {
 		
 				if (null != underList) {
 					for (PainterListener painter : underList) {
-						painter.paint(this, new JGraphics(parent, offg2));
-						painter.paint(this, offg2);
+						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));
+						painter.paintByViewer(this, offg2);
 					}
 				}
 
 				if (null != middleList) {
 					for (PainterListener painter : middleList) {
-						painter.paint(this, new JGraphics(parent, offg2));
-						painter.paint(this, offg2);
+						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));
+						painter.paintByViewer(this, offg2);
 					}
 				}
 
 				if (null != aboveList) {
 					for (PainterListener painter : aboveList) {
-						painter.paint(this, new JGraphics(parent, offg2));
-						painter.paint(this, offg2);
+						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));
+						painter.paintByViewer(this, offg2);
 					}
 				}
 				
@@ -417,7 +445,7 @@ public class JCanvas extends JPanel {
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
-						painter.paint(this, new JGraphics(parent, g2));
+						painter.paintByWorldPosition(this, new JGraphics(parent, g2));
 					}
 					temporaryList.clear();
 				}				

@@ -33,8 +33,8 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 	}
 
 	public ExampleJCanvasWithTranslate() {
-		worldSize = new Size(10.0, 30.0);
-		worldSize = null;
+		worldSize = new Size(-10.0, -3.0, 10.0, 30.0);
+//		worldSize = null;
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -42,20 +42,22 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 20, JCanvas.SIDES_PORTION.FREE_PORTION	);
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 20, JCanvas.SIDES_PORTION.FIX_PORTION	);
 
 			//Eloszorre kirajzolja az origot
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
 			
 			@Override
-			public void paint(JPanel canvas, JGraphics g2) {}
+			public void paintByWorldPosition(JPanel canvas, JGraphics g2) {}
 
 			@Override
-			public void paint(JPanel canvas, Graphics2D g2) {
+			public void paintByViewer(JPanel canvas, Graphics2D g2) {	
+				int x0 = myCanvas.getPixelXPositionByWorld(0);
+				int y0 = myCanvas.getPixelYPositionByWorld(0);
 				g2.setColor(Color.yellow);
 				g2.setStroke(new BasicStroke(3));
-				g2.drawLine(-20, 0, 20, 0);
-				g2.drawLine(0, -20, 0, 20);
+				g2.drawLine(x0-5, y0, x0+5, y0);
+				g2.drawLine(x0, y0-5, x0, y0+5);
 			}	
 			
 		}, JCanvas.POSITION.DEEPEST);		
@@ -87,30 +89,30 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 				myCanvas.addPainterListenerToAbove(new PainterListener(){
 					
 					@Override
-					public void paint(JPanel canvas, JGraphics g2) {
+					public void paintByWorldPosition(JPanel canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
 						if( null == worldSize ){
 							g2.drawLine((0.0), (0.0), 80, 80 );
 						}else{
-							g2.drawLine((0.0), (0.0), worldSize.getWidth(), worldSize.getHeight() );
+							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
 						}
 
 						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(1));
 
-						g2.drawLine(0, 0, 10, 0 );
-						g2.drawLine(0, 0, 0, 10 );
-
 						if( null != worldSize ){
-							g2.drawLine(worldSize.getWidth()-10, worldSize.getHeight(), worldSize.getWidth(), worldSize.getHeight());
-							g2.drawLine(worldSize.getWidth(), worldSize.getHeight()-10, worldSize.getWidth(), worldSize.getHeight());
+							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin() + 5, worldSize.getYMin());
+							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin(), worldSize.getYMin() + 5);
+							
+							g2.drawLine(worldSize.getXMax() - 5, worldSize.getYMax(), worldSize.getXMax(), worldSize.getYMax());
+							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
 						}
 						
 					}
 
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {}			 
+					public void paintByViewer(JPanel canvas, Graphics2D g2) {}			 
 				});	
 				myCanvas.repaint();
 			}			
@@ -121,7 +123,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 		//
 		//Kirajzol atmeneti jelleggel egy x^2 fuggvenyt
 		//
-		JButton drawTempButton = new JButton("draw Temp");
+		JButton drawTempButton = new JButton("draw x^2");
 		drawTempButton.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -130,13 +132,13 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
 					@Override
-					public void paint(JPanel canvas, JGraphics g2) {					
+					public void paintByWorldPosition(JPanel canvas, JGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
-						g2.setStroke(new BasicStroke(1));
+						g2.setStroke(new BasicStroke(3));
 						
 						Position previous = null;
 						double increment = myCanvas.getWorldLengthByPixel(1);
-						for( double x=0; x<=worldSize.getWidth(); x+=increment ){
+						for( double x=worldSize.getXMin(); x<=worldSize.getXMax(); x+=increment ){
 							double y = 0.3*x * x;
 							if( null == previous ){
 								previous = new Position(x, y);
@@ -151,7 +153,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 					}
 
 					@Override
-					public void paint(JPanel canvas, Graphics2D g2) {}	
+					public void paintByViewer(JPanel canvas, Graphics2D g2) {}	
 					
 				}, JCanvas.POSITION.DEEPEST);		
 				myCanvas.repaint();
