@@ -1,7 +1,7 @@
 package hu.akoel.mgu.jcanvas;
 
 import hu.akoel.mgu.jcanvas.own.JGraphics;
-import hu.akoel.mgu.jcanvas.own.Offset;
+import hu.akoel.mgu.jcanvas.own.Position;
 import hu.akoel.mgu.jcanvas.own.PainterListener;
 import hu.akoel.mgu.jcanvas.own.Size;
 
