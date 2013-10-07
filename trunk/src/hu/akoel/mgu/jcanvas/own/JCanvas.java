@@ -1,8 +1,5 @@
-package hu.akoel.mgu.jcanvas;
+package hu.akoel.mgu.jcanvas.own;
 
-import hu.akoel.mgu.jcanvas.own.JGraphics;
-import hu.akoel.mgu.jcanvas.own.Offset;
-import hu.akoel.mgu.jcanvas.own.Size;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -476,21 +473,22 @@ public class JCanvas extends JPanel {
 		          /**
 		           * Akkor a model magassagat kell csokkenteni
 		           */
-		          pixelHeight = pixelWidth.divide( wH );
+		          pixelHeight = pixelWidth.divide( wH, MathContext.DECIMAL128 );
 
-		          /**
-		           * Ha a vilag elnyujtottabb (magassagban) mint a modell
-		           */
+		        /**
+		         * Ha a vilag elnyujtottabb (magassagban) mint a modell
+		         */
 		        }else{
 
 		          /**
 		           * Akkor a modell szelesseget kell csokkenteni
 		           */
 		          pixelWidth = wH.multiply( pixelHeight );
+
 		        }
 				
 		        unitToPixelPortion = pixelWidth.divide(worldSize.getWidth(), MathContext.DECIMAL128);
-//System.err.println(pixelWidth.intValue() + " = " + pixelHeight.intValue() );		        
+System.err.println(unitToPixelPortion + " - " + pixelHeight.intValue() + " - " + getPixelYPositionByWorld( BigDecimal.valueOf(30)) + " == " + (getUnitToPixelPortion().multiply( BigDecimal.valueOf(30))).intValue());		        
 		        
 /*			}else{
 				pixelWidth.add( worldTranslate.getX() );

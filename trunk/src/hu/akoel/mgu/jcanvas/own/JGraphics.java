@@ -1,6 +1,5 @@
 package hu.akoel.mgu.jcanvas.own;
 
-import hu.akoel.mgu.jcanvas.JCanvas;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
