@@ -1,12 +1,13 @@
 package hu.akoel.mgu.jcanvas.own;
 
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
@@ -276,6 +277,14 @@ public class JCanvas extends JPanel {
 		coreCanvas.repaint();
 	}
 
+	public double getWorldXPositionByPixel( int pixel ){
+		return getWorldLengthByPixel( pixel ) + worldSize.getXMin() - worldTranslate.getX();
+	}
+	
+	public double getWorldYPositionByPixel( int pixel ){
+		return getWorldLengthByPixel(getViewableSize().height - pixel) + worldSize.getYMin() - worldTranslate.getY();
+	}
+	
 	public double getWorldLengthByPixel( int pixel ){
 		return pixel / getUnitToPixelPortion();
 	}
@@ -413,6 +422,9 @@ public class JCanvas extends JPanel {
 			super();
 			this.parent = parent;
 			this.setBackground(background);
+			
+			 // Eger kormanyaval letrehozott zoom figyelese
+		    addMouseWheelListener(new WheelZoomListener());
 		}
 
 		  /**
@@ -564,6 +576,27 @@ public class JCanvas extends JPanel {
 				return new Dimension( (int)Math.round(pixelWidth) + 1, (int)Math.round(pixelHeight) + 1);
 
 		}
+		
+		  /**
+		   * Az eger kormanya altal letrehozott zoom figyelo osztaly
+		   */
+		  class WheelZoomListener implements MouseWheelListener{
+		    public void mouseWheelMoved(MouseWheelEvent e){
+		      double xCenter, yCenter;
+		      xCenter = getWorldXPositionByPixel(e.getX());
+		      yCenter = getWorldYPositionByPixel(e.getY());
+System.err.println(xCenter + ", " + yCenter);
+/*		      //Felfele tekeres -> ZoomIn
+		      if (e.getWheelRotation() < 0)
+		        zoomIn(xCenter, yCenter, e.getX(), e.getY(), measurement.getInRate());
+		        //Lefele tekeres -> ZoomOut
+		      else
+	        zoomOut(xCenter, yCenter, e.getX(), e.getY(), measurement.getInRate());
+*/
+		    }//mouseWheelMoved(MouseWheelEvent e)
+
+		  }//class WheelZoomListener
+
 
 	}
 }
