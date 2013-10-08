@@ -42,7 +42,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 20, JCanvas.SIDES_PORTION.FIX_PORTION	);
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 10, JCanvas.SIDES_PORTION.FREE_PORTION	);
 
 			//Eloszorre kirajzolja az origot
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
