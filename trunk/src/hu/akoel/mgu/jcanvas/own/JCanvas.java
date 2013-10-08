@@ -296,7 +296,7 @@ public class JCanvas extends JPanel {
 		}
 		
 		//Ez a szelesseg a teljes vilag szelessege plusz a keret
-		double maxWidth = worldSize.getWidth() * ( unitToPixelPortion ) + ( getInsets().right + getInsets().left);
+		double maxWidth = (worldSize.getWidth() + worldTranslate.getX()) * ( unitToPixelPortion ) + ( getInsets().right + getInsets().left);
 		
 		//Ha a befoglalo panel szelessege kisebb mint a vilag szelessege
 		//Vagyis a befoglalo panel teljes szelessegeben elnyulik a valo vilag		
@@ -335,7 +335,7 @@ public class JCanvas extends JPanel {
 		}
 	
 		//Ez a magassag a teljes vilag magassag plusz a keret
-		double maxHeight = (worldSize.getHeight() * unitToPixelPortion + getInsets().top + getInsets().bottom);				
+		double maxHeight = (worldSize.getHeight() + worldTranslate.getY()) * unitToPixelPortion + getInsets().top + getInsets().bottom;				
 			
 		//Ha a befoglalo panel magassaga kisebb mint a vilag magassaga
 		//Vagyis a befoglalo panel teljes magassagaban elnyulik a valo vilag
