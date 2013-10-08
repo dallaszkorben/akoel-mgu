@@ -57,26 +57,71 @@ public class JCanvas extends JPanel {
 	CoreCanvas coreCanvas;
 	SIDES_PORTION sidePortion;
 
+	
+	
 	/**
 	 * 
 	 * @param borderType A Canvas kore rajzoladno keret tipuse. null eseten nincs keret
 	 * @param background A Canvas hatterszine. null eseten az eredeti szurke
 	 * @param worldSize A Canvas maximalis merete. null eseten barmekkorara bovitheto
 	 * @param unitToPixelPortion Megadja, hogy a valo vilag 1 egysege hany kepernyo pixelnek felel meg. Alapertelmezetten 1:1
-	 * @param sidePortion
+	 * @param sidePortion Megadja, hogy az oldalak aranya milyen modon valtozhat. FREE_PORTION eseten
+	 * az oldalak meretet a befoglalo panel merete hatarozza meg elsosorban.
+	 * FIX_PORTION eseten viszont az egesz vilag latszik a vilag oldalaranyainak megfelelo oldalarannyal
 	 */
 	public JCanvas(Border borderType, Color background, Size worldSize, double unitToPixelPortion, SIDES_PORTION sidePortion ) {
 		super();
 
+		if( sidePortion.equals( SIDES_PORTION.FIX_PORTION ) && null == worldSize ){
+			throw new Error("In case of FIX_PORTION it is required to set the worldSize. Now it is null.");
+		}
+		
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		this.worldSize = worldSize;
 		this.unitToPixelPortion = unitToPixelPortion;
 		this.sidePortion = sidePortion;
 
-//		coreCanvas = new CoreCanvas(this, background);
-//		this.add(coreCanvas);
+		this.add( getCoreCanvas( this, background ) );
+	}
+	
+	/**
+	 * If the unitToPixelPortion is set then the sidePortion is FREE_PORTION
+	 * 
+	 * @param borderType
+	 * @param background
+	 * @param worldSize
+	 * @param unitToPixelPortion
+	 */
+	public JCanvas(Border borderType, Color background, Size worldSize, double unitToPixelPortion ) {
+		
+		this.commonConstructor(borderType, background, worldSize);		
+		this.unitToPixelPortion = unitToPixelPortion;
+		this.sidePortion = SIDES_PORTION.FREE_PORTION;
+	}
 
+	
+	/**
+	 * If the unitToPixelPortion is missing then the sidePortion is FIX_PORTION
+	 * 
+	 * @param borderType
+	 * @param background
+	 * @param worldSize
+	 */
+	public JCanvas(Border borderType, Color background, Size worldSize) {
+		
+		if( null == worldSize ){
+			throw new Error("In case of FIX_PORTION it is required to set the worldSize. Now it is null.");
+		}
+
+		this.commonConstructor(borderType, background, worldSize);
+		this.sidePortion = SIDES_PORTION.FIX_PORTION;
+	}
+	
+	private void commonConstructor(Border borderType, Color background, Size worldSize ){
+		this.setBorder(borderType);
+		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		this.worldSize = worldSize;
 		this.add( getCoreCanvas( this, background ) );
 	}
 	

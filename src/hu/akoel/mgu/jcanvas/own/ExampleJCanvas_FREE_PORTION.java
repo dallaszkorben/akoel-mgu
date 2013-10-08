@@ -21,7 +21,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ExampleJCanvasWithTranslate extends JFrame {
+public class ExampleJCanvas_FREE_PORTION extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
@@ -29,10 +29,10 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 	
 	public static void main(String[] args) {
 		
-		new ExampleJCanvasWithTranslate();
+		new ExampleJCanvas_FREE_PORTION();
 	}
 
-	public ExampleJCanvasWithTranslate() {
+	public ExampleJCanvas_FREE_PORTION() {
 		worldSize = new Size(-10.0, -3.0, 10.0, 30.0);
 //		worldSize = null;
 		
@@ -42,7 +42,7 @@ public class ExampleJCanvasWithTranslate extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 10, JCanvas.SIDES_PORTION.FREE_PORTION	);
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 10 );
 
 			//Eloszorre kirajzolja az origot
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
