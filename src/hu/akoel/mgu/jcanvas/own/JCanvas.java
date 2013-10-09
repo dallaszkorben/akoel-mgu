@@ -5,13 +5,9 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -132,6 +128,10 @@ public class JCanvas extends JPanel {
 	
 	public double getUnitToPixelPortion(){
 		return unitToPixelPortion;
+	}
+	
+	public void setUnitToPixelPortion( double unitToPixelPortion ){
+		this.unitToPixelPortion = unitToPixelPortion;
 	}
 	
 	public CoreCanvas getCoreCanvas(JCanvas canvas, Color background ){
@@ -282,7 +282,7 @@ public class JCanvas extends JPanel {
 	}
 	
 	public double getWorldYPositionByPixel( int pixel ){
-		return getWorldLengthByPixel(getViewableSize().height - pixel) + worldSize.getYMin() - worldTranslate.getY();
+		return getWorldLengthByPixel(getViewableSize().height - 1 - pixel) + worldSize.getYMin() - worldTranslate.getY();
 	}
 	
 	public double getWorldLengthByPixel( int pixel ){
@@ -405,6 +405,48 @@ public class JCanvas extends JPanel {
 			return maxHeight;
 		}
 	}
+	
+	/**
+	 * Az eger kormanya altal letrehozott zoom figyelo osztaly
+	 */
+	class WheelZoomListener implements MouseWheelListener{
+		public void mouseWheelMoved(MouseWheelEvent e){
+			double xCenter, yCenter;
+			xCenter = getWorldXPositionByPixel(e.getX());
+			yCenter = getWorldYPositionByPixel(e.getY());
+
+System.err.println(xCenter + ", " + yCenter);
+
+	      //Felfele tekeres -> ZoomIn
+	      if (e.getWheelRotation() < 0)
+	    	  zoomIn(xCenter, yCenter, e.getX(), e.getY(), 1.2 );
+	      //Lefele tekeres -> ZoomOut
+	      else
+	    	  zoomOut(xCenter, yCenter, e.getX(), e.getY(), 1.2 );
+
+		}//mouseWheelMoved(MouseWheelEvent e)
+
+	}//class WheelZoomListener
+
+	 public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
+		    setUnitToPixelPortion(getUnitToPixelPortion() * rate );
+		    this.revalidate();
+		    //this.processComponentEvent(new ComponentEvent(coreCanvas, ComponentEvent.COMPONENT_RESIZED));
+//		    invalidate();
+//		    repaint();
+//		    coreCanvas.invalidate();
+//		    coreCanvas.repaint();			  
+	 }	
+	 
+	 public void zoomOut(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
+		    setUnitToPixelPortion(getUnitToPixelPortion() / rate );
+		    this.revalidate();
+		    //this.processComponentEvent(new ComponentEvent(coreCanvas, ComponentEvent.COMPONENT_RESIZED));
+//		    invalidate();
+//		    coreCanvas.invalidate();
+//		    coreCanvas.repaint();			  
+	 }
+	
 	
 	/**
 	 * 
@@ -564,6 +606,7 @@ public class JCanvas extends JPanel {
 		        }
 				
 		        unitToPixelPortion = pixelWidth / worldSize.getWidth();
+		        
 //System.err.println(unitToPixelPortion + " - " + pixelHeight.intValue() + " - " + getPixelYPositionByWorld( BigDecimal.valueOf(300)) + " == " + (getUnitToPixelPortion().multiply( BigDecimal.valueOf(300))).intValue());		        
 		        
 				
@@ -573,30 +616,11 @@ public class JCanvas extends JPanel {
 				pixelHeight.add( worldTranslate.getY() );
 */				
 			}
-				return new Dimension( (int)Math.round(pixelWidth) + 1, (int)Math.round(pixelHeight) + 1);
+//System.err.println( ((int)Math.round(pixelHeight) + 1) + " - " + getPixelYPositionByWorld(-3) + ", " + getPixelYPositionByWorld(31.47) + " --- " + getWorldXPositionByPixel(getPixelYPositionByWorld(31.47)));				return new Dimension( (int)Math.round(pixelWidth) + 1, (int)Math.round(pixelHeight) + 1);
 
 		}
 		
-		  /**
-		   * Az eger kormanya altal letrehozott zoom figyelo osztaly
-		   */
-		  class WheelZoomListener implements MouseWheelListener{
-		    public void mouseWheelMoved(MouseWheelEvent e){
-		      double xCenter, yCenter;
-		      xCenter = getWorldXPositionByPixel(e.getX());
-		      yCenter = getWorldYPositionByPixel(e.getY());
-System.err.println(xCenter + ", " + yCenter);
-/*		      //Felfele tekeres -> ZoomIn
-		      if (e.getWheelRotation() < 0)
-		        zoomIn(xCenter, yCenter, e.getX(), e.getY(), measurement.getInRate());
-		        //Lefele tekeres -> ZoomOut
-		      else
-	        zoomOut(xCenter, yCenter, e.getX(), e.getY(), measurement.getInRate());
-*/
-		    }//mouseWheelMoved(MouseWheelEvent e)
-
-		  }//class WheelZoomListener
-
+	
 
 	}
 }
