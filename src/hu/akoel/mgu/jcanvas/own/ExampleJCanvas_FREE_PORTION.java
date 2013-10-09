@@ -42,7 +42,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), Color.CYAN, worldSize, 10 );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), Color.GREEN, worldSize, 10 );
 
 			//Eloszorre kirajzolja az origot
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
@@ -109,10 +109,16 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
 						}
 						
+						g2.setColor(Color.CYAN);
+						g2.fillOval(-4, -1, 2, 2);
+						
 					}
 
 					@Override
-					public void paintByViewer(JPanel canvas, Graphics2D g2) {}			 
+					public void paintByViewer(JPanel canvas, Graphics2D g2) {
+//g2.setColor(Color.blue);
+//g2.drawLine(0, 0, 70, 0);
+					}			 
 				});	
 				myCanvas.repaint();
 			}			

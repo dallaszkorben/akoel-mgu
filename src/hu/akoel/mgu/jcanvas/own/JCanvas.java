@@ -126,6 +126,9 @@ public class JCanvas extends JPanel {
 		return worldTranslate;
 	}
 	
+	public void setWorldTranslate(Position worldTranslate){
+		this.worldTranslate = worldTranslate;
+	}
 	public double getUnitToPixelPortion(){
 		return unitToPixelPortion;
 	}
@@ -416,6 +419,7 @@ public class JCanvas extends JPanel {
 			yCenter = getWorldYPositionByPixel(e.getY());
 
 //System.err.println(xCenter + ", " + yCenter);
+//System.err.println(getPixelYPositionByWorld(31.47) + " - " + getPixelYPositionByWorld(-3) + " --- " + getViewableSize().height);
 
 	      //Felfele tekeres -> ZoomIn
 	      if (e.getWheelRotation() < 0)
@@ -430,23 +434,28 @@ public class JCanvas extends JPanel {
 
 	 public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
 		 setUnitToPixelPortion(getUnitToPixelPortion() * rate );
-		 this.getParent().revalidate();
-		    //this.processComponentEvent(new ComponentEvent(coreCanvas, ComponentEvent.COMPONENT_RESIZED));
-//		    invalidate();
-//		    repaint();
-//		 revalidate();
-//		    coreCanvas.invalidate();
-//		    coreCanvas.repaint();			  
+
+		 worldTranslate.setX( worldTranslate.getX() - getWorldLengthByPixel(xPoint) * (rate-1) );
+		 worldTranslate.setY( worldTranslate.getY() - getWorldLengthByPixel(getViewableSize().height-yPoint) * (rate-1) );
+		 
+		 this.getParent().repaint();
+		 coreCanvas.invalidate();
+		 coreCanvas.repaint();
+		 revalidate();
+			  
 	 }	
 	 
 	 public void zoomOut(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
 		 setUnitToPixelPortion(getUnitToPixelPortion() / rate );
-		 this.getParent().revalidate();
-		    //this.processComponentEvent(new ComponentEvent(coreCanvas, ComponentEvent.COMPONENT_RESIZED));
-//		    invalidate();
-//		 revalidate();
-//		    coreCanvas.invalidate();
-//		    coreCanvas.repaint();			  
+
+		 worldTranslate.setX( worldTranslate.getX() + getWorldLengthByPixel(xPoint) * (rate-1)/rate);
+		 worldTranslate.setY( worldTranslate.getY() + getWorldLengthByPixel(getViewableSize().height-yPoint) * (rate-1)/rate );
+		 
+		 this.getParent().repaint();
+		 coreCanvas.invalidate();
+		 coreCanvas.repaint();
+		 revalidate();
+		  
 	 }
 	
 	
@@ -495,8 +504,6 @@ public class JCanvas extends JPanel {
 		    int height = this.getHeight();
 
 		    super.paintComponent(g);
-			
-//System.err.println("width: " + this.getWidth() + " height: " + this.getHeight());
 
 			if (offImage == null) {
 
@@ -506,15 +513,13 @@ public class JCanvas extends JPanel {
 				//Az uj canvas grafikai objektumanak elkerese
 				offg2 = (Graphics2D) offImage.getGraphics();
 				
+				offg2.setColor(Color.GREEN);
+				offg2.fillRect(0, 0, width, height);
+				
 				offg2.scale(1,-1);
 
-//TODO    
 				//Most tolom el a koordinatarendszert
-				offg2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);
-//System.err.println(getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);				
-
-offg2.setColor(Color.red);
-offg2.fillRect(0, 0, width, height);				
+				offg2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight() + 1);			
 				
 				if (null != underList) {
 					for (PainterListener painter : underList) {
@@ -545,7 +550,7 @@ offg2.fillRect(0, 0, width, height);
 				
 				g2.scale(1,-1);
 //				g2.translate(0,getHeight());
-				g2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);
+				g2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight() + 1);
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
@@ -598,7 +603,6 @@ offg2.fillRect(0, 0, width, height);
 		           */
 		          pixelHeight = pixelWidth / wH;
 		          
-//		          System.err.println(pixelWidth + " = " + pixelHeight);
 		          /**
 		           * Ha a vilag elnyujtottabb (magassagban) mint a modell
 		           */
@@ -610,17 +614,9 @@ offg2.fillRect(0, 0, width, height);
 		          pixelWidth = wH * pixelHeight;
 		        }
 				
-		        unitToPixelPortion = pixelWidth / worldSize.getWidth();
-		        
-//System.err.println(unitToPixelPortion + " - " + pixelHeight.intValue() + " - " + getPixelYPositionByWorld( BigDecimal.valueOf(300)) + " == " + (getUnitToPixelPortion().multiply( BigDecimal.valueOf(300))).intValue());		        
-		        
-				
-
-/*			}else{
-				pixelWidth.add( worldTranslate.getX() );
-				pixelHeight.add( worldTranslate.getY() );
-*/				
+		        unitToPixelPortion = pixelWidth / worldSize.getWidth();				
 			}
+			
 //System.err.println( ((int)Math.round(pixelHeight) + 1) + " - " + getPixelYPositionByWorld(-3) + ", " + getPixelYPositionByWorld(31.47) + " --- " + getWorldXPositionByPixel(getPixelYPositionByWorld(31.47)));				return new Dimension( (int)Math.round(pixelWidth) + 1, (int)Math.round(pixelHeight) + 1);
 
 		}
