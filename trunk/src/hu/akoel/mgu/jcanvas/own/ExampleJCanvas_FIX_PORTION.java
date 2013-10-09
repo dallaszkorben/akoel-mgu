@@ -33,7 +33,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 	}
 
 	public ExampleJCanvas_FIX_PORTION() {
-		worldSize = new Size(-10.0, -3.0, 10.0, 30.0);
+		worldSize = new Size(-10.0, -3.0, 10.0, 31.47);
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
