@@ -415,7 +415,7 @@ public class JCanvas extends JPanel {
 			xCenter = getWorldXPositionByPixel(e.getX());
 			yCenter = getWorldYPositionByPixel(e.getY());
 
-System.err.println(xCenter + ", " + yCenter);
+//System.err.println(xCenter + ", " + yCenter);
 
 	      //Felfele tekeres -> ZoomIn
 	      if (e.getWheelRotation() < 0)
@@ -429,20 +429,22 @@ System.err.println(xCenter + ", " + yCenter);
 	}//class WheelZoomListener
 
 	 public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
-		    setUnitToPixelPortion(getUnitToPixelPortion() * rate );
-		    this.revalidate();
+		 setUnitToPixelPortion(getUnitToPixelPortion() * rate );
+		 this.getParent().revalidate();
 		    //this.processComponentEvent(new ComponentEvent(coreCanvas, ComponentEvent.COMPONENT_RESIZED));
 //		    invalidate();
 //		    repaint();
+//		 revalidate();
 //		    coreCanvas.invalidate();
 //		    coreCanvas.repaint();			  
 	 }	
 	 
 	 public void zoomOut(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
-		    setUnitToPixelPortion(getUnitToPixelPortion() / rate );
-		    this.revalidate();
+		 setUnitToPixelPortion(getUnitToPixelPortion() / rate );
+		 this.getParent().revalidate();
 		    //this.processComponentEvent(new ComponentEvent(coreCanvas, ComponentEvent.COMPONENT_RESIZED));
 //		    invalidate();
+//		 revalidate();
 //		    coreCanvas.invalidate();
 //		    coreCanvas.repaint();			  
 	 }
@@ -510,7 +512,10 @@ System.err.println(xCenter + ", " + yCenter);
 				//Most tolom el a koordinatarendszert
 				offg2.translate(getPixelLengthByWorld(worldTranslate.getX()), getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);
 //System.err.println(getPixelLengthByWorld(worldTranslate.getY())-getHeight()+1);				
-		
+
+offg2.setColor(Color.red);
+offg2.fillRect(0, 0, width, height);				
+				
 				if (null != underList) {
 					for (PainterListener painter : underList) {
 						painter.paintByWorldPosition(this, new JGraphics(parent, offg2));

@@ -42,7 +42,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize, 10 );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), Color.CYAN, worldSize, 10 );
 
 			//Eloszorre kirajzolja az origot
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
