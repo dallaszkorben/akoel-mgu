@@ -41,10 +41,10 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
 			
 			@Override
-			public void paintByWorldPosition(JPanel canvas, JGraphics g2) {}
+			public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {}
 
 			@Override
-			public void paintByViewer(JPanel canvas, Graphics2D g2) {	
+			public void paintByViewer(JCanvas canvas, Graphics2D g2) {	
 				int x0 = myCanvas.getPixelXPositionByWorld(0);
 				int y0 = myCanvas.getPixelYPositionByWorld(0);
 				g2.setColor(Color.yellow);
@@ -82,7 +82,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 				myCanvas.addPainterListenerToAbove(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(JPanel canvas, JGraphics g2) {
+					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
 						if( null == worldSize ){
@@ -105,7 +105,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 					}
 
 					@Override
-					public void paintByViewer(JPanel canvas, Graphics2D g2) {}			 
+					public void paintByViewer(JCanvas canvas, Graphics2D g2) {}			 
 				});	
 				myCanvas.repaint();
 			}			
@@ -125,13 +125,15 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(JPanel canvas, JGraphics g2) {					
+					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
 						Position previous = null;
-						double increment = myCanvas.getWorldLengthByPixel(1);
-						for( double x=worldSize.getXMin(); x<=worldSize.getXMax(); x+=increment ){
+						double increment = myCanvas.getWorldLengthByPixel(2);
+						double start = canvas.getWorldXByPixel(0);
+						double stop = canvas.getWorldXByPixel(canvas.getWidth()	);
+						for( double x=start; x<=stop; x+=increment ){
 							double y = 0.3*x * x;
 							if( null == previous ){
 								previous = new Position(x, y);
@@ -146,7 +148,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 					}
 
 					@Override
-					public void paintByViewer(JPanel canvas, Graphics2D g2) {}	
+					public void paintByViewer(JCanvas canvas, Graphics2D g2) {}	
 					
 				}, JCanvas.POSITION.DEEPEST);		
 				myCanvas.repaint();

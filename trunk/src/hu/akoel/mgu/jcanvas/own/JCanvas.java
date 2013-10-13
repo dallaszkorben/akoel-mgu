@@ -100,6 +100,9 @@ public class JCanvas extends JPanel {
 
 		this.commonConstructor(borderType, background, worldSize);
 		this.sidePortion = SIDES_PORTION.FIX_PORTION;
+		
+		//Jelzem, hogy megtorent az eltolas. 
+		wasTransferedToMiddle = true;
 	}
 	
 	private void commonConstructor(Border borderType, Color background, Size worldSize ){
