@@ -21,7 +21,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 
 	Size worldSize;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) {	
 		
 		new ExampleJCanvas_FIX_PORTION();
 	}

@@ -26,6 +26,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 	private static final long serialVersionUID = 5810956401235486862L;
 
 	Size worldSize;
+	Position positionToMiddle = new Position( 0, 0);
 	
 	public static void main(String[] args) {
 		
@@ -33,8 +34,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 	}
 
 	public ExampleJCanvas_FREE_PORTION() {
-		worldSize = new Size(-10.0, -3.0, 10.0, 31.47);
-//		worldSize = null;
+		worldSize = null;
+		
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -42,16 +43,16 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), Color.GREEN, worldSize, 10 );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), Color.GREEN, 10, positionToMiddle );
 
 			//Eloszorre kirajzolja az origot
 			myCanvas.addPainterListenerToUnder(new PainterListener(){
 			
 			@Override
-			public void paintByWorldPosition(JPanel canvas, JGraphics g2) {}
+			public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {}
 
 			@Override
-			public void paintByViewer(JPanel canvas, Graphics2D g2) {	
+			public void paintByViewer(JCanvas canvas, Graphics2D g2) {	
 				int x0 = myCanvas.getPixelXPositionByWorld(0);
 				int y0 = myCanvas.getPixelYPositionByWorld(0);
 				g2.setColor(Color.yellow);
@@ -89,7 +90,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 				myCanvas.addPainterListenerToAbove(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(JPanel canvas, JGraphics g2) {
+					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
 						if( null == worldSize ){
@@ -107,17 +108,28 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							
 							g2.drawLine(worldSize.getXMax() - 5, worldSize.getYMax(), worldSize.getXMax(), worldSize.getYMax());
 							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
+						}else{
+//System.out.println(canvas.getViewableSize().height + " - " + canvas.getPixelPerUnit() + " - " + canvas.getWorldYByPixel(0) );							
+						
+							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ), canvas.getWorldXByPixel(0) + 5, canvas.getWorldYByPixel(canvas.getViewableSize().height ) );
+							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ), canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ) + 5);
+							
+							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width) - 5, canvas.getWorldYByPixel(0), canvas.getViewableSize().width, canvas.getWorldYByPixel(0) );
+							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 0), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 0), canvas.getWorldYByPixel(0) - 5);
+							
 						}
 						
+						g2.setColor(Color.black);
+						g2.drawOval(-10, -10, 20, 20);
 						g2.setColor(Color.CYAN);
-						g2.fillOval(-4, -1, 2, 2);
 						
+						g2.fillOval(-4, -1, 2, 2);
+										
 					}
 
 					@Override
-					public void paintByViewer(JPanel canvas, Graphics2D g2) {
-//g2.setColor(Color.blue);
-//g2.drawLine(0, 0, 70, 0);
+					public void paintByViewer(JCanvas canvas, Graphics2D g2) {
+
 					}			 
 				});	
 				myCanvas.repaint();
@@ -138,13 +150,15 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(JPanel canvas, JGraphics g2) {					
+					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
 						Position previous = null;
-						double increment = myCanvas.getWorldLengthByPixel(1);
-						for( double x=worldSize.getXMin(); x<=worldSize.getXMax(); x+=increment ){
+						double increment = myCanvas.getWorldLengthByPixel(2);
+						double start = canvas.getWorldXByPixel(0);
+						double stop = canvas.getWorldXByPixel(canvas.getWidth()	);
+						for( double x=start; x<=stop; x+=increment ){
 							double y = 0.3*x * x;
 							if( null == previous ){
 								previous = new Position(x, y);
@@ -159,7 +173,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 					}
 
 					@Override
-					public void paintByViewer(JPanel canvas, Graphics2D g2) {}	
+					public void paintByViewer(JCanvas canvas, Graphics2D g2) {}	
 					
 				}, JCanvas.POSITION.DEEPEST);		
 				myCanvas.repaint();
@@ -172,7 +186,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0 ){			
-				myCanvas.moveUp(1);
+				myCanvas.moveY(-1);
 			}
 		});
 		
@@ -181,7 +195,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0 ){
-				myCanvas.moveDown(1);
+				myCanvas.moveY(1);
 			}
 		});
 		
@@ -190,7 +204,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0 ){
-				myCanvas.moveRight(1);
+				myCanvas.moveX(1);
 			}
 		});
 		
@@ -199,7 +213,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0 ){
-				myCanvas.moveLeft(1);
+				myCanvas.moveX(-1);
 			}
 		});
 		
@@ -232,5 +246,6 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		this.setVisible(true);
 
 	}
+	
+	
 }
-
