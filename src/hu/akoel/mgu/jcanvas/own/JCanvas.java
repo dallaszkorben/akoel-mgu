@@ -402,13 +402,13 @@ public class JCanvas extends JPanel {
 		double possibleWidth = super.getWidth();
 			
 		//Ha nincs megadva a vilag merete vagy adott oldalaranyt kell tartani
-		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
+//		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
 
 			//Akkor a befoglalo panel szelessege a mervado
 			return possibleWidth - ( getInsets().right + getInsets().left);
 
-		}
-		
+//		}
+/*		
 		//Ez a szelesseg a teljes vilag szelessege
 //		double maxWidth = (worldSize.getWidth() + worldTranslate.getX()) * ( getPixelPerUnit() );// + ( getInsets().right + getInsets().left);
 		double maxWidth = getPixelLengthByWorld(worldSize.getWidth() + worldTranslate.getX());
@@ -426,6 +426,7 @@ public class JCanvas extends JPanel {
 			//Akkor a vilag szelessege lesz a mervado
 			return maxWidth;
 		}
+*/		
 	}
 	
 	/**
@@ -442,13 +443,13 @@ public class JCanvas extends JPanel {
 		double possibleHeight = super.getHeight();
 	
 		//Ha nincs megadva a vilag merete
-		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
+//		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
 
 			//Akkor a befoglalo panel magassaga a mervado
 			return possibleHeight - ( getInsets().top + getInsets().bottom );
 
-		}
-	
+//		}
+/*	
 		//Ez a magassag a teljes vilag magassag
 		//double maxHeight = (worldSize.getHeight() + worldTranslate.getY()) * getPixelPerUnit();// + getInsets().top + getInsets().bottom;				
 		double maxHeight = getPixelLengthByWorld(worldSize.getHeight() + worldTranslate.getY());
@@ -466,6 +467,7 @@ public class JCanvas extends JPanel {
 			//Akkor a vilag magassaga lesz a mervado
 			return maxHeight;
 		}
+*/		
 	}
 	
 	//---------------------------
@@ -776,7 +778,11 @@ if( freeX > 0){
 		          pixelWidth = wH * pixelHeight;
 		        }
 				
-		        pixelPerUnit = pixelWidth / worldSize.getWidth();				
+		        pixelPerUnit = pixelWidth / worldSize.getWidth();
+		        pixelWidth++;
+		        pixelHeight++;	 
+//System.out.println(pixelPerUnit + " = " + pixelWidth + " / " + worldSize.getWidth());		       
+		        
 			}
 			
 //System.err.println( ((int)Math.round(pixelHeight) + 1) + " - " + getPixelYPositionByWorld(-3) + ", " + getPixelYPositionByWorld(31.47) + " --- " + getWorldXPositionByPixel(getPixelYPositionByWorld(31.47)));
