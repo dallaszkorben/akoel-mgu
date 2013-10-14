@@ -27,7 +27,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 	}
 
 	public ExampleJCanvas_FIX_PORTION() {
-		worldSize = new Size(-10.0, -3.0, 10.0, 31.47);
+		worldSize = new Size(-10.0, -3.0, 10.0, 25);
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -132,14 +132,16 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						Position previous = null;
 						double increment = myCanvas.getWorldLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
-						double stop = canvas.getWorldXByPixel(canvas.getWidth()	);
+						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
+System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						
 						for( double x=start; x<=stop; x+=increment ){
-							double y = 0.3*x * x;
+							double y = (0.5*x)*(0.5*x);
 							if( null == previous ){
 								previous = new Position(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
 							previous = new Position(x, y);
+System.err.println(previous);							
 						}
 						
 						g2.setColor(Color.blue);
