@@ -53,8 +53,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 
 			@Override
 			public void paintByViewer(JCanvas canvas, Graphics2D g2) {	
-				int x0 = myCanvas.getPixelXPositionByWorld(0);
-				int y0 = myCanvas.getPixelYPositionByWorld(0);
+				int x0 = 0; //myCanvas.getPixelXPositionByWorld(0);
+				int y0 = 0; //myCanvas.getPixelYPositionByWorld(0);
 				g2.setColor(Color.yellow);
 				g2.setStroke(new BasicStroke(3));
 				g2.drawLine(x0-5, y0, x0+5, y0);
@@ -122,6 +122,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width) - 5, canvas.getWorldYByPixel(0), canvas.getViewableSize().width, canvas.getWorldYByPixel(0) );
 							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 0), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 0), canvas.getWorldYByPixel(0) - 5);
 							
+//							g2.drawLine(0, 10.8, 10, 10.8);
+//System.err.println(canvas.getWorldYByPixel(0) + " - " + canvas.getPixelYPositionByWorldBeforeTranslate(10.8));
 						}
 						
 						//

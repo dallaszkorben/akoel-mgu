@@ -46,7 +46,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 			@Override
 			public void paintByViewer(JCanvas canvas, Graphics2D g2) {	
 				int x0 = myCanvas.getPixelXPositionByWorld(0);
-				int y0 = myCanvas.getPixelYPositionByWorld(0);
+				int y0 = myCanvas.getPixelYPositionByWorldBeforeTranslate(0);
 				g2.setColor(Color.yellow);
 				g2.setStroke(new BasicStroke(3));
 				g2.drawLine(x0-5, y0, x0+5, y0);
@@ -85,21 +85,22 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
-						if( null == worldSize ){
+/*						if( null == worldSize ){
 							g2.drawLine((0.0), (0.0), 80, 80 );
 						}else{
 							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
 						}
-
+*/
 						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(1));
 
 						if( null != worldSize ){
-							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin() + 5, worldSize.getYMin());
-							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin(), worldSize.getYMin() + 5);
+							
+//							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin() + 5, worldSize.getYMin());
+//							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin(), worldSize.getYMin() + 5);
 							
 							g2.drawLine(worldSize.getXMax() - 5, worldSize.getYMax(), worldSize.getXMax(), worldSize.getYMax());
-							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
+//							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
 						}
 						
 					}
@@ -133,7 +134,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						double increment = myCanvas.getWorldLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
-System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						
+//System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						
 						for( double x=start; x<=stop; x+=increment ){
 							double y = (0.5*x)*(0.5*x);
 							if( null == previous ){
@@ -141,7 +142,7 @@ System.out.println(" increment: " + increment + " width: " + canvas.getViewableS
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
 							previous = new Position(x, y);
-System.err.println(previous);							
+//System.err.println(previous);							
 						}
 						
 						g2.setColor(Color.blue);

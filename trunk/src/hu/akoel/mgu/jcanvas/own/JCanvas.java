@@ -308,7 +308,7 @@ public class JCanvas extends JPanel {
 	 */
 	public double getWorldXByPixel( int pixel ){
 		if( null == worldSize ){
-
+			
 			return getWorldLengthByPixel( pixel + 1 ) - worldTranslate.getX();
 			
 		}else{
@@ -341,11 +341,16 @@ public class JCanvas extends JPanel {
 	}
 	
 	public int getPixelLengthByWorld( double length ){
-		return (int)( getPixelPerUnit() * length + 1 );
+		double doubleLength = getPixelPerUnit() * length;
+//		if( doubleLength != (double)((int)(doubleLength)) ){
+			doubleLength = doubleLength + 1;
+//		}
+		
+		return (int)( doubleLength );
 	}
 	
 	
-	
+	//Mas ne hasznalja
 	public int getPixelXPositionByWorld( double x ){
 
 		if( null == worldSize ){
@@ -355,7 +360,8 @@ public class JCanvas extends JPanel {
 		}
 	}
 	
-	public int getPixelYPositionByWorld( double y ){
+	//Mas ne hasznalja
+	public int getPixelYPositionByWorldBeforeTranslate( double y ){
 		if( null == worldSize ){
 			return getPixelLengthByWorld( y ) - 1;
 		}else{
@@ -777,10 +783,9 @@ if( freeX > 0){
 		           */
 		          pixelWidth = wH * pixelHeight;
 		        }
-				
-		        pixelPerUnit = pixelWidth / worldSize.getWidth();
-		        pixelWidth++;
-		        pixelHeight++;	 
+//System.out.println("pixelHeight: " + pixelHeight);				
+		        pixelPerUnit = (pixelWidth) / (worldSize.getWidth());
+	 
 //System.out.println(pixelPerUnit + " = " + pixelWidth + " / " + worldSize.getWidth());		       
 		        
 			}
