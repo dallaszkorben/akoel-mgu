@@ -23,7 +23,7 @@ public class Test {
 		//szamitjuk hozza a fizikai meretet
 		viewableWidth = getPixelLengthByWorld(worldSize.getWidth());
 		
-		System.err.println("world width: " + worldSize.getWidth() + " canvas size: " + viewableWidth + " value of the last pixel: " + (getWorldXByPixel(viewableWidth-1)) + " pixel order of the border: " + getPixelXPositionByWorld(worldSize.getXMax()) + " pixel of the bigest counted valu: " + getPixelXPositionByWorld(19.955156950672645));
+		System.err.println("world width: " + worldSize.getWidth() + " canvas size: " + viewableWidth + " value of the last pixel: " + (getWorldXByPixel(viewableWidth-1)) + " Pixel order of the border: " + getPixelXPositionByWorld(worldSize.getXMax()) + " pixel of the bigest counted valu: " + getPixelXPositionByWorld(19.955156950672645));
 		
 	}
 	

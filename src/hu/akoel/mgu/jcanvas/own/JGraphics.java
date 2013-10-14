@@ -20,13 +20,13 @@ public class JGraphics {
 //		BigDecimal pp = canvas.getUnitToPixelPortion();
 //		g2.drawLine(pp.multiply(x1).intValue(), pp.multiply(y1).intValue(), pp.multiply(x2).intValue(), pp.multiply(y2).intValue());
 //		g2.drawLine(canvas.getPixelXPositionByWorld(x1), canvas.getPixelYPositionByWorld(y1), canvas.getPixelXPositionByWorld(x2), canvas.getPixelYPositionByWorld(y2) );
-		g2.drawLine(canvas.getPixelXPositionByWorld(x1), canvas.getPixelYPositionByWorld(y1), canvas.getPixelXPositionByWorld(x2), canvas.getPixelYPositionByWorld(y2) );
+		g2.drawLine(canvas.getPixelXPositionByWorld(x1), canvas.getPixelYPositionByWorldBeforeTranslate(y1), canvas.getPixelXPositionByWorld(x2), canvas.getPixelYPositionByWorldBeforeTranslate(y2) );
 	}
 	
 	public void fillOval( double x, double y, double width, double height){
 		//BigDecimal pp = canvas.getUnitToPixelPortion();
 		//g2.fillOval(pp.multiply(x).intValue(), pp.multiply(y).intValue(), pp.multiply(width).intValue(), pp.multiply(height).intValue());
-		g2.fillOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorld(y), canvas.getPixelLengthByWorld(width)-1, canvas.getPixelLengthByWorld(height)-1);
+		g2.fillOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelLengthByWorld(width)-1, canvas.getPixelLengthByWorld(height)-1);
 	}
 
 	public void drawOval( double x, double y, double width, double height){
@@ -38,7 +38,7 @@ public class JGraphics {
 //System.out.println(canvas.getWorldXByPixel(227));
 
 
-		g2.drawOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorld(y), canvas.getPixelLengthByWorld(width)-1, canvas.getPixelLengthByWorld(height)-1);
+		g2.drawOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelLengthByWorld(width)-1, canvas.getPixelLengthByWorld(height)-1);
 	}
 
 	
