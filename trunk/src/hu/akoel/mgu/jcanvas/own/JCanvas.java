@@ -299,6 +299,13 @@ public class JCanvas extends JPanel {
 	//-------------------
 	// Koordinata kezeles
 	//-------------------
+	
+	/**
+	 * Visszaadja a kepernyo-koordinatarendszerben (origo a bal felso sarok) talalhato
+	 * pixel x poziciojanak valos X koordinatajat
+	 * @param pixel kepernyo-koordinatarendszerben levo pixel x koordinataja
+	 * @return valos X koordinata
+	 */
 	public double getWorldXByPixel( int pixel ){
 		if( null == worldSize ){
 
@@ -312,6 +319,12 @@ public class JCanvas extends JPanel {
 		
 	}
 	
+	/**
+	 * Visszaadja a kepernyo-koordinatarendszerben (origo a bal felso sarok) talalhato
+	 * pixel y poziciojanak valos Y koordinatajat
+	 * @param pixel kepernyo-koordinatarendszerben levo pixel y koordinataja
+	 * @return valos Y koordinata
+	 */
 	public double getWorldYByPixel( int pixel ){
 		
 		if( null == worldSize ){

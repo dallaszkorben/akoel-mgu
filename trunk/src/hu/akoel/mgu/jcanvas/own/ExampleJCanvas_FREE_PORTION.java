@@ -78,7 +78,9 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		});	
 		
 		//
-		//Kirajzol eloterbe egy egyenes vonalat
+		// Kirajzol eloterbe egy egyenes vonalat es egy kitoltott kort
+		// valamint a bal also els jobb felso sarokba egy-egy 
+		// celkereszt negyedet
 		//
 		JButton drawLineButton = new JButton("draw Line");
 		drawLineButton.addActionListener(new ActionListener(){
@@ -99,6 +101,9 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
 						}
 
+						//
+						//celkereszt negyed
+						//
 						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(1));
 
@@ -110,7 +115,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
 						}else{
 //System.out.println(canvas.getViewableSize().height + " - " + canvas.getPixelPerUnit() + " - " + canvas.getWorldYByPixel(0) );							
-						
+//System.out.println(canvas.getWorldYByPixel(canvas.getViewableSize().height ));						
 							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ), canvas.getWorldXByPixel(0) + 5, canvas.getWorldYByPixel(canvas.getViewableSize().height ) );
 							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ), canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ) + 5);
 							
@@ -119,6 +124,9 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							
 						}
 						
+						//
+						// Kor
+						//
 						g2.setColor(Color.black);
 						g2.drawOval(-10, -10, 20, 20);
 						g2.setColor(Color.CYAN);
@@ -129,7 +137,6 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 
 					@Override
 					public void paintByViewer(JCanvas canvas, Graphics2D g2) {
-
 					}			 
 				});	
 				myCanvas.repaint();
