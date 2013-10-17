@@ -26,7 +26,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 	private static final long serialVersionUID = 5810956401235486862L;
 
 	Size worldSize;
-	Position positionToMiddle = new Position( 0, 0);
+	Position positionToMiddle = null;//new Position( 0, 0);
 	
 	public static void main(String[] args) {
 		
@@ -116,12 +116,12 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 						}else{
 //System.out.println(canvas.getViewableSize().height + " - " + canvas.getPixelPerUnit() + " - " + canvas.getWorldYByPixel(0) );							
 //System.out.println(canvas.getWorldYByPixel(canvas.getViewableSize().height ));						
-							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ), canvas.getWorldXByPixel(0) + 5, canvas.getWorldYByPixel(canvas.getViewableSize().height ) );
-							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ), canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height ) + 5);
+							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ), canvas.getWorldXByPixel(0) + 5, canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ) );
+							g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ), canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ) + 5);
 							
 							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width) - 5, canvas.getWorldYByPixel(0), canvas.getViewableSize().width, canvas.getWorldYByPixel(0) );
-							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 0), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 0), canvas.getWorldYByPixel(0) - 5);
-							
+							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0) - 5);
+System.err.println("ppu:" + canvas.getPixelPerUnit() + " Height:" + (canvas.getViewableSize().height) + " Translate:" + canvas.getWorldTranslate().getY() + " Value:" + canvas.getWorldYByPixel(canvas.getViewableSize().height-1) + " Position: " + canvas.getPixelYPositionByWorldBeforeTranslate(canvas.getWorldYByPixel(canvas.getViewableSize().height-1)));		
 //							g2.drawLine(0, 10.8, 10, 10.8);
 //System.err.println(canvas.getWorldYByPixel(0) + " - " + canvas.getPixelYPositionByWorldBeforeTranslate(10.8));
 						}

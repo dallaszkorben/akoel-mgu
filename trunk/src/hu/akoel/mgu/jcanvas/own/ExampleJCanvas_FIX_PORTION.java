@@ -131,7 +131,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						g2.setStroke(new BasicStroke(3));
 						
 						Position previous = null;
-						double increment = myCanvas.getWorldLengthByPixel(2);
+						double increment = canvas.getWorldLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
 //System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						
