@@ -26,7 +26,7 @@ public class JGraphics {
 	public void fillOval( double x, double y, double width, double height){
 		//BigDecimal pp = canvas.getUnitToPixelPortion();
 		//g2.fillOval(pp.multiply(x).intValue(), pp.multiply(y).intValue(), pp.multiply(width).intValue(), pp.multiply(height).intValue());
-		g2.fillOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelLengthByWorld(width)-1, canvas.getPixelLengthByWorld(height)-1);
+		g2.fillOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelXLengthByWorld(width)-1, canvas.getPixelYLengthByWorld(height)-1);
 	}
 
 	public void drawOval( double x, double y, double width, double height){
@@ -38,7 +38,7 @@ public class JGraphics {
 //System.out.println(canvas.getWorldXByPixel(227));
 
 
-		g2.drawOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelLengthByWorld(width)-1, canvas.getPixelLengthByWorld(height)-1);
+		g2.drawOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelXLengthByWorld(width)-1, canvas.getPixelYLengthByWorld(height)-1);
 	}
 
 	
