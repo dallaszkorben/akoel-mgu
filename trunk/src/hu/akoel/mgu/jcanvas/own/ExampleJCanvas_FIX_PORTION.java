@@ -85,22 +85,20 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
-/*						if( null == worldSize ){
-							g2.drawLine((0.0), (0.0), 80, 80 );
-						}else{
-							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
-						}
-*/
+						g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
+						
 						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(1));
 
 						if( null != worldSize ){
 							
-//							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin() + 5, worldSize.getYMin());
-//							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin(), worldSize.getYMin() + 5);
+							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin() + 5, worldSize.getYMin());
+							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin(), worldSize.getYMin() + 5);
 							
 							g2.drawLine(worldSize.getXMax() - 5, worldSize.getYMax(), worldSize.getXMax(), worldSize.getYMax());
-//							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
+							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
+							
+//System.err.println("ppu:" + canvas.getPixelPerUnit() + " Width:" + (canvas.getViewableSize().width) + " Value:" + worldSize.getXMax() + " Position: " + canvas.getPixelXPositionByWorld(worldSize.getXMax()));
 						}
 						
 					}
@@ -131,7 +129,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						g2.setStroke(new BasicStroke(3));
 						
 						Position previous = null;
-						double increment = canvas.getWorldLengthByPixel(2);
+						double increment = canvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
 //System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						

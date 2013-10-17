@@ -121,7 +121,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 							
 							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width) - 5, canvas.getWorldYByPixel(0), canvas.getViewableSize().width, canvas.getWorldYByPixel(0) );
 							g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0) - 5);
-System.err.println("ppu:" + canvas.getPixelPerUnit() + " Height:" + (canvas.getViewableSize().height) + " Translate:" + canvas.getWorldTranslate().getY() + " Value:" + canvas.getWorldYByPixel(canvas.getViewableSize().height-1) + " Position: " + canvas.getPixelYPositionByWorldBeforeTranslate(canvas.getWorldYByPixel(canvas.getViewableSize().height-1)));		
+//System.err.println("ppu:" + canvas.getPixelPerUnit() + " Height:" + (canvas.getViewableSize().height) + " Translate:" + canvas.getWorldTranslate().getY() + " Value:" + canvas.getWorldYByPixel(canvas.getViewableSize().height-1) + " Position: " + canvas.getPixelYPositionByWorldBeforeTranslate(canvas.getWorldYByPixel(canvas.getViewableSize().height-1)));		
 //							g2.drawLine(0, 10.8, 10, 10.8);
 //System.err.println(canvas.getWorldYByPixel(0) + " - " + canvas.getPixelYPositionByWorldBeforeTranslate(10.8));
 						}
@@ -164,7 +164,7 @@ System.err.println("ppu:" + canvas.getPixelPerUnit() + " Height:" + (canvas.getV
 						g2.setStroke(new BasicStroke(3));
 						
 						Position previous = null;
-						double increment = myCanvas.getWorldLengthByPixel(2);
+						double increment = myCanvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getWidth()	);
 						for( double x=start; x<=stop; x+=increment ){
