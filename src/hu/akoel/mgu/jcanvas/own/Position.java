@@ -3,7 +3,7 @@ package hu.akoel.mgu.jcanvas.own;
 public class Position {
 
 	private double x;
-	private Double y;
+	private double y;
 	
 	public Position( double x, double y ){
 		this.x = x;

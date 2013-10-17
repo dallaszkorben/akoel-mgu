@@ -6,7 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
@@ -15,7 +14,6 @@ import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
-import javax.xml.crypto.dsig.spec.XSLTTransformParameterSpec;
 
 
 public class JCanvas extends JPanel {
@@ -328,9 +326,11 @@ public class JCanvas extends JPanel {
 	public double getWorldYByPixel( int pixel ){
 		
 		if( null == worldSize ){
-			return (getViewableSize().height - pixel) / getPixelPerUnit() - worldTranslate.getY();
+			return getWorldLengthByPixel( getViewableSize().height - pixel ) - worldTranslate.getY();
+			//return (getViewableSize().height - pixel - 1) / getPixelPerUnit() - worldTranslate.getY();
 		}else{			
-			return (getViewableSize().height - pixel) / getPixelPerUnit() + worldSize.getYMin() - worldTranslate.getY();
+			return getWorldLengthByPixel( getViewableSize().height - pixel ) + worldSize.getYMin() - worldTranslate.getY();
+			//return (getViewableSize().height - pixel - 1) / getPixelPerUnit() + worldSize.getYMin() - worldTranslate.getY();			
 		}
 	}
 
@@ -346,7 +346,7 @@ public class JCanvas extends JPanel {
 			doubleLength = doubleLength + 1;
 //		}
 		
-		return (int)( doubleLength );
+		return Math.round( (float)doubleLength );
 	}
 	
 	
@@ -384,7 +384,7 @@ public class JCanvas extends JPanel {
 	public Dimension getViewableSize(){
 		return coreCanvas.getPreferredSize();
 	}
-	
+/*	
 	public int getWidth() {
 		return getPreferredSize().width;		
 	}
@@ -392,7 +392,7 @@ public class JCanvas extends JPanel {
 	public int getHeight() {
 		return getPreferredSize().height;
 	}
-
+*/
 
 	/**
 	 * Visszaadja a lathato vilag border nelkuli szelesseget
