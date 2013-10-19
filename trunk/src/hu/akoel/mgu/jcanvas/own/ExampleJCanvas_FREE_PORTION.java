@@ -45,8 +45,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 
 		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), Color.GREEN, 10, positionToMiddle );
 
-			//Eloszorre kirajzolja az origot
-			myCanvas.addPainterListenerToUnder(new PainterListener(){
+		//Eloszorre kirajzolja az origot
+		myCanvas.addPainterListenerToDeepest(new PainterListener(){
 			
 			@Override
 			public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {}
@@ -61,7 +61,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 				g2.drawLine(x0, y0-5, x0, y0+5);
 			}	
 			
-		}, JCanvas.POSITION.DEEPEST);		
+		}, JCanvas.Level.UNDER);		
 		myCanvas.repaint();
 		
 		
@@ -88,8 +88,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				myCanvas.removePainterListenersFromTemporary();
-				myCanvas.removePainterListenersFromAbove();
-				myCanvas.addPainterListenerToAbove(new PainterListener(){
+				myCanvas.removePainterListenersFromHighest();
+				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
 					@Override
 					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
@@ -184,7 +184,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 					@Override
 					public void paintByViewer(JCanvas canvas, Graphics2D g2) {}	
 					
-				}, JCanvas.POSITION.DEEPEST);		
+				}, JCanvas.Level.UNDER);		
 				myCanvas.repaint();
 			}
 			

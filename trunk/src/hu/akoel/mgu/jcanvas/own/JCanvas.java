@@ -18,12 +18,12 @@ import javax.swing.event.MouseInputListener;
 
 public class JCanvas extends JPanel {
 
-	public enum POSITION {
-		DEEPEST, HIGHEST
+	public static enum Level {
+		UNDER, ABOVE
 	}
 
 	//Az oldalak aranyara vonatkozo szabaly a befoglalo kontener meretvaltozasanak fuggvenyeben
-	public enum SIDES_PORTION{
+	public static enum SIDES_PORTION{
 		
 		//Az ablakban latszik a teljes definialt vilag. Ez egyben azt jelenti, hogy
 		//a meretarany az ablak meretenek valtoztatasaval valtozik, es az ablak
@@ -42,15 +42,14 @@ public class JCanvas extends JPanel {
 
 	private Size worldSize;
 	private double pixelPerUnitX, pixelPerUnitY;
-//	private Point worldPixelTranslate = new Point(0,0); //pixelben adott eltolas
 	private Position worldTranslate = new Position( 0.0, 0.0 );
 	private Position positionToMiddle = null;
 	private boolean wasTransferedToMiddle = false;
 	
 	//PERMANENT listak
-	ArrayList<PainterListener> aboveList = new ArrayList<PainterListener>();
+	ArrayList<PainterListener> highestList = new ArrayList<PainterListener>();
 	ArrayList<PainterListener> middleList = new ArrayList<PainterListener>();
-	ArrayList<PainterListener> underList = new ArrayList<PainterListener>();
+	ArrayList<PainterListener> deepestList = new ArrayList<PainterListener>();
 	
 	//TEMPORARY lista
 	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
@@ -69,17 +68,22 @@ public class JCanvas extends JPanel {
 	 */
 	public JCanvas(Border borderType, Color background, double pixelPerUnit, Position positionToMiddle ) {
 		
+		if( pixelPerUnit <= 0 ){
+			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnit );
+		}
+		
 		this.commonConstructor(borderType, background, null);		
-		this.pixelPerUnitX = pixelPerUnit;
-		this.pixelPerUnitY = pixelPerUnit;
-		this.sidePortion = SIDES_PORTION.FREE_PORTION;
+		this.setPixelPerUnitX(pixelPerUnit);
+		this.setPixelPerUnitY(pixelPerUnit);
+		
+		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
 		this.positionToMiddle = positionToMiddle;
 		
 		//Ha nem adtam meg eltolast a koordinatarendszernek
 		if(null == positionToMiddle ){
 			
 			//Akkor azt jelzem, hogy megtorent az eltolas. 
-			wasTransferedToMiddle = true;
+			setWasTransferedToMiddle( true );
 		}
 	}
 
@@ -98,17 +102,26 @@ public class JCanvas extends JPanel {
 		}
 
 		this.commonConstructor(borderType, background, worldSize);
-		this.sidePortion = SIDES_PORTION.FIX_PORTION;
 		
-		//Jelzem, hogy megtorent az eltolas. 
-		wasTransferedToMiddle = true;
+		this.setSidePortion( SIDES_PORTION.FIX_PORTION );
+				
+		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
+		setWasTransferedToMiddle( true );
 	}
 	
 	private void commonConstructor(Border borderType, Color background, Size worldSize ){
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		this.worldSize = worldSize;
+		this.setWorldSize( worldSize );
 		this.add( getCoreCanvas( this, background ) );
+	}
+	
+	public SIDES_PORTION getSidePortion(){
+		return sidePortion;
+	}
+	
+	public void setSidePortion( SIDES_PORTION sidePortion ){
+		this.sidePortion = sidePortion;
 	}
 	
 	public Position getWorldTranslate(){
@@ -119,22 +132,57 @@ public class JCanvas extends JPanel {
 		this.worldTranslate = worldTranslate;
 	}
 	
+	public void setWorldTranslateX( double x ){
+		this.worldTranslate.setX(x);
+	}
+	
+	public void setWorldTranslateY( double y){
+		this.worldTranslate.setY(y);
+	}
+	
+	public double getWorldTranslateX(){
+		return this.worldTranslate.getX();
+	}
+	
+	public double getWorldTranslateY(){
+		return this.worldTranslate.getY();
+	}
+	
 	public double getPixelPerUnitX(){
 		return pixelPerUnitX;
 	}
 	
-	public void setPixelPerUnitX( double unitToPixelPortion ){
-		this.pixelPerUnitX = unitToPixelPortion;
+	public void setPixelPerUnitX( double pixelPerUnit ){
+		this.pixelPerUnitX = pixelPerUnit;
 	}
 
 	public double getPixelPerUnitY(){
 		return pixelPerUnitY;
 	}
 	
-	public void setPixelPerUnitY( double unitToPixelPortion ){
-		this.pixelPerUnitY = unitToPixelPortion;
+	public void setPixelPerUnitY( double pixelPerUnit ){
+		this.pixelPerUnitY = pixelPerUnit;
 	}
 
+	public double getPositionToMiddleX(){
+		return this.positionToMiddle.getX();
+	}
+	
+	public double getPositionToMiddleY(){
+		return this.positionToMiddle.getY();
+	}
+	
+	public void setPositionToMiddle( Position positionToMiddle ){
+		this.positionToMiddle = positionToMiddle;
+	}
+	
+	public void setWasTransferedToMiddle( boolean wasTransferedToMiddle ){
+		this.wasTransferedToMiddle = wasTransferedToMiddle;
+	}
+	
+	public boolean getWasTransferedToMiddle(){
+		return this.wasTransferedToMiddle;
+	}
 	
 	public CoreCanvas getCoreCanvas(JCanvas canvas, Color background ){
 		if( null == coreCanvas ){
@@ -146,38 +194,38 @@ public class JCanvas extends JPanel {
 	//
 	//PERMANENT - Under list
 	//
-	public void addPainterListenerToUnder(PainterListener painter, POSITION position) {
-		if (position.equals(POSITION.HIGHEST)) {
-			underList.add(painter);
+	public void addPainterListenerToDeepest(PainterListener painterListener, Level position) {
+		if (position.equals(Level.ABOVE)) {
+			deepestList.add(painterListener);
 		} else {
-			underList.add(0, painter);
+			deepestList.add(0, painterListener);
 		}
 		coreCanvas.invalidate();
 	}
 
-	public void addPainterListenerToUnder(PainterListener painter) {
-		addPainterListenerToUnder(painter, POSITION.HIGHEST);
+	public void addPainterListenerToDeepest(PainterListener painterListener) {
+		addPainterListenerToDeepest(painterListener, Level.ABOVE);
 	}
 	
-	public void removePainterListenersFromUnder(){
-		underList.clear();
+	public void removePainterListenersFromDeepest(){
+		deepestList.clear();
 		coreCanvas.invalidate();
 	}
 
 	//
 	//PERMANENT - Middle list
 	//
-	public void addPainterListenerToMiddle(PainterListener painter, POSITION position) {
-		if (position.equals(POSITION.HIGHEST)) {
-			this.middleList.add(painter);
+	public void addPainterListenerToMiddle(PainterListener painterListener, Level position) {
+		if (position.equals(Level.ABOVE)) {
+			this.middleList.add(painterListener);
 		} else {
-			this.middleList.add(0, painter);
+			this.middleList.add(0, painterListener);
 		}
 		coreCanvas.invalidate();
 	}
 
 	public void addPainterListenerToMiddle(PainterListener painter) {
-		this.addPainterListenerToMiddle(painter, POSITION.HIGHEST);
+		this.addPainterListenerToMiddle(painter, Level.ABOVE);
 	}
 	
 	public void removePainterListenersFromMiddle(){
@@ -188,37 +236,37 @@ public class JCanvas extends JPanel {
 	//
 	//PERMANENT - Above list
 	//
-	public void addPainterListenerToAbove(PainterListener painter, POSITION position) {
-		if (position.equals(POSITION.HIGHEST)) {
-			this.aboveList.add(painter);
+	public void addPainterListenerToHighest(PainterListener painterListener, Level position) {
+		if (position.equals(Level.ABOVE)) {
+			this.highestList.add(painterListener);
 		} else {
-			this.aboveList.add(0, painter);
+			this.highestList.add(0, painterListener);
 		}
 		coreCanvas.invalidate();
 	}
 
-	public void addPainterListenerToAbove(PainterListener painter) {
-		this.addPainterListenerToAbove(painter, POSITION.HIGHEST);
+	public void addPainterListenerToHighest(PainterListener painter) {
+		this.addPainterListenerToHighest(painter, Level.ABOVE);
 	}
 	
-	public void removePainterListenersFromAbove(){
-		aboveList.clear();
+	public void removePainterListenersFromHighest(){
+		highestList.clear();
 		coreCanvas.invalidate();
 	}
 	
 	//
 	//TEMPORARY list
 	//
-	public void addPainterListenerToTemporary(PainterListener painter, POSITION position) {
-		if (position.equals(POSITION.HIGHEST)) {
-			this.temporaryList.add(painter);
+	public void addPainterListenerToTemporary(PainterListener painterListener, Level position) {
+		if (position.equals(Level.ABOVE)) {
+			this.temporaryList.add(painterListener);
 		} else {
-			this.temporaryList.add(0, painter);
+			this.temporaryList.add(0, painterListener);
 		}
 	}
 
 	public void addPainterListenerToTemporary(PainterListener painter) {
-		this.addPainterListenerToTemporary(painter, POSITION.HIGHEST);
+		this.addPainterListenerToTemporary(painter, Level.ABOVE);
 	}
 	
 	public void removePainterListenersFromTemporary(){
@@ -229,7 +277,7 @@ public class JCanvas extends JPanel {
 	// Mozgatas
 	//---------
 	public void moveX( int pixel ){
-		double possibleXTranslate = worldTranslate.getX();
+		double possibleXTranslate = getWorldTranslate().getX();
 		
 		if( pixel > 0){
 			possibleXTranslate -= getWorldXLengthByPixel(pixel + 1);
@@ -237,7 +285,7 @@ public class JCanvas extends JPanel {
 			possibleXTranslate += getWorldXLengthByPixel(-pixel + 1);
 		}
 
-		worldTranslate.setX( possibleXTranslate );
+		setWorldTranslateX( possibleXTranslate );
 		
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
@@ -245,7 +293,7 @@ public class JCanvas extends JPanel {
 	
 	public void moveY( int pixel ){
 
-		double possibleYTranslate = worldTranslate.getY();
+		double possibleYTranslate = getWorldTranslateY();
 		
 		if( pixel > 0){
 			possibleYTranslate += getWorldYLengthByPixel(pixel + 1);
@@ -253,7 +301,7 @@ public class JCanvas extends JPanel {
 			possibleYTranslate -= getWorldYLengthByPixel(-pixel + 1);
 		}
 		
-		worldTranslate.setY( possibleYTranslate );
+		setWorldTranslateY( possibleYTranslate );
 
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
@@ -261,7 +309,7 @@ public class JCanvas extends JPanel {
 	}
 	
 	public void moveXY(int pixelX, int pixelY){
-		double possibleXTranslate = worldTranslate.getX();
+		double possibleXTranslate = getWorldTranslateX();
 		
 		if( pixelX > 0){
 			possibleXTranslate -= getWorldXLengthByPixel(pixelX + 1);
@@ -269,9 +317,9 @@ public class JCanvas extends JPanel {
 			possibleXTranslate += getWorldXLengthByPixel(-pixelX + 1);
 		}
 
-		worldTranslate.setX( possibleXTranslate );
+		setWorldTranslateX( possibleXTranslate );
 		
-		double possibleYTranslate = worldTranslate.getY();
+		double possibleYTranslate = getWorldTranslateY();
 		
 		if( pixelY > 0){
 			possibleYTranslate += getWorldYLengthByPixel(pixelY + 1);
@@ -279,7 +327,7 @@ public class JCanvas extends JPanel {
 			possibleYTranslate -= getWorldYLengthByPixel(-pixelY + 1);
 		}
 		
-		worldTranslate.setY( possibleYTranslate );
+		setWorldTranslateY( possibleYTranslate );
 
 		coreCanvas.invalidate();
 		coreCanvas.repaint();
@@ -287,14 +335,11 @@ public class JCanvas extends JPanel {
 	
 	
 	public void moveDown(int pixel){		
-		
-		moveY(pixel);		
-		
+		moveY(pixel);				
 	}
 
 	public void moveUp(int pixel){
-		moveY(-pixel);
-		
+		moveY(-pixel);		
 	}
 
 	public void moveRight(int pixel){	
@@ -316,13 +361,13 @@ public class JCanvas extends JPanel {
 	 * @return valos X koordinata
 	 */
 	public double getWorldXByPixel( int pixel ){
-		if( null == worldSize ){
+		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			
-			return getWorldXLengthByPixel( pixel + 1 ) - worldTranslate.getX();
+			return getWorldXLengthByPixel( pixel + 1 ) - getWorldTranslateX();
 			
 		}else{
 		
-			return getWorldXLengthByPixel( pixel + 1 ) + worldSize.getXMin() - worldTranslate.getX();
+			return getWorldXLengthByPixel( pixel + 1 ) + getWorldSize().getXMin() - getWorldTranslateX();
 			
 		}
 		
@@ -336,11 +381,11 @@ public class JCanvas extends JPanel {
 	 */
 	public double getWorldYByPixel( int pixel ){
 		
-		if( null == worldSize ){
-			return getWorldYLengthByPixel( getViewableSize().height - pixel ) - worldTranslate.getY();
+		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
+			return getWorldYLengthByPixel( getViewableSize().height - pixel ) - getWorldTranslateY();
 			//return (getViewableSize().height - pixel - 1) / getPixelPerUnit() - worldTranslate.getY();
 		}else{			
-			return getWorldYLengthByPixel( getViewableSize().height - pixel ) + worldSize.getYMin() - worldTranslate.getY();
+			return getWorldYLengthByPixel( getViewableSize().height - pixel ) + getWorldSize().getYMin() - getWorldTranslateY();
 			//return (getViewableSize().height - pixel - 1) / getPixelPerUnit() + worldSize.getYMin() - worldTranslate.getY();			
 		}
 	}
@@ -369,19 +414,19 @@ public class JCanvas extends JPanel {
 	//Mas ne hasznalja
 	public int getPixelXPositionByWorld( double x ){
 
-		if( null == worldSize ){
+		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			return getPixelXLengthByWorld( x ) - 1;
 		}else{
-			return getPixelXLengthByWorld( x - worldSize.getXMin() ) - 1;
+			return getPixelXLengthByWorld( x - getWorldSize().getXMin() ) - 1;
 		}
 	}
 	
 	//Mas ne hasznalja
 	public int getPixelYPositionByWorldBeforeTranslate( double y ){
-		if( null == worldSize ){
+		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			return getPixelYLengthByWorld( y ) - 1;
 		}else{
-			return getPixelYLengthByWorld( y - worldSize.getYMin() ) - 1;
+			return getPixelYLengthByWorld( y - getWorldSize().getYMin() ) - 1;
 		}
 	}
 	
@@ -390,7 +435,30 @@ public class JCanvas extends JPanel {
 	 * @return
 	 */
 	public Size getWorldSize(){
-		return worldSize;
+		
+		if( null == getSidePortion() ){
+			return null;
+			
+		}else if( getSidePortion().equals(SIDES_PORTION.FIX_PORTION)){
+			return worldSize;
+			
+		}else if( getSidePortion().equals(SIDES_PORTION.FREE_PORTION)){
+			double width = getViewerWidth();
+			double height = getViewerHeight();
+			double xMin = getWorldXByPixel(0);
+			double xMax = getWorldXByPixel((int)width-1);
+			double yMax = getWorldYByPixel(0);
+			double yMin = getWorldYByPixel((int)height-1);
+			
+			Size size = new Size(xMin, yMin, xMax, yMax);
+			return size;
+		}else{
+			return null;
+		}
+	}
+	
+	public void setWorldSize( Size worldSize ){
+		this.worldSize = worldSize;
 	}
 
 	/**
@@ -427,7 +495,7 @@ public class JCanvas extends JPanel {
 //		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
 
 			//Akkor a befoglalo panel szelessege a mervado
-			return possibleWidth - ( getInsets().right + getInsets().left);
+		return possibleWidth - ( getInsets().right + getInsets().left);
 
 //		}
 /*		
@@ -569,8 +637,8 @@ public class JCanvas extends JPanel {
 		 setPixelPerUnitX(getPixelPerUnitX() * rate );
 		 setPixelPerUnitY(getPixelPerUnitY() * rate );
 		 
-		 double possibleXTranslate = worldTranslate.getX() - getWorldXLengthByPixel(xPoint) * (rate-1);
-		 double possibleYTranslate = worldTranslate.getY() - getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate-1);
+		 double possibleXTranslate = getWorldTranslateX() - getWorldXLengthByPixel(xPoint) * (rate-1);
+		 double possibleYTranslate = getWorldTranslateY() - getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate-1);
 
 /*		 int availableHeight = (int)super.getHeight();
 		 int possibleHeight = (int)getViewerHeight();
@@ -587,8 +655,8 @@ public class JCanvas extends JPanel {
 			 possibleXTranslate = worldTranslate.getX() - Math.max(possibleXTranslate, -freeX);
 		 }
 */		 
-		 worldTranslate.setX( possibleXTranslate );
-		 worldTranslate.setY( possibleYTranslate );
+		 setWorldTranslateX( possibleXTranslate );
+		 setWorldTranslateY( possibleYTranslate );
 		 
 		 this.getParent().repaint();
 		 coreCanvas.invalidate();
@@ -601,8 +669,8 @@ public class JCanvas extends JPanel {
 		 setPixelPerUnitX(getPixelPerUnitX() / rate );
 		 setPixelPerUnitY(getPixelPerUnitY() / rate );
 		 
-		 double possibleXTranslate = worldTranslate.getX() + getWorldXLengthByPixel(xPoint) * (rate-1)/rate;
-		 double possibleYTranslate = worldTranslate.getY() + getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate-1)/rate;
+		 double possibleXTranslate = getWorldTranslateX() + getWorldXLengthByPixel(xPoint) * (rate-1)/rate;
+		 double possibleYTranslate = getWorldTranslateY() + getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate-1)/rate;
 /*
 		 int availableHeight = (int)super.getHeight();
 		 int possibleHeight = (int)getViewerHeight();
@@ -619,8 +687,8 @@ if( freeX > 0){
 	possibleXTranslate = worldTranslate.getX() - Math.max(possibleXTranslate, -freeX);
 }
 */
-		 worldTranslate.setX( possibleXTranslate );
-		 worldTranslate.setY( possibleYTranslate );
+		 setWorldTranslateX( possibleXTranslate );
+		 setWorldTranslateY( possibleYTranslate );
 		 
 		 
 		 this.getParent().repaint();
@@ -640,15 +708,19 @@ if( freeX > 0){
 
 		private static final long serialVersionUID = 5336269435310911828L;
 
-		JCanvas parent;
+		private JCanvas parent;
 		private BufferedImage offImage;
+//		private Size parentWorldSize;
 
 		public CoreCanvas(JCanvas parent, Color background) {
 			super();
 			this.parent = parent;
+//			this.parentWorldSize = parent.getWorldSize();
+			
 			this.setBackground(background);
 			
-			if( null == worldSize ){
+			//if( null == parentWorldSize ){
+			if( null == parent.getWorldSize() ){
 			
 				// Eger kormanyaval letrehozott zoom figyelese
 				addMouseWheelListener(new WheelZoomListener());
@@ -678,11 +750,11 @@ if( freeX > 0){
 		  
 		public void paintComponent(Graphics g) {
 
-			if( !wasTransferedToMiddle ){
-				wasTransferedToMiddle = true;
+			if( !getWasTransferedToMiddle() ){
+				setWasTransferedToMiddle( true );
 				setWorldTranslate( new Position( 
-						( getWorldXLengthByPixel( (int)(getViewerWidth()/2) ) - positionToMiddle.getX() ), 
-						( getWorldYLengthByPixel( (int)(getViewerHeight()/2) ) - positionToMiddle.getY() )  
+						( getWorldXLengthByPixel( (int)(getViewerWidth()/2) ) - getPositionToMiddleX() ), 
+						( getWorldYLengthByPixel( (int)(getViewerHeight()/2) ) - getPositionToMiddleY() )  
 						) );
 			}
 			
@@ -701,17 +773,17 @@ if( freeX > 0){
 				//Az uj canvas grafikai objektumanak elkerese
 				offg2 = (Graphics2D) offImage.getGraphics();
 				
-				offg2.setColor(Color.GREEN);
+				offg2.setColor(getBackground());
 				offg2.fillRect(0, 0, width, height);
 				
 				offg2.scale(1,-1);
 
 				//Most tolom el a koordinatarendszert
 				//offg2.translate((int)(getPixelPerUnit()*(worldTranslate.getX())), (int)(getPixelPerUnit()*(worldTranslate.getY()))-getHeight() + 0);
-				offg2.translate( getPixelXLengthByWorld(worldTranslate.getX()) - 1, getPixelYLengthByWorld( worldTranslate.getY()) - getHeight() );
+				offg2.translate( getPixelXLengthByWorld(parent.getWorldTranslateX()) - 1, getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
 				
-				if (null != underList) {
-					for (PainterListener painter : underList) {
+				if (null != deepestList) {
+					for (PainterListener painter : deepestList) {
 						painter.paintByWorldPosition(parent, new JGraphics(parent, offg2));
 						painter.paintByViewer(parent, offg2);
 					}
@@ -724,8 +796,8 @@ if( freeX > 0){
 					}
 				}
 
-				if (null != aboveList) {
-					for (PainterListener painter : aboveList) {
+				if (null != highestList) {
+					for (PainterListener painter : highestList) {
 						painter.paintByWorldPosition(parent, new JGraphics(parent, offg2));
 						painter.paintByViewer(parent, offg2);
 					}
@@ -738,10 +810,8 @@ if( freeX > 0){
 				g2.drawImage(offImage, 0, 0, this);
 				
 				g2.scale(1,-1);
-//				g2.translate(0,getHeight());
-//				g2.translate((int)(getPixelPerUnit()*(worldTranslate.getX())), (int)(getPixelPerUnit()*(worldTranslate.getY()))-getHeight() + 0);			
 				
-				g2.translate( getPixelXLengthByWorld(worldTranslate.getX()) -1, getPixelYLengthByWorld( worldTranslate.getY()) - getHeight() );
+				g2.translate( getPixelXLengthByWorld( parent.getWorldTranslateX()) -1, getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
@@ -772,7 +842,7 @@ if( freeX > 0){
 			 * Beallitja a rajzolhato feluletet az oldalaranyoknak megfeleloen
 			 * a szulo-ablak aktualis merete alapjan.
 			 */
-			if( sidePortion == SIDES_PORTION.FIX_PORTION ){
+			if( getSidePortion().equals(  SIDES_PORTION.FIX_PORTION ) ){
 			
 				 /**
 		         * A szulo ablak oldalainak aranya(model meret)
@@ -782,7 +852,10 @@ if( freeX > 0){
 		        /**
 		         * Az abrazolando vilag oldalainak aranya (world meret)
 		         */
-		        wH = worldSize.getWidth() / worldSize.getHeight();
+		        //wH = parentWorldSize.getWidth() / parentWorldSize.getHeight();
+		        Size parentWorldSize = parent.getWorldSize();
+		        wH = parentWorldSize.getWidth() / parentWorldSize.getHeight();
+		        
 
 		        /**
 		         * Ha a vilag tomzsibb mint a modell
@@ -807,23 +880,14 @@ if( freeX > 0){
 		        
 		        pixelWidth = Math.round(pixelWidth)-1;
 		        pixelHeight = Math.round(pixelHeight)-1;
-		        
-//System.out.println("pixelHeight: " + pixelHeight);
 		       
-		        pixelPerUnitX = (pixelWidth) / (worldSize.getWidth());
-		        pixelPerUnitY = (pixelHeight) / (worldSize.getHeight());
-//System.out.println(pixelPerUnitX+ " - " + pixelPerUnitY);	 
+		        parent.setPixelPerUnitX((pixelWidth) / (parentWorldSize.getWidth()));
+		        parent.setPixelPerUnitY((pixelHeight) / (parentWorldSize.getHeight()));
+		        
 		        pixelWidth++;
 		        pixelHeight++;
-//System.err.println((pixelHeight/pixelWidth) + " - " + (worldSize.getHeight()/worldSize.getWidth()));		        
-//System.out.println(pixelPerUnit + " = " + pixelWidth + " / " + worldSize.getWidth());		       
 		        
-			}
-			
-//System.err.println( ((int)Math.round(pixelHeight) + 1) + " - " + getPixelYPositionByWorld(-3) + ", " + getPixelYPositionByWorld(31.47) + " --- " + getWorldXPositionByPixel(getPixelYPositionByWorld(31.47)));
-			
-			//Felfele kerekitek, de ezzel az utolso pixel lekerdezese, rossz eredmenyt adhat. 
-			//Ezt a getWorld... fuggvenyeknel figyelembe kell venni			
+			}		
 				return new Dimension( (int)(pixelWidth), (int)(pixelHeight) );
 
 		}	

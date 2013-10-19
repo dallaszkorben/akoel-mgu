@@ -15,19 +15,27 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ExampleJCanvas_FIX_PORTION extends JFrame {
+public class ExampleJCanvas_Grid extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	Size worldSize;
+	private Size worldSize = new Size(-10.0, -3.0, 10.0, 25);
 	
-	public static void main(String[] args) {	
-		
-		new ExampleJCanvas_FIX_PORTION();
+	private Color background = Color.black;
+	private Position positionToMiddle = new Position( 0, 0);
+	private double pixelPerUnit = 10;
+
+	private Color gridColor = Color.green;
+	private int gridWidth = 1;
+	private Position gridDelta = new Position(1.0, 1.0);
+	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
+	private JGrid.Type gridType = JGrid.Type.DOT;
+	
+	public static void main(String[] args) {		
+		new ExampleJCanvas_Grid();
 	}
 
-	public ExampleJCanvas_FIX_PORTION() {
-		worldSize = new Size(-10.0, -3.0, 10.0, 25);
+	public ExampleJCanvas_Grid() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -35,28 +43,11 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), Color.CYAN, worldSize );
+//		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
 
-			//Eloszorre kirajzolja az origot
-			myCanvas.addPainterListenerToDeepest(new PainterListener(){
-			
-			@Override
-			public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {}
-
-			@Override
-			public void paintByViewer(JCanvas canvas, Graphics2D g2) {	
-				int x0 = myCanvas.getPixelXPositionByWorld(0);
-				int y0 = myCanvas.getPixelYPositionByWorldBeforeTranslate(0);
-				g2.setColor(Color.yellow);
-				g2.setStroke(new BasicStroke(3));
-				g2.drawLine(x0-5, y0, x0+5, y0);
-				g2.drawLine(x0, y0-5, x0, y0+5);
-			}	
-			
-		}, JCanvas.Level.UNDER);		
-		myCanvas.repaint();
-		
-		
+		new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
+	
 		//
 		//Ujra rajzol minden statikus rajzi elemet
 		//
@@ -70,58 +61,16 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 		});	
 		
 		//
-		//Kirajzol eloterbe egy egyenes vonalat
+		//Kirajzol eloterbe egy fuggvenyt
 		//
-		JButton drawLineButton = new JButton("draw Line");
-		drawLineButton.addActionListener(new ActionListener(){
+		JButton drawFunctionButton = new JButton("draw Function");
+		drawFunctionButton.addActionListener(new ActionListener(){
+
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				myCanvas.removePainterListenersFromTemporary();
 				myCanvas.removePainterListenersFromHighest();
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
-					
-					@Override
-					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
-						
-						g2.setColor(new Color(200, 100, 100));
-						g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
-						
-						g2.setColor(Color.red);
-						g2.setStroke(new BasicStroke(1));
-
-						if( null != worldSize ){
-							
-							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin() + 5, worldSize.getYMin());
-							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMin(), worldSize.getYMin() + 5);
-							
-							g2.drawLine(worldSize.getXMax() - 5, worldSize.getYMax(), worldSize.getXMax(), worldSize.getYMax());
-							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
-							
-//System.err.println("ppu:" + canvas.getPixelPerUnit() + " Width:" + (canvas.getViewableSize().width) + " Value:" + worldSize.getXMax() + " Position: " + canvas.getPixelXPositionByWorld(worldSize.getXMax()));
-						}
-						
-					}
-
-					@Override
-					public void paintByViewer(JCanvas canvas, Graphics2D g2) {}			 
-				});	
-				myCanvas.repaint();
-			}			
-		});
-		
-
-		
-		//
-		//Kirajzol atmeneti jelleggel egy x^2 fuggvenyt
-		//
-		JButton drawTempButton = new JButton("draw x^2");
-		drawTempButton.addActionListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				myCanvas.removePainterListenersFromTemporary();
-				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
 					@Override
 					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {					
@@ -132,15 +81,13 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						double increment = canvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
-//System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						
 						for( double x=start; x<=stop; x+=increment ){
-							double y = (0.5*x)*(0.5*x);
+							double y = 0.01*(x*x*x) - 0.07*(x*x) + 0.1*(x) - 0;
 							if( null == previous ){
 								previous = new Position(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
 							previous = new Position(x, y);
-//System.err.println(previous);							
 						}
 						
 						g2.setColor(Color.blue);
@@ -209,8 +156,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 		drawPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 2, 2));
 		
 		drawPanel.add(reprintButton);
-		drawPanel.add(drawLineButton);
-		drawPanel.add(drawTempButton);
+		drawPanel.add(drawFunctionButton);
 		
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
