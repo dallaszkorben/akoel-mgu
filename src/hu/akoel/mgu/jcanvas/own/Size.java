@@ -38,4 +38,7 @@ public class Size {
 		return yMax;
 	}
 
+	public String toString(){
+		return xMin + ", " + yMin + ", " + xMax + ", " + yMax;
+	}
 }
