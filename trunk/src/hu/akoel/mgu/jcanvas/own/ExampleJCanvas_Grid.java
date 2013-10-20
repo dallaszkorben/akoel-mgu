@@ -31,6 +31,16 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
+	private Color origoColor = Color.red;
+	private int origoWidthInPixel = 5;
+	private double origoLength = 1;
+	private JOrigo.PainterPosition origoPosition = JOrigo.PainterPosition.DEEPEST;
+	
+	private Color axisColor = Color.yellow;
+	private int axisWidthInPixel = 3;
+	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_LEFT_BOTTOM;
+	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
+		
 	public static void main(String[] args) {		
 		new ExampleJCanvas_Grid();
 	}
@@ -47,7 +57,10 @@ public class ExampleJCanvas_Grid extends JFrame {
 		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
 
 		new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
+		
+		new JOrigo( myCanvas, origoColor, origoWidthInPixel, origoLength, origoPosition);
 	
+		new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		//
 		//Ujra rajzol minden statikus rajzi elemet
 		//

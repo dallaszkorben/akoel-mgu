@@ -72,11 +72,12 @@ public class JCanvas extends JPanel {
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnit );
 		}
 		
+		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
+		
 		this.commonConstructor(borderType, background, null);		
 		this.setPixelPerUnitX(pixelPerUnit);
 		this.setPixelPerUnitY(pixelPerUnit);
 		
-		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
 		this.positionToMiddle = positionToMiddle;
 		
 		//Ha nem adtam meg eltolast a koordinatarendszernek
@@ -101,10 +102,10 @@ public class JCanvas extends JPanel {
 			throw new Error("In case of FIX_PORTION it is required to set the worldSize. Now it is null.");
 		}
 
-		this.commonConstructor(borderType, background, worldSize);
-		
 		this.setSidePortion( SIDES_PORTION.FIX_PORTION );
-				
+		
+		this.commonConstructor(borderType, background, worldSize);
+						
 		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
 		setWasTransferedToMiddle( true );
 	}
@@ -719,8 +720,8 @@ if( freeX > 0){
 			
 			this.setBackground(background);
 			
-			//if( null == parentWorldSize ){
-			if( null == parent.getWorldSize() ){
+			//if( ha szabadon valtoztathato az oldalarany ){
+			if( parent.getSidePortion().equals( SIDES_PORTION.FREE_PORTION) ){
 			
 				// Eger kormanyaval letrehozott zoom figyelese
 				addMouseWheelListener(new WheelZoomListener());
