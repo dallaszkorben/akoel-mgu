@@ -26,10 +26,10 @@ public class JGrid {
 //	private Color color;
 	private PainterPosition position;
 	Position deltaGrid;
-	int crossLength = 3;
+	int crossLengthInPixel = 3;
 //	Type type;
 
-	public JGrid( JCanvas canvas, final Type type, final Color color, final int width,   PainterPosition position, final Position deltaGrid ){
+	public JGrid( JCanvas canvas, final Type type, final Color color, final int widthInPixel, PainterPosition position, final Position deltaGrid ){
 		this.canvas = canvas;
 //		this.color = color;
 		this.position = position;
@@ -50,7 +50,7 @@ public class JGrid {
 				yStart = (int)(size.yMin / deltaGrid.getY()) * deltaGrid.getY();				
 				
 				g2.setColor( color );
-				g2.setStroke(new BasicStroke(width));
+				g2.setStroke(new BasicStroke(widthInPixel));
 				
 				if(type.equals( Type.SOLID ) ){
 					m = 1;
@@ -71,8 +71,8 @@ public class JGrid {
 			         
 				}else{
 					if(type.equals( Type.CROSS ) ){
-						crossXLength = crossLength / canvas.getPixelPerUnitX();
-						crossYLength = crossLength / canvas.getPixelPerUnitX();
+						crossXLength = crossLengthInPixel / canvas.getPixelPerUnitX();
+						crossYLength = crossLengthInPixel / canvas.getPixelPerUnitX();
 					}else{
 						crossXLength = 0;
 						crossYLength = 0;
@@ -103,9 +103,9 @@ public class JGrid {
 		};
 		
 		if( position.equals(PainterPosition.DEEPEST ) ){
-			canvas.addPainterListenerToDeepest(painterListener, Level.UNDER);
+			canvas.addPainterListenerToDeepest(painterListener, Level.ABOVE);
 		}else if( position.equals( PainterPosition.MIDDLE)){
-			canvas.addPainterListenerToMiddle(painterListener);
+			canvas.addPainterListenerToMiddle(painterListener, Level.ABOVE);
 		}else if( position.equals(PainterPosition.HIGHEST)){
 			canvas.addPainterListenerToHighest(painterListener, Level.ABOVE);
 		}
