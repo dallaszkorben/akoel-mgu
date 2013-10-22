@@ -46,6 +46,7 @@ public class JAxis {
 				double positionXNumber = 0;
 				
 				BigDecimal xSteps = getXSteps(), mainXStick;
+				BigDecimal ySteps = getYSteps(), mainYStick;
 				
 				FontRenderContext frc;
 				TextLayout textLayout;
@@ -105,24 +106,75 @@ public class JAxis {
 				g2.setStroke(new BasicStroke(1));
 				while(mainXStick.doubleValue() < canvas.getWorldSize().xMax){
 				
-					//Vizszintes fobeosztas
-					g2.drawLine(
+					if( mainXStick.doubleValue() >= canvas.getWorldSize().xMin ){
+					
+						//Vizszintes fobeosztas
+						g2.drawLine(
 							mainXStick.doubleValue(), 
 							positionYHorizontalAxis - canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2, 
 							mainXStick.doubleValue(), 
 							positionYHorizontalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2 
-					);
+						);
 					
 				
-					frc = g2.getFontRenderContext();
-					textLayout = new TextLayout(String.valueOf(mainXStick), fontNumber, frc);
-					g2.drawFont(textLayout, canvas.getPixelXPositionByWorld(mainXStick.doubleValue()), canvas.getPixelYPositionByWorldBeforeTranslate(canvas.getWorldSize().yMin) + fontNumber.getSize() + mainStickSizeInPixel);
-			        
+						frc = g2.getFontRenderContext();
+						textLayout = new TextLayout(String.valueOf(mainXStick), fontNumber, frc);
+						
+/*						g2.drawFont(
+								textLayout, 
+								mainXStick.doubleValue() - canvas.getWorldXLengthByPixel((int)(textLayout.getBounds().getWidth()/2)), 
+								positionYHorizontalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)
+						);
+*/					}	        
 				        
 					
 					//Kovetkezo fobeosztas
 					mainXStick = mainXStick.add(xSteps);
 				}
+
+				//Fuggoleges fobeosztasok es feliratok
+				mainYStick = ((new BigDecimal(canvas.getWorldSize().yMin)).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
+				mainYStick = mainYStick.subtract(ySteps);
+/*
+				g2.setStroke(new BasicStroke(1));
+				while(mainYStick.doubleValue() < canvas.getWorldSize().yMax){
+				
+					if( mainYStick.doubleValue() >= canvas.getWorldSize().yMin ){
+					
+						//Fuggoleges fobeosztas
+						g2.drawLine(
+							positionXVerticalAxis - canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2,
+							mainYStick.doubleValue(),
+							positionXVerticalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2,
+							mainYStick.doubleValue()
+						);
+					
+						frc = g2.getFontRenderContext();
+						textLayout = new TextLayout(String.valueOf(mainYStick), fontNumber, frc);						
+					
+						g2.drawFont(
+								textLayout, 
+								positionXVerticalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel), 
+								mainYStick.doubleValue() - canvas.getWorldYLengthByPixel( (int)(textLayout.getAscent()/2) )
+						);
+						
+						
+					}					        
+					
+					//Kovetkezo fobeosztas
+					mainYStick = mainYStick.add(ySteps);
+				}
+*/	
+				
+g2.drawLine(-0.5, 4, 1.5, 4);				
+frc = g2.getFontRenderContext();
+textLayout = new TextLayout("hello", fontNumber, frc);
+g2.drawFont(
+		textLayout,
+		1,
+		4
+);				
+				
 			}
 			
 			@Override
@@ -183,8 +235,26 @@ public class JAxis {
 
 
 			    return actualMarkerDistance;
-			}// getSteps()			
+			}// getXSteps()			
 			  
+			protected BigDecimal getYSteps(){
+
+			    //A vilagban minimum ekkora lepeseket kell tennem, hogy a minimalis tavolsagot
+			    //tudjam tartani a kepernyon
+			    BigDecimal minMarkerDistance = BigDecimal.valueOf( canvas.getWorldYLengthByPixel(minimalDistanceInPixel) );
+			    BigDecimal actualMarkerDistance = BigDecimal.valueOf( canvas.getWorldYLengthByPixel(minimalDistanceInPixel) );
+
+			    int i = 0;
+			    while(units.length > i){
+			      actualMarkerDistance = getNextOrder(minMarkerDistance).multiply(new BigDecimal(units[i]));
+			      if(actualMarkerDistance.doubleValue() >= minMarkerDistance.doubleValue()){
+			        break;
+			      }
+			      i++;
+			    }//while
+
+			    return actualMarkerDistance;
+			}// getYSteps()	
 			  
 		};
 		
