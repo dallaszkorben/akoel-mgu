@@ -49,11 +49,7 @@ public class JGraphics {
 	
 	public void drawFont( TextLayout textLayout, double x, double y ){
 		g2.scale(1,-1);
-		
-//System.err.println((y-canvas.getWorldSize().getYMin()) + " - " + canvas.getPixelYPositionByWorldBeforeTranslate(-(y-canvas.getWorldSize().getYMin() )));		
 		textLayout.draw( g2, canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(-y) );
-		
-//		textLayout.draw( g2,	canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(-(y-canvas.getWorldSize().getYMin()) ) );
 		g2.scale(1,-1);
 	}
 }

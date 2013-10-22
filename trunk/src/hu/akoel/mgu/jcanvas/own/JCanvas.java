@@ -108,6 +108,8 @@ public class JCanvas extends JPanel {
 						
 		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
 		setWasTransferedToMiddle( true );
+		
+		setWorldTranslate( new Position( -worldSize.xMin, -worldSize.yMin ));
 	}
 	
 	private void commonConstructor(Border borderType, Color background, Size worldSize ){
@@ -362,15 +364,11 @@ public class JCanvas extends JPanel {
 	 * @return valos X koordinata
 	 */
 	public double getWorldXByPixel( int pixel ){
-		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
-			
+//		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			return getWorldXLengthByPixel( pixel + 1 ) - getWorldTranslateX();
-			
-		}else{
-		
-			return getWorldXLengthByPixel( pixel + 1 ) + getWorldSize().getXMin() - getWorldTranslateX();
-			
-		}
+//		}else{
+//			return getWorldXLengthByPixel( pixel + 1 ) + getWorldSize().getXMin() - getWorldTranslateX();
+//		}
 		
 	}
 	
@@ -382,13 +380,13 @@ public class JCanvas extends JPanel {
 	 */
 	public double getWorldYByPixel( int pixel ){
 		
-		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
+//		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			return getWorldYLengthByPixel( getViewableSize().height - pixel ) - getWorldTranslateY();
 			//return (getViewableSize().height - pixel - 1) / getPixelPerUnit() - worldTranslate.getY();
-		}else{			
-			return getWorldYLengthByPixel( getViewableSize().height - pixel ) + getWorldSize().getYMin() - getWorldTranslateY();
+//		}else{			
+//			return getWorldYLengthByPixel( getViewableSize().height - pixel ) + getWorldSize().getYMin() - getWorldTranslateY();
 			//return (getViewableSize().height - pixel - 1) / getPixelPerUnit() + worldSize.getYMin() - worldTranslate.getY();			
-		}
+//		}
 	}
 
 	
@@ -415,20 +413,20 @@ public class JCanvas extends JPanel {
 	//Mas ne hasznalja
 	public int getPixelXPositionByWorld( double x ){
 
-		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
+//		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			return getPixelXLengthByWorld( x ) - 1;
-		}else{
-			return getPixelXLengthByWorld( x - getWorldSize().getXMin() ) - 1;
-		}
+//		}else{
+//			return getPixelXLengthByWorld( x - getWorldSize().getXMin() ) - 1;
+//		}
 	}
 	
 	//Mas ne hasznalja
 	public int getPixelYPositionByWorldBeforeTranslate( double y ){
-		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
+//		if( getSidePortion().equals(  SIDES_PORTION.FREE_PORTION ) ){
 			return getPixelYLengthByWorld( y ) - 1;
-		}else{
-			return getPixelYLengthByWorld( y - getWorldSize().getYMin() ) - 1;
-		}
+//		}else{
+//			return getPixelYLengthByWorld( y - getWorldSize().getYMin() ) - 1;
+//		}
 	}
 	
 	/**
