@@ -397,7 +397,12 @@ public class JCanvas extends JPanel {
 	
 	public int getPixelXLengthByWorld( double length ){
 		double doubleLength = getPixelPerUnitX() * length;
-		doubleLength = doubleLength + 1;		
+	
+		doubleLength = doubleLength + 1;
+
+		if(doubleLength < 0)
+			return -Math.round( -(float)doubleLength );
+		else
 		return Math.round( (float)doubleLength );
 	}
 	
@@ -407,8 +412,12 @@ public class JCanvas extends JPanel {
 	
 	public int getPixelYLengthByWorld( double length ){
 		double doubleLength = getPixelPerUnitY() * length;
-		doubleLength = doubleLength + 1;		
-		return Math.round( (float)doubleLength );
+		doubleLength = doubleLength + 1;
+		
+		if(doubleLength < 0)
+			return -Math.round( -(float)doubleLength );
+		else
+			return Math.round( (float)doubleLength );
 	}
 	//Mas ne hasznalja
 	public int getPixelXPositionByWorld( double x ){

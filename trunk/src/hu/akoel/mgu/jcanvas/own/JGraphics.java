@@ -18,7 +18,7 @@ public class JGraphics {
 		this.g2 = g2;
 	}
 	
-	public void drawLine( double x1, double y1, double x2, double y2){
+	public void drawLine( double x1, double y1, double x2, double y2){	
 		g2.drawLine(canvas.getPixelXPositionByWorld(x1), canvas.getPixelYPositionByWorldBeforeTranslate(y1), canvas.getPixelXPositionByWorld(x2), canvas.getPixelYPositionByWorldBeforeTranslate(y2) );	
 	}
 	

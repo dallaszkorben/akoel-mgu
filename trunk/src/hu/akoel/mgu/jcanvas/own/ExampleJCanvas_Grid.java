@@ -19,7 +19,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	private Size worldSize = new Size(-10.0, -3.0, 10.0, 25);
+	private Size worldSize = new Size(-10.0, -2.0, 20.0, 30);
 	
 	private Color background = Color.black;
 	private Position positionToMiddle = new Position( 0, 0);
@@ -38,7 +38,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 	
 	private Color axisColor = Color.yellow;
 	private int axisWidthInPixel = 3;
-	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_ZERO_ZERO;
+	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_LEFT_BOTTOM;
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
 	public static void main(String[] args) {		
