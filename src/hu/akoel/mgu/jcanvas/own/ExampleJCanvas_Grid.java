@@ -19,7 +19,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	private Size worldSize = new Size(-10.0, 0.0, 10.0, 25);
+	private Size worldSize = new Size(-10.0, -3.0, 10.0, 25);
 	
 	private Color background = Color.black;
 	private Position positionToMiddle = new Position( 0, 0);
@@ -53,8 +53,8 @@ public class ExampleJCanvas_Grid extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
-//		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
+//		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
 
 		new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		

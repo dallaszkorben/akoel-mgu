@@ -120,12 +120,12 @@ public class JAxis {
 						frc = g2.getFontRenderContext();
 						textLayout = new TextLayout(String.valueOf(mainXStick), fontNumber, frc);
 						
-/*						g2.drawFont(
+						g2.drawFont(
 								textLayout, 
 								mainXStick.doubleValue() - canvas.getWorldXLengthByPixel((int)(textLayout.getBounds().getWidth()/2)), 
 								positionYHorizontalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)
 						);
-*/					}	        
+					}	        
 				        
 					
 					//Kovetkezo fobeosztas
@@ -135,7 +135,7 @@ public class JAxis {
 				//Fuggoleges fobeosztasok es feliratok
 				mainYStick = ((new BigDecimal(canvas.getWorldSize().yMin)).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
 				mainYStick = mainYStick.subtract(ySteps);
-/*
+
 				g2.setStroke(new BasicStroke(1));
 				while(mainYStick.doubleValue() < canvas.getWorldSize().yMax){
 				
@@ -163,17 +163,7 @@ public class JAxis {
 					
 					//Kovetkezo fobeosztas
 					mainYStick = mainYStick.add(ySteps);
-				}
-*/	
-				
-g2.drawLine(-0.5, 4, 1.5, 4);				
-frc = g2.getFontRenderContext();
-textLayout = new TextLayout("hello", fontNumber, frc);
-g2.drawFont(
-		textLayout,
-		1,
-		4
-);				
+				}			
 				
 			}
 			
