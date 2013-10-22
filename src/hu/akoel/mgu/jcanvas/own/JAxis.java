@@ -102,10 +102,19 @@ public class JAxis {
 				//Vizszintes fobeosztasok es feliratok
 				mainXStick = ((new BigDecimal(canvas.getWorldSize().xMin)).divide(xSteps, 0, BigDecimal.ROUND_CEILING)).multiply(xSteps);
 				mainXStick = mainXStick.subtract(xSteps);
+//That is ok
+//System.out.println(canvas.getWorldXByPixel(0));
+				
+//System.out.println(canvas.getPixelXPositionByWorld( canvas.getWorldTranslate().getX() + canvas.getWorldSize().xMin ) );				
+			
+//mainXStick = mainXStick.add(xSteps);
+//g2.setStroke(new BasicStroke(1));
+//g2.drawLine(mainXStick.doubleValue(), 5, mainXStick.doubleValue(), 10);				
 
 				g2.setStroke(new BasicStroke(1));
-				while(mainXStick.doubleValue() < canvas.getWorldSize().xMax){
+				while(mainXStick.doubleValue() <= canvas.getWorldSize().xMax){
 				
+					//Alathato reszen kivuli elemeket ne rajzolja ki
 					if( mainXStick.doubleValue() >= canvas.getWorldSize().xMin ){
 					
 						//Vizszintes fobeosztas
@@ -137,8 +146,9 @@ public class JAxis {
 				mainYStick = mainYStick.subtract(ySteps);
 
 				g2.setStroke(new BasicStroke(1));
-				while(mainYStick.doubleValue() < canvas.getWorldSize().yMax){
+				while(mainYStick.doubleValue() <= canvas.getWorldSize().yMax){
 				
+					//Alathato reszen kivuli elemeket ne rajzolja ki
 					if( mainYStick.doubleValue() >= canvas.getWorldSize().yMin ){
 					
 						//Fuggoleges fobeosztas
