@@ -19,7 +19,7 @@ public class JGraphics {
 	}
 	
 	public void drawLine( double x1, double y1, double x2, double y2){
-		g2.drawLine(canvas.getPixelXPositionByWorld(x1), canvas.getPixelYPositionByWorldBeforeTranslate(y1), canvas.getPixelXPositionByWorld(x2), canvas.getPixelYPositionByWorldBeforeTranslate(y2) );
+		g2.drawLine(canvas.getPixelXPositionByWorld(x1), canvas.getPixelYPositionByWorldBeforeTranslate(y1), canvas.getPixelXPositionByWorld(x2), canvas.getPixelYPositionByWorldBeforeTranslate(y2) );	
 	}
 	
 	public void fillOval( double x, double y, double width, double height){
@@ -47,9 +47,13 @@ public class JGraphics {
 		return g2.getFontRenderContext();
 	}
 	
-	public void drawFont( TextLayout textLayout, float x, float y ){
+	public void drawFont( TextLayout textLayout, double x, double y ){
 		g2.scale(1,-1);
-		textLayout.draw( g2, x, y );
+		
+//System.err.println((y-canvas.getWorldSize().getYMin()) + " - " + canvas.getPixelYPositionByWorldBeforeTranslate(-(y-canvas.getWorldSize().getYMin() )));		
+		textLayout.draw( g2, canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(-y) );
+		
+//		textLayout.draw( g2,	canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(-(y-canvas.getWorldSize().getYMin()) ) );
 		g2.scale(1,-1);
 	}
 }
