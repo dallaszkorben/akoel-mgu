@@ -9,8 +9,13 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -19,28 +24,32 @@ public class ExampleJCanvas_Grid extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	private Size worldSize = new Size(-10.0, -2.0, 20.0, 30);
-	
+	JCanvas myCanvas;
+	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
 	private Color background = Color.black;
 	private Position positionToMiddle = new Position( 0, 0);
 	private double pixelPerUnit = 10;
 
+	JGrid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
 	private Position gridDelta = new Position(1.0, 1.0);
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
+	JOrigo myOrigo;
 	private Color origoColor = Color.red;
 	private int origoWidthInPixel = 5;
 	private double origoLength = 1;
 	private JOrigo.PainterPosition origoPosition = JOrigo.PainterPosition.DEEPEST;
 	
+	JAxis myAxis;
 	private Color axisColor = Color.yellow;
 	private int axisWidthInPixel = 3;
 	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_LEFT_BOTTOM;
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
+	
 	public static void main(String[] args) {		
 		new ExampleJCanvas_Grid();
 	}
@@ -53,14 +62,15 @@ public class ExampleJCanvas_Grid extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-//		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
+		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
+//		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
 
-		new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
+		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		new JOrigo( myCanvas, origoColor, origoWidthInPixel, origoLength, origoPosition);
+		myOrigo = new JOrigo( myCanvas, origoColor, origoWidthInPixel, origoLength, origoPosition);
 	
-		new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
+		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
+		
 		//
 		//Ujra rajzol minden statikus rajzi elemet
 		//
@@ -117,6 +127,69 @@ public class ExampleJCanvas_Grid extends JFrame {
 			
 		});
 
+		//
+		//Grid ki/be kapcsolo
+		//
+		JCheckBox turnOnGrid = new JCheckBox("Turn On Grid");
+		turnOnGrid.setSelected(true);
+		turnOnGrid.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					myGrid.turnOff();
+				}else{
+					myGrid.turnOn();
+				}
+				myCanvas.repaint();
+			}
+		});
+		
+		//
+		//Origo ki/be kapcsolo
+		//
+		JCheckBox turnOnOrigo = new JCheckBox("Turn On Origo");
+		turnOnOrigo.setSelected(true);
+		turnOnOrigo.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					myOrigo.turnOff();
+				}else{
+					myOrigo.turnOn();
+				}
+				myCanvas.repaint();
+			}
+		});
+		
+		//
+		//Axis ki/be kapcsolo
+		//
+		JCheckBox turnOnAxis = new JCheckBox("Turn On Axis");
+		turnOnAxis.setSelected(true);
+		turnOnAxis.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					myAxis.turnOff();
+				}else{
+					myAxis.turnOn();
+				}
+				myCanvas.repaint();
+			}
+		});
+		
+		JPanel controlPanel = new JPanel();
+		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+		controlPanel.add(turnOnAxis);
+		controlPanel.add(turnOnOrigo);
+		controlPanel.add(turnOnGrid);
+		
+		//
+		// Iranyito gombok
+		//
 		JButton upButton = new JButton("up");
 		upButton.addActionListener(new ActionListener(){
 			
@@ -152,7 +225,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 				myCanvas.moveLeft(1);
 			}
 		});
-		
+				
 		JPanel translationPanel = new JPanel();	
 		translationPanel.setLayout(new GridLayout(3,3));
 		translationPanel.add(new JLabel());
@@ -165,6 +238,11 @@ public class ExampleJCanvas_Grid extends JFrame {
 		translationPanel.add(downButton);
 		translationPanel.add(new JLabel());
 		
+		JPanel mainControlPanel = new JPanel();
+		mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.Y_AXIS	));
+		mainControlPanel.add(controlPanel);
+		mainControlPanel.add(translationPanel);
+		
 		JPanel drawPanel = new JPanel();
 		drawPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 2, 2));
 		
@@ -175,7 +253,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
 		this.getContentPane().add(new JLabel(), BorderLayout.NORTH);
 		this.getContentPane().add(drawPanel, BorderLayout.SOUTH);
-		this.getContentPane().add(translationPanel, BorderLayout.EAST);
+		this.getContentPane().add(mainControlPanel, BorderLayout.EAST);
 		this.getContentPane().add(new JLabel(), BorderLayout.WEST);
 
 		this.setVisible(true);

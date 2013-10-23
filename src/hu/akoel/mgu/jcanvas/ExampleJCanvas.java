@@ -62,8 +62,8 @@ public class ExampleJCanvas extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				myCanvas.removePainterListenersFromTemporary();
-				myCanvas.removePainterListenersFromAbove();
-				myCanvas.addPainterListenerToAbove(new PainterListener(){
+				myCanvas.removePainterListenersFromHighest();
+				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
 					@Override
 					public void paintByViewer(JPanel canvas, Graphics2D g2) {
@@ -88,8 +88,8 @@ public class ExampleJCanvas extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 			
 				myCanvas.removePainterListenersFromTemporary();
-				myCanvas.removePainterListenersFromUnder();
-				myCanvas.addPainterListenerToUnder(new PainterListener(){
+				myCanvas.removePainterListenersFromDeepest();
+				myCanvas.addPainterListenerToDeepest(new PainterListener(){
 					@Override
 					public void paintByViewer(JPanel canvas, Graphics2D g2) {
 						for( int j=1; j<2000; j++){
@@ -102,7 +102,7 @@ public class ExampleJCanvas extends JFrame {
 							g2.fillOval(x, y, width, height);
 						}					
 					}			
-				}, JCanvas.POSITION.DEEPEST);
+				}, JCanvas.Level.UNDER);
 				myCanvas.repaint();
 			}
 			
@@ -127,7 +127,7 @@ public class ExampleJCanvas extends JFrame {
 						int height = 50;
 						g2.fillOval(x, y, width, height);						
 					}			
-				}, JCanvas.POSITION.DEEPEST);		
+				}, JCanvas.Level.UNDER);		
 				myCanvas.repaint();
 			}
 			

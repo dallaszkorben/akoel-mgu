@@ -82,10 +82,19 @@ public class JCanvas extends JPanel {
 		
 		//Ha nem adtam meg eltolast a koordinatarendszernek
 		if(null == positionToMiddle ){
-			
-			//Akkor azt jelzem, hogy megtorent az eltolas. 
-			setWasTransferedToMiddle( true );
+			setWasTransferedToMiddle(true);
+/*			setWorldTranslate( new Position( 
+				( getWorldXLengthByPixel( (int)(getViewerWidth()/2) ) - getPositionToMiddleX() ), 
+				( getWorldYLengthByPixel( (int)(getViewerHeight()/2) ) - getPositionToMiddleY() )  
+				)
+				 
+			);
+*/		
+
+		}else{
+			setWasTransferedToMiddle(false);
 		}
+		
 	}
 
 	
@@ -198,16 +207,25 @@ public class JCanvas extends JPanel {
 	//PERMANENT - Under list
 	//
 	public void addPainterListenerToDeepest(PainterListener painterListener, Level position) {
-		if (position.equals(Level.ABOVE)) {
-			deepestList.add(painterListener);
-		} else {
-			deepestList.add(0, painterListener);
+		if(!this.deepestList.contains(painterListener)){
+			if (position.equals(Level.ABOVE)) {
+				deepestList.add(painterListener);
+			} else {
+				deepestList.add(0, painterListener);
+			}
+			coreCanvas.invalidate();
 		}
-		coreCanvas.invalidate();
 	}
 
 	public void addPainterListenerToDeepest(PainterListener painterListener) {
-		addPainterListenerToDeepest(painterListener, Level.ABOVE);
+		if(!this.deepestList.contains(painterListener)){
+			addPainterListenerToDeepest(painterListener, Level.ABOVE);
+		}
+	}
+	
+	public void removePainterListenerFromDeepest( PainterListener painterListener ){
+		deepestList.remove(painterListener);
+		coreCanvas.invalidate();
 	}
 	
 	public void removePainterListenersFromDeepest(){
@@ -219,16 +237,25 @@ public class JCanvas extends JPanel {
 	//PERMANENT - Middle list
 	//
 	public void addPainterListenerToMiddle(PainterListener painterListener, Level position) {
-		if (position.equals(Level.ABOVE)) {
-			this.middleList.add(painterListener);
-		} else {
-			this.middleList.add(0, painterListener);
+		if(!this.middleList.contains(painterListener)){
+			if (position.equals(Level.ABOVE)) {
+				this.middleList.add(painterListener);
+			} else {
+				this.middleList.add(0, painterListener);
+			}
+			coreCanvas.invalidate();
 		}
-		coreCanvas.invalidate();
 	}
 
-	public void addPainterListenerToMiddle(PainterListener painter) {
-		this.addPainterListenerToMiddle(painter, Level.ABOVE);
+	public void addPainterListenerToMiddle(PainterListener painterListener) {
+		if(!this.middleList.contains(painterListener)){
+			this.addPainterListenerToMiddle(painterListener, Level.ABOVE);
+		}
+	}
+	
+	public void removePainterListenerFromMiddle( PainterListener painterListener ){
+		middleList.remove(painterListener);
+		coreCanvas.invalidate();
 	}
 	
 	public void removePainterListenersFromMiddle(){
@@ -240,16 +267,25 @@ public class JCanvas extends JPanel {
 	//PERMANENT - Above list
 	//
 	public void addPainterListenerToHighest(PainterListener painterListener, Level position) {
-		if (position.equals(Level.ABOVE)) {
-			this.highestList.add(painterListener);
-		} else {
-			this.highestList.add(0, painterListener);
+		if(!this.highestList.contains(painterListener)){
+			if (position.equals(Level.ABOVE)) {
+				this.highestList.add(painterListener);
+			} else {
+				this.highestList.add(0, painterListener);
+			}
+			coreCanvas.invalidate();
 		}
-		coreCanvas.invalidate();
 	}
 
-	public void addPainterListenerToHighest(PainterListener painter) {
-		this.addPainterListenerToHighest(painter, Level.ABOVE);
+	public void addPainterListenerToHighest(PainterListener painterListener) {
+		if(!this.highestList.contains(painterListener)){
+			this.addPainterListenerToHighest(painterListener, Level.ABOVE);
+		}
+	}
+	
+	public void removePainterListenerFromHighest( PainterListener painterListener ){
+		highestList.remove(painterListener);
+		coreCanvas.invalidate();
 	}
 	
 	public void removePainterListenersFromHighest(){
@@ -261,15 +297,24 @@ public class JCanvas extends JPanel {
 	//TEMPORARY list
 	//
 	public void addPainterListenerToTemporary(PainterListener painterListener, Level position) {
-		if (position.equals(Level.ABOVE)) {
-			this.temporaryList.add(painterListener);
-		} else {
-			this.temporaryList.add(0, painterListener);
+		
+		if(!this.temporaryList.contains(painterListener)){			
+			if (position.equals(Level.ABOVE)){
+				this.temporaryList.add(painterListener);
+			} else {			
+				this.temporaryList.add(0, painterListener);
+			}
 		}
 	}
 
-	public void addPainterListenerToTemporary(PainterListener painter) {
-		this.addPainterListenerToTemporary(painter, Level.ABOVE);
+	public void addPainterListenerToTemporary(PainterListener painterListener ) {
+		if(!this.temporaryList.contains(painterListener)){
+			this.addPainterListenerToTemporary(painterListener, Level.ABOVE);
+		}
+	}
+	
+	public void removePainterListenerFromTemporary( PainterListener painterListener ){
+		temporaryList.remove(painterListener);
 	}
 	
 	public void removePainterListenersFromTemporary(){
