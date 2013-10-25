@@ -47,6 +47,8 @@ public class JCanvas extends JPanel {
 	private Position positionToMiddle = null;
 	private boolean wasTransferedToMiddle = false;
 	
+	private ArrayList<PixelPerUnitChangeListener> pixelPerUnitChangeListenerList = new ArrayList<PixelPerUnitChangeListener>();
+	
 	//PERMANENT listak
 	ArrayList<PainterListener> highestList = new ArrayList<PainterListener>();
 	ArrayList<PainterListener> middleList = new ArrayList<PainterListener>();
@@ -147,6 +149,10 @@ public class JCanvas extends JPanel {
 		this.add( getCoreCanvas( this, background ) );
 	}
 	
+	public void addPixelPerUnitChangeListener( PixelPerUnitChangeListener listener ){
+		this.pixelPerUnitChangeListenerList.add(listener);
+	}
+	
 	public void refreshCoreCanvas(){
 		coreCanvas.revalidate();
 		coreCanvas.repaint();
@@ -190,6 +196,9 @@ public class JCanvas extends JPanel {
 	
 	public void setPixelPerUnitX( double pixelPerUnit ){
 		this.pixelPerUnitX = pixelPerUnit;
+		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
+			listener.getPixelPerUnit(pixelPerUnit, getPixelPerUnitY());
+		}
 	}
 
 	public double getPixelPerUnitY(){
@@ -198,6 +207,9 @@ public class JCanvas extends JPanel {
 	
 	public void setPixelPerUnitY( double pixelPerUnit ){
 		this.pixelPerUnitY = pixelPerUnit;
+		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
+			listener.getPixelPerUnit(getPixelPerUnitX(), pixelPerUnit);
+		}
 	}
 
 	public double getPositionToMiddleX(){
@@ -761,8 +773,11 @@ public class JCanvas extends JPanel {
 		 double originalXPPU = getPixelPerUnitX();
 		 double originalYPPU = getPixelPerUnitY();
 		 
-		 setPixelPerUnitX(getPixelPerUnitX() / rate );
-		 setPixelPerUnitY(getPixelPerUnitY() / rate );
+		 pixelPerUnitX = getPixelPerUnitX() / rate;
+		 pixelPerUnitY = getPixelPerUnitY() / rate;
+		 
+		 //setPixelPerUnitX(getPixelPerUnitX() / rate );
+		 //setPixelPerUnitY(getPixelPerUnitY() / rate );
 		 
 		 double originalXTranslate = getWorldTranslateX();
 		 double possibleXTranslate = originalXTranslate + getWorldXLengthByPixel(xPoint) * (rate-1)/rate;
@@ -823,11 +838,17 @@ public class JCanvas extends JPanel {
 				
 			 //Es ha igy sem fer bele e hatarba, akkor visszavonom a zoom muveletet
 			 if( !ok ){
-			 	 setPixelPerUnitX( originalXPPU );
-				 setPixelPerUnitY( originalYPPU );
+//			 	 setPixelPerUnitX( originalXPPU );
+//				 setPixelPerUnitY( originalYPPU );
+			 	 pixelPerUnitX = originalXPPU;
+				 pixelPerUnitY = originalYPPU;
+
 				 setWorldTranslateX( originalXTranslate );
 				 setWorldTranslateY( originalYTranslate );
 
+			 }else{
+				 setPixelPerUnitX( pixelPerUnitX );
+				 setPixelPerUnitY( pixelPerUnitY );
 			 }
 			 
 		 }
