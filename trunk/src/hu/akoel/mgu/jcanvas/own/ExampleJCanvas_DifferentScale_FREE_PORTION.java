@@ -15,21 +15,21 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ExampleJCanvas_FREE_PORTION extends JFrame {
+public class ExampleJCanvas_DifferentScale_FREE_PORTION extends JFrame {
 
-	private static final long serialVersionUID = 5810956401235486862L;
-
+	private static final long serialVersionUID = 5810959901235486862L;
 	
 	private Color background = Color.GREEN;
 	private Position positionToMiddle = new Position( 0, 0);
-	private double pixelPerUnit = 10;
+	private double pixelPerUnitX = 10;
+	private double pixelPerUnitY = 5;
 	
 	public static void main(String[] args) {
 		
-		new ExampleJCanvas_FREE_PORTION();
+		new ExampleJCanvas_DifferentScale_FREE_PORTION();
 	}
 
-	public ExampleJCanvas_FREE_PORTION() {
+	public ExampleJCanvas_DifferentScale_FREE_PORTION() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -37,7 +37,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), background, pixelPerUnit, positionToMiddle );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), background, pixelPerUnitX, pixelPerUnitY, positionToMiddle );
 
 		//Eloszorre kirajzolja az origot
 		myCanvas.addPainterListenerToDeepest(new PainterListener(){
@@ -89,25 +89,19 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
-//						if( null == worldSize ){
-							g2.drawLine((0.0), (0.0), 80, 80 );
-//						}else{
-//							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
-//						}
+						g2.drawLine((0.0), (0.0), 80, 80 );
 
 						//
 						//celkereszt negyed
 						//
 						g2.setColor(Color.red);
 						g2.setStroke(new BasicStroke(1));
-
 					
 						g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ), canvas.getWorldXByPixel(0) + 5, canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ) );
 						g2.drawLine(canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ), canvas.getWorldXByPixel(0), canvas.getWorldYByPixel(canvas.getViewableSize().height-1 ) + 5);
-						
+							
 						g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width) - 5, canvas.getWorldYByPixel(0), canvas.getViewableSize().width, canvas.getWorldYByPixel(0) );
 						g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0) - 5);
-
 						
 						//
 						// Kor

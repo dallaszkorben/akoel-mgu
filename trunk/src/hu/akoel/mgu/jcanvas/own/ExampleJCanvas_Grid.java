@@ -33,7 +33,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private Size boundSize = new Size(0.0, 0.0, 40.0, 40);	
 	private Color background = Color.black;
 	private Position positionToMiddle = null;//new Position( 10, 10);
-	private double pixelPerUnit = 10;
+	private double pixelPerUnit = 1;
 
 	private JGrid myGrid;	
 	private Color gridColor = Color.green;
@@ -56,9 +56,12 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
 	private JScale myScale;
-	private double pixelPerCm = 42.1;
-	private JScale.UNIT unit = JScale.UNIT.cm;
-	private double startScale = 1;
+	private double pixelPerCmX = 42.1;
+	private JScale.UNIT unitX = JScale.UNIT.km;
+	private double startScaleX = 100000;
+	private double pixelPerCmY = 42.1;
+	private JScale.UNIT unitY = JScale.UNIT.m;
+	private double startScaleY = 100;
 	
 	
 	private JRadioButton lbAxisSelector;
@@ -88,7 +91,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
-		myScale = new JScale(myCanvas, pixelPerCm, unit, startScale);
+		myScale = new JScale(myCanvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY);
 		
 		//
 		//Ujra rajzol minden statikus rajzi elemet

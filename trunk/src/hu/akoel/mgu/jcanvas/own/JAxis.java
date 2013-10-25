@@ -247,9 +247,9 @@ public class JAxis {
 					//Fuggoleges fobeosztas
 					g2.setColor(stickColor);
 					g2.drawLine(
-						positionXVerticalAxis - canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2,
+						positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel)/2,
 						mainYStick.doubleValue(),
-						positionXVerticalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2,
+						positionXVerticalAxis + canvas.getWorldXLengthByPixel(mainStickSizeInPixel)/2,
 						mainYStick.doubleValue()
 					);
 				
