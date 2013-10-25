@@ -19,10 +19,10 @@ public class JScale {
 		}
 	}
 	
-	JCanvas canvas;
-	double pixelPerCm;
-	UNIT unit;
-	double startScale;
+	private JCanvas canvas;
+	public double pixelPerCm;
+	public UNIT unit;
+	private double startScale;
 	
 	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale ){
 		this.canvas = canvas;
@@ -34,6 +34,15 @@ public class JScale {
 		canvas.setPixelPerUnitX( ppu );
 		canvas.setPixelPerUnitY( ppu );
 		
+		canvas.addPixelPerUnitChangeListener( new PixelPerUnitChangeListener() {
+			
+			@Override
+			public void getPixelPerUnit(double x, double y) {
+				
+				System.err.println( "M= " + (JScale.this.pixelPerCm * JScale.this.unit.getExchange() / UNIT.cm.getExchange() / x));
+				
+			}
+		});
 		
 		System.out.println( "ppu: " + ppu );
 		
