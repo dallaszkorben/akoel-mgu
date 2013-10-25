@@ -30,7 +30,7 @@ public class JAxis {
 	int mainStickSizeInPixel = 8;
 	int mainStickNumberSize = 14;
 	int secondaryStickSizeInPixel = 6;
-    double[] mainStickBaseNumbers = new double[]{0.25, 0.5, 1};
+    double[] mainStickBaseNumbers = new double[]{0.5, 1};//{0.25, 0.5, 1};
     int minimalDistanceInPixel = 40;
     
 	JCanvas canvas;
