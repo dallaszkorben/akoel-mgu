@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
@@ -42,12 +43,14 @@ public class JCanvas extends JPanel {
 
 	private Size worldSize;
 	private Size boundSize;
-	private double pixelPerUnitX, pixelPerUnitY;
+	//private double pixelPerUnitX, pixelPerUnitY;
+	private Position pixelPerUnit = new Position(0,0);
 	private Position worldTranslate = new Position( 0.0, 0.0 );
 	private Position positionToMiddle = null;
 	private boolean wasTransferedToMiddle = false;
 	
 	private ArrayList<PixelPerUnitChangeListener> pixelPerUnitChangeListenerList = new ArrayList<PixelPerUnitChangeListener>();
+	private ArrayList<PositionListener> positionListenerList = new ArrayList<PositionListener>();
 	
 	//PERMANENT listak
 	ArrayList<PainterListener> highestList = new ArrayList<PainterListener>();
@@ -61,7 +64,10 @@ public class JCanvas extends JPanel {
 	SIDES_PORTION sidePortion;
 	
 	/**
-	 * If the unitToPixelPortion is set then the sidePortion is FREE_PORTION
+	 * Ez egy olyan canvas, melyben megadjuk hogy mind ket tengely beosztasa a parameterben megadott meretu.
+	 * Ebbol az is k0vetkezik, hogy FREE_PORTION tipusu. vagyis a befoglalo canvas meretenek valtozasaval
+	 * az oldalak meretaranya nem valtozik, csupan nagyobb vagy kisebb reszet lathatjuk a vilagnak.
+	 * Ezen kivul megadhatjuk azt is hogy a Canvas kozepere melyik vilagkoordinata keruljon
 	 * 
 	 * @param borderType a Canvas keretenek tipusa
 	 * @param background a Canvas hatterszine
@@ -77,9 +83,48 @@ public class JCanvas extends JPanel {
 		
 		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
 		
-		this.commonConstructor(borderType, background, null, null);		
-		this.setPixelPerUnitX(pixelPerUnit);
-		this.setPixelPerUnitY(pixelPerUnit);
+		this.commonConstructor(borderType, background, null, null);
+		this.setPixelPerUnit(pixelPerUnit, pixelPerUnit);
+		
+		this.positionToMiddle = positionToMiddle;
+		
+		//Ha nem adtam meg eltolast a koordinatarendszernek
+		if(null == positionToMiddle ){
+			setWasTransferedToMiddle(true);	
+
+		}else{
+			setWasTransferedToMiddle(false);
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * Ez egy olyan canvas, melyben megadjuk hogy az egyes tengelyek beosztasa mekkora legyen. Ez azt jelenti, hogy a ket
+	 * tengely akar kulonbozo meretaranyu is lehet	 * 
+	 * Ezen kivul megadhatjuk azt is hogy a Canvas kozepere melyik vilagkoordinata keruljon
+	 * 
+	 * 
+	 * @param borderType
+	 * @param background
+	 * @param pixelPerUnitX
+	 * @param pixelPerUnitY
+	 * @param positionToMiddle
+	 */
+	public JCanvas(Border borderType, Color background, double pixelPerUnitX, double pixelPerUnitY, Position positionToMiddle ) {
+		
+		if( pixelPerUnitX <= 0 ){
+			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnitX );
+		}
+		
+		if( pixelPerUnitY <= 0 ){
+			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnitY );
+		}
+		
+		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
+		
+		this.commonConstructor(borderType, background, null, null);
+		this.setPixelPerUnit(pixelPerUnitX, pixelPerUnitY);
 		
 		this.positionToMiddle = positionToMiddle;
 		
@@ -101,9 +146,8 @@ public class JCanvas extends JPanel {
 		
 		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
 		
-		this.commonConstructor(borderType, background, null, boundSize);		
-		this.setPixelPerUnitX(pixelPerUnit);
-		this.setPixelPerUnitY(pixelPerUnit);
+		this.commonConstructor(borderType, background, null, boundSize);
+		this.setPixelPerUnit(pixelPerUnit, pixelPerUnit);
 		
 		this.positionToMiddle = positionToMiddle;
 		
@@ -153,6 +197,10 @@ public class JCanvas extends JPanel {
 		this.pixelPerUnitChangeListenerList.add(listener);
 	}
 	
+	public void addPositionListener( PositionListener listener ){
+		positionListenerList.add(listener);
+	}
+	
 	public void refreshCoreCanvas(){
 		coreCanvas.revalidate();
 		coreCanvas.repaint();
@@ -191,26 +239,30 @@ public class JCanvas extends JPanel {
 	}
 	
 	public double getPixelPerUnitX(){
-		return pixelPerUnitX;
+		return pixelPerUnit.getX();
+	}
+	
+	public double getPixelPerUnitY(){
+		return pixelPerUnit.getY();
+	}
+	
+	public void setPixelPerUnit( double pixelPerUnitX, double pixelPerUnitY ){
+		pixelPerUnit.setX(pixelPerUnitX);
+		pixelPerUnit.setY(pixelPerUnitY);
+		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
+			listener.getPixelPerUnit(pixelPerUnitX, pixelPerUnitY);
+		}
 	}
 	
 	public void setPixelPerUnitX( double pixelPerUnit ){
-		this.pixelPerUnitX = pixelPerUnit;
-		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
-			listener.getPixelPerUnit(pixelPerUnit, getPixelPerUnitY());
-		}
+		setPixelPerUnit( pixelPerUnit, getPixelPerUnitY() );
 	}
 
-	public double getPixelPerUnitY(){
-		return pixelPerUnitY;
+	public void setPixelPerUnitY( double pixelPerUnit ){
+		setPixelPerUnit(getPixelPerUnitX(), pixelPerUnit);
 	}
 	
-	public void setPixelPerUnitY( double pixelPerUnit ){
-		this.pixelPerUnitY = pixelPerUnit;
-		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
-			listener.getPixelPerUnit(getPixelPerUnitX(), pixelPerUnit);
-		}
-	}
+
 
 	public double getPositionToMiddleX(){
 		return this.positionToMiddle.getX();
@@ -682,9 +734,38 @@ public class JCanvas extends JPanel {
 */		
 	}
 	
-	//---------------------------
-	//Koordinatarendszer mozgatas
-	//---------------------------
+	/**
+	 * Az egerkurzor mozgatasakor a kurzor vilag koordinatajanak atadasa 
+	 * 
+	 * @author akoel
+	 *
+	 */
+	class MousePositionListener implements MouseMotionListener{
+		private JCanvas canvas;
+		
+		public MousePositionListener( JCanvas canvas ){
+			this.canvas = canvas;
+		}
+		
+		@Override
+		public void mouseDragged(MouseEvent e) {}
+
+		@Override
+		public void mouseMoved(MouseEvent e) {
+			
+			for( PositionListener listener : positionListenerList){
+				listener.getWorldPosition( canvas.getWorldXByPixel(e.getX()), canvas.getWorldYByPixel(e.getY()));
+			}
+			
+		}
+	}
+	
+	/**
+	 * Az eger kozepso gombjanak benyomasaval vegzett kepernyo mozgas figyelese
+	 * 
+	 * @author akoel
+	 *
+	 */
 	class WheelMoveListener implements MouseInputListener{
 		private int startX;
 		private int startY;
@@ -753,8 +834,7 @@ public class JCanvas extends JPanel {
 	}//class WheelZoomListener
 
 	 public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint, double rate){
-		 setPixelPerUnitX(getPixelPerUnitX() * rate );
-		 setPixelPerUnitY(getPixelPerUnitY() * rate );
+		 setPixelPerUnit(getPixelPerUnitX() * rate, getPixelPerUnitY() * rate );
 		 
 		 double possibleXTranslate = getWorldTranslateX() - getWorldXLengthByPixel(xPoint) * (rate-1);
 		 double possibleYTranslate = getWorldTranslateY() - getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate-1);
@@ -773,11 +853,11 @@ public class JCanvas extends JPanel {
 		 double originalXPPU = getPixelPerUnitX();
 		 double originalYPPU = getPixelPerUnitY();
 		 
-		 pixelPerUnitX = getPixelPerUnitX() / rate;
-		 pixelPerUnitY = getPixelPerUnitY() / rate;
-		 
-		 //setPixelPerUnitX(getPixelPerUnitX() / rate );
-		 //setPixelPerUnitY(getPixelPerUnitY() / rate );
+		 //Nem a fuggvenyen keresztul hivom meg, mert meg nem biztos, hogy vegrehajthato a PixelPerUnit valtozas
+		 //Majd ha biztos lesz, akkor a vegen vegrehajtom ugyan ezt de fuggvenyhivassal, hogy meghivodhasson
+		 //a PixelPerUnitChangeListener valtozasfigyelo
+		 pixelPerUnit.setX( getPixelPerUnitX() / rate );
+		 pixelPerUnit.setY( getPixelPerUnitY() / rate );
 		 
 		 double originalXTranslate = getWorldTranslateX();
 		 double possibleXTranslate = originalXTranslate + getWorldXLengthByPixel(xPoint) * (rate-1)/rate;
@@ -788,10 +868,11 @@ public class JCanvas extends JPanel {
 		 setWorldTranslateX( possibleXTranslate );
 		 setWorldTranslateY( possibleYTranslate );
 		 
+		 boolean ok = true;
+		 
 		 //Szukseges a vizsgalat mert van szel definialva
 		 if( null != boundSize ){
-			 
-			 boolean ok = true;
+			 			 
 			 boolean overlapLeft = false;
 			 boolean overlapBottom = false;
 			 
@@ -835,22 +916,28 @@ public class JCanvas extends JPanel {
 					 ok = false;
 				 }
 			 }
-				
-			 //Es ha igy sem fer bele e hatarba, akkor visszavonom a zoom muveletet
-			 if( !ok ){
-//			 	 setPixelPerUnitX( originalXPPU );
-//				 setPixelPerUnitY( originalYPPU );
-			 	 pixelPerUnitX = originalXPPU;
-				 pixelPerUnitY = originalYPPU;
 
-				 setWorldTranslateX( originalXTranslate );
-				 setWorldTranslateY( originalYTranslate );
+		 }
 
-			 }else{
-				 setPixelPerUnitX( pixelPerUnitX );
-				 setPixelPerUnitY( pixelPerUnitY );
-			 }
+		 //Es ha igy sem fer bele e hatarba, akkor visszavonom a zoom muveletet
+		 if( !ok ){
 			 
+			 //Visszaallitom az eredeti PixelPerUnit erteket
+			 //Nem a fuggvenyen keresztul hivom meg, mert akkor a PixelPerUnitChangeListener meghivodna, de erre nincs szukseg,
+			 //hiszen nem tortent PixelPerUnit valtozas
+		 	 pixelPerUnit.setX( originalXPPU );
+			 pixelPerUnit.setY( originalYPPU );
+
+			 //Visszaallitom az eredeti eltolas erteket
+			 setWorldTranslateX( originalXTranslate );
+			 setWorldTranslateY( originalYTranslate );
+
+		 //Lehetseges a kert valtozas
+		 }else{
+			 
+			 //Es most fuggvenyhivas segitsegevel is jovahagyom a PixelPerUnit erteket annak erdekeben, hogy a
+			 //PixelPerUnitChangeListener meghivodhasson
+			 setPixelPerUnit(pixelPerUnit.getX(), pixelPerUnit.getY());
 		 }
 		 
 		 this.getParent().repaint();
@@ -872,12 +959,10 @@ public class JCanvas extends JPanel {
 
 		private JCanvas parent;
 		private BufferedImage offImage;
-//		private Size parentWorldSize;
 
 		public CoreCanvas(JCanvas parent, Color background) {
 			super();
 			this.parent = parent;
-//			this.parentWorldSize = parent.getWorldSize();
 			
 			this.setBackground(background);
 			
@@ -892,6 +977,8 @@ public class JCanvas extends JPanel {
 				addMouseListener(myWheelMoveListener);
 				addMouseMotionListener(myWheelMoveListener);
 			}
+			
+			addMouseMotionListener( new MousePositionListener(parent) );
 		}
 
 		  /**
@@ -941,7 +1028,6 @@ public class JCanvas extends JPanel {
 				offg2.scale(1,-1);
 
 				//Most tolom el a koordinatarendszert
-				//offg2.translate((int)(getPixelPerUnit()*(worldTranslate.getX())), (int)(getPixelPerUnit()*(worldTranslate.getY()))-getHeight() + 0);
 				offg2.translate( getPixelXLengthByWorld(parent.getWorldTranslateX()) - 1, getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
 				
 				if (null != deepestList) {
@@ -980,10 +1066,8 @@ public class JCanvas extends JPanel {
 						painter.paintByWorldPosition(parent, new JGraphics(parent, g2));
 					}
 					temporaryList.clear();
-				}				
-				
-			}
-		
+				}					
+			}	
 		}
 
 		/**
@@ -1043,8 +1127,7 @@ public class JCanvas extends JPanel {
 		        pixelWidth = Math.round(pixelWidth)-1;
 		        pixelHeight = Math.round(pixelHeight)-1;
 		       
-		        parent.setPixelPerUnitX((pixelWidth) / (parentWorldSize.getWidth()));
-		        parent.setPixelPerUnitY((pixelHeight) / (parentWorldSize.getHeight()));
+		        parent.setPixelPerUnit( (pixelWidth) / (parentWorldSize.getWidth()), (pixelHeight) / (parentWorldSize.getHeight()) );
 		        
 		        pixelWidth++;
 		        pixelHeight++;
