@@ -28,9 +28,9 @@ public class JAxis {
 	}
 	
 	int mainStickSizeInPixel = 8;
+	int mainStickNumberSize = 14;
 	int secondaryStickSizeInPixel = 6;
-//	int secondaryStickNumberInPixel = 8;
-    double[] units = new double[]{0.25, 0.5, 1};
+    double[] mainStickBaseNumbers = new double[]{0.25, 0.5, 1};
     int minimalDistanceInPixel = 40;
     
 	JCanvas canvas;
@@ -64,6 +64,10 @@ public class JAxis {
 			  
 	};
 	
+	public void refresh(){
+		canvas.refreshCoreCanvas();
+	}
+	
 	public void turnOff(){
 		if( painterPosition.equals(PainterPosition.DEEPEST ) ){
 			canvas.removePainterListenerFromDeepest(painterListener);
@@ -84,6 +88,14 @@ public class JAxis {
 		}	
 	}
     
+	public void setMainStickNumberSize( int mainStickNumberSize ){
+		this.mainStickNumberSize = mainStickNumberSize;
+	}
+	
+	public void setAxisPosition( AxisPosition axisPosition ){
+		this.axisPosition = axisPosition;
+	}
+	
 	public void setAxisColor( Color axisColor ){
 		this.axisColor = axisColor;
 	}
@@ -116,8 +128,8 @@ public class JAxis {
 	 * 
 	 * @param units
 	 */
-	public void setUnits( double[] units ){
-		this.units = units;
+	public void setMainStickBaseNumbers( double[] mainStickBaseNumbers ){
+		this.mainStickBaseNumbers = mainStickBaseNumbers;
 	} 
 	
     class AxisPainterListener implements PainterListener{
@@ -131,49 +143,52 @@ public class JAxis {
 			double positionXVerticalAxis = 0;
 			double positionYHorizontalAxis = 0;
 			
-			double positionYNumber = 0;
-			double positionXNumber = 0;
+			double positionYHorizontalNumber = 0;
+			double positionXVerticalNumber = 0;
 			
 			BigDecimal xSteps = getXSteps(), mainXStick;
 			BigDecimal ySteps = getYSteps(), mainYStick;
 			
 			FontRenderContext frc;
 			TextLayout textLayout;
-			Font fontNumber = new Font("Default", Font.PLAIN, 14);
+			Font fontNumber = new Font("Default", Font.PLAIN, mainStickNumberSize);
 			
 			if( axisPosition.equals( AxisPosition.AT_ZERO_ZERO) ){
 				positionXVerticalAxis = 0;
 				positionYHorizontalAxis = 0;
 				
-				positionYNumber = canvas.getPixelYPositionByWorldBeforeTranslate(positionYHorizontalAxis) - mainStickSizeInPixel/2;					
-				positionXNumber = canvas.getPixelXPositionByWorld( positionXVerticalAxis );
-				
+				positionXVerticalNumber = positionXVerticalAxis + canvas.getWorldXLengthByPixel( mainStickSizeInPixel );
+				positionYHorizontalNumber = positionYHorizontalAxis + canvas.getWorldYLengthByPixel( mainStickSizeInPixel );					
+
 			}else if( axisPosition.equals( AxisPosition.AT_LEFT_BOTTOM )){
 				positionXVerticalAxis = canvas.getWorldXByPixel( 0 );
-				positionYHorizontalAxis = canvas.getWorldYByPixel( canvas.getViewableSize().height - 1 );
-				
-				
-				positionYNumber = canvas.getPixelYPositionByWorldBeforeTranslate(canvas.getWorldSize().yMax) - mainStickSizeInPixel;
-				positionYNumber = 0;
-				positionXNumber = canvas.getPixelXPositionByWorld( positionXVerticalAxis );
+				positionYHorizontalAxis = canvas.getWorldSize().yMin;
+								
+				positionXVerticalNumber = positionXVerticalAxis + canvas.getWorldXLengthByPixel( mainStickSizeInPixel );
+				positionYHorizontalNumber = positionYHorizontalAxis + canvas.getWorldYLengthByPixel( mainStickSizeInPixel );
 				
 			}else if( axisPosition.equals( AxisPosition.AT_LEFT_TOP)){
 				positionXVerticalAxis = canvas.getWorldXByPixel( 0 );
 				positionYHorizontalAxis = canvas.getWorldSize().yMax;	
 				
-				positionYNumber =  mainStickSizeInPixel;					
-				positionXNumber = canvas.getPixelXPositionByWorld( positionXVerticalAxis );
+				positionXVerticalNumber = positionXVerticalAxis + canvas.getWorldXLengthByPixel( mainStickSizeInPixel );
+				positionYHorizontalNumber = positionYHorizontalAxis - canvas.getWorldYLengthByPixel( mainStickSizeInPixel + mainStickNumberSize );								
 
 			}else if( axisPosition.equals( AxisPosition.AT_RIGHT_BOTTOM ) ){
 				positionXVerticalAxis = canvas.getWorldSize().xMax;
-				positionYHorizontalAxis = canvas.getWorldYByPixel( 0 );
+				positionYHorizontalAxis = canvas.getWorldSize().yMin;
 				
-				positionYNumber = canvas.getPixelYPositionByWorldBeforeTranslate(positionYHorizontalAxis) - mainStickSizeInPixel/2;					
-				positionXNumber = canvas.getPixelXPositionByWorld( positionXVerticalAxis );
-
+				//TODO Ki kell talalni valamit ra hogy a szam valodi szelessegetol fuggjon
+				positionXVerticalNumber = positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel + 20 );
+				positionYHorizontalNumber = positionYHorizontalAxis + canvas.getWorldYLengthByPixel( mainStickSizeInPixel );					
+				
 			}else if( axisPosition.equals( AxisPosition.AT_RIGHT_TOP ) ){
 				positionXVerticalAxis = canvas.getWorldSize().xMax;
-				positionYHorizontalAxis = canvas.getWorldSize().yMin;
+				positionYHorizontalAxis = canvas.getWorldSize().yMax;
+				
+				positionXVerticalNumber = positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel + 20 );
+				positionYHorizontalNumber = positionYHorizontalAxis - canvas.getWorldYLengthByPixel( mainStickSizeInPixel + mainStickNumberSize );				
+				
 			}
 			
 			g2.setColor( axisColor );
@@ -211,7 +226,7 @@ public class JAxis {
 					g2.drawFont(
 							textLayout, 
 							mainXStick.doubleValue() - canvas.getWorldXLengthByPixel((int)(textLayout.getBounds().getWidth()/2)), 
-							positionYHorizontalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)
+							positionYHorizontalNumber
 					);
 				} 
 				
@@ -244,7 +259,7 @@ public class JAxis {
 					g2.setColor(numberColor);
 					g2.drawFont(
 							textLayout, 
-							positionXVerticalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel), 
+							positionXVerticalNumber,							 
 							mainYStick.doubleValue() - canvas.getWorldYLengthByPixel( (int)(textLayout.getAscent()/2) )
 					);
 					
@@ -302,8 +317,8 @@ public class JAxis {
 		    BigDecimal actualMarkerDistance = BigDecimal.valueOf( canvas.getWorldXLengthByPixel(minimalDistanceInPixel) );
 
 		    int i = 0;
-		    while(units.length > i){
-		      actualMarkerDistance = getNextOrder(minMarkerDistance).multiply(new BigDecimal(units[i]));
+		    while(mainStickBaseNumbers.length > i){
+		      actualMarkerDistance = getNextOrder(minMarkerDistance).multiply(new BigDecimal(mainStickBaseNumbers[i]));
 		      if(actualMarkerDistance.doubleValue() >= minMarkerDistance.doubleValue()){
 		        break;
 		      }
@@ -322,8 +337,8 @@ public class JAxis {
 		    BigDecimal actualMarkerDistance = BigDecimal.valueOf( canvas.getWorldYLengthByPixel(minimalDistanceInPixel) );
 
 		    int i = 0;
-		    while(units.length > i){
-		      actualMarkerDistance = getNextOrder(minMarkerDistance).multiply(new BigDecimal(units[i]));
+		    while(mainStickBaseNumbers.length > i){
+		      actualMarkerDistance = getNextOrder(minMarkerDistance).multiply(new BigDecimal(mainStickBaseNumbers[i]));
 		      if(actualMarkerDistance.doubleValue() >= minMarkerDistance.doubleValue()){
 		        break;
 		      }
