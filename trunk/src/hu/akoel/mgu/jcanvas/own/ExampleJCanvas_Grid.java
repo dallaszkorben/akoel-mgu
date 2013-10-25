@@ -1,6 +1,8 @@
 package hu.akoel.mgu.jcanvas.own;
 
 
+import hu.akoel.mgu.jcanvas.own.JAxis.AxisPosition;
+
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -14,41 +16,48 @@ import java.awt.event.ItemListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 
 public class ExampleJCanvas_Grid extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	JCanvas myCanvas;
+	private JCanvas myCanvas;
 	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
 	private Color background = Color.black;
 	private Position positionToMiddle = new Position( 0, 0);
 	private double pixelPerUnit = 10;
 
-	JGrid myGrid;	
+	private JGrid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
 	private Position gridDelta = new Position(1.0, 1.0);
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
-	JOrigo myOrigo;
+	private JOrigo myOrigo;
 	private Color origoColor = Color.red;
 	private int origoWidthInPixel = 5;
 	private double origoLength = 1;
 	private JOrigo.PainterPosition origoPosition = JOrigo.PainterPosition.DEEPEST;
 	
-	JAxis myAxis;
+	private JAxis myAxis;
 	private Color axisColor = Color.yellow;
-	private int axisWidthInPixel = 3;
+	private int axisWidthInPixel = 1;
 	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_LEFT_BOTTOM;
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
+	private JRadioButton lbAxisSelector;
+	private JRadioButton rbAxisSelector;
+	private JRadioButton ltAxisSelector;
+	private JRadioButton rtAxisSelector;
+	private JRadioButton zzAxisSelector;
 	
 	public static void main(String[] args) {		
 		new ExampleJCanvas_Grid();
@@ -164,6 +173,45 @@ public class ExampleJCanvas_Grid extends JFrame {
 		});
 		
 		//
+		//Axis
+		//
+		ActionListener axisSelectorActionListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if( e.getSource() == lbAxisSelector){
+					myAxis.setAxisPosition( AxisPosition.AT_LEFT_BOTTOM );				
+				}else if( e.getSource() == rbAxisSelector){
+					myAxis.setAxisPosition( AxisPosition.AT_RIGHT_BOTTOM );
+				}else if( e.getSource() == ltAxisSelector){
+					myAxis.setAxisPosition( AxisPosition.AT_LEFT_TOP );
+				}else if( e.getSource() == rtAxisSelector){
+					myAxis.setAxisPosition( AxisPosition.AT_RIGHT_TOP );
+				}else if( e.getSource() == zzAxisSelector){
+					myAxis.setAxisPosition( AxisPosition.AT_ZERO_ZERO );
+				}
+				myAxis.refresh();
+			}
+		};
+		
+		ButtonGroup bg = new ButtonGroup();
+		lbAxisSelector = new JRadioButton( "LEFT BOTTOM", true);
+		bg.add(lbAxisSelector);
+		lbAxisSelector.addActionListener(axisSelectorActionListener);
+		rbAxisSelector = new JRadioButton( "RIGHT BOTTOM");
+		bg.add(rbAxisSelector);
+		rbAxisSelector.addActionListener(axisSelectorActionListener);
+		ltAxisSelector = new JRadioButton( "LEFT TOP");
+		bg.add(ltAxisSelector);
+		ltAxisSelector.addActionListener(axisSelectorActionListener);
+		rtAxisSelector = new JRadioButton( "RIGHT TOP");
+		bg.add(rtAxisSelector);
+		rtAxisSelector.addActionListener(axisSelectorActionListener);
+		zzAxisSelector = new JRadioButton( "ZERO ZERO");
+		bg.add(zzAxisSelector);
+		zzAxisSelector.addActionListener(axisSelectorActionListener);
+		
+		//
 		//Axis ki/be kapcsolo
 		//
 		JCheckBox turnOnAxis = new JCheckBox("Turn On Axis");
@@ -174,8 +222,18 @@ public class ExampleJCanvas_Grid extends JFrame {
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					myAxis.turnOff();
+					lbAxisSelector.setEnabled(false);
+					rbAxisSelector.setEnabled(false);
+					ltAxisSelector.setEnabled(false);
+					rtAxisSelector.setEnabled(false);
+					zzAxisSelector.setEnabled(false);					
 				}else{
 					myAxis.turnOn();
+					lbAxisSelector.setEnabled(true);
+					rbAxisSelector.setEnabled(true);
+					ltAxisSelector.setEnabled(true);
+					rtAxisSelector.setEnabled(true);
+					zzAxisSelector.setEnabled(true);
 				}
 				myCanvas.repaint();
 			}
@@ -183,7 +241,15 @@ public class ExampleJCanvas_Grid extends JFrame {
 		
 		JPanel controlPanel = new JPanel();
 		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+		
+		//Axis elemei
 		controlPanel.add(turnOnAxis);
+		controlPanel.add(lbAxisSelector);
+		controlPanel.add(rbAxisSelector);
+		controlPanel.add(ltAxisSelector);
+		controlPanel.add(rtAxisSelector);
+		controlPanel.add(zzAxisSelector);
+		
 		controlPanel.add(turnOnOrigo);
 		controlPanel.add(turnOnGrid);
 		

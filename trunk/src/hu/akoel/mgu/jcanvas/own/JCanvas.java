@@ -128,6 +128,11 @@ public class JCanvas extends JPanel {
 		this.add( getCoreCanvas( this, background ) );
 	}
 	
+	public void refreshCoreCanvas(){
+		coreCanvas.revalidate();
+		coreCanvas.repaint();
+	}
+	
 	public SIDES_PORTION getSidePortion(){
 		return sidePortion;
 	}
