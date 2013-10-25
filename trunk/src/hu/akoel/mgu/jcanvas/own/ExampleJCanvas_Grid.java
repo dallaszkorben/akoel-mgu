@@ -30,8 +30,9 @@ public class ExampleJCanvas_Grid extends JFrame {
 
 	private JCanvas myCanvas;
 	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
+	private Size boundSize = new Size(0.0, 0.0, 40.0, 40);	
 	private Color background = Color.black;
-	private Position positionToMiddle = new Position( 0, 0);
+	private Position positionToMiddle = null;//new Position( 10, 10);
 	private double pixelPerUnit = 10;
 
 	private JGrid myGrid;	
@@ -42,10 +43,11 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
 	private JOrigo myOrigo;
+	private Position origoPosition = new Position( 5, 5 );
 	private Color origoColor = Color.red;
 	private int origoWidthInPixel = 5;
 	private double origoLength = 1;
-	private JOrigo.PainterPosition origoPosition = JOrigo.PainterPosition.DEEPEST;
+	private JOrigo.PainterPosition origoPainterPosition = JOrigo.PainterPosition.DEEPEST;
 	
 	private JAxis myAxis;
 	private Color axisColor = Color.yellow;
@@ -53,6 +55,12 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_LEFT_BOTTOM;
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
+	private JScale myScale;
+	private double pixelPerCm = 42.1;
+	private JScale.UNIT unit = JScale.UNIT.cm;
+	private double startScale = 1;
+	
+	
 	private JRadioButton lbAxisSelector;
 	private JRadioButton rbAxisSelector;
 	private JRadioButton ltAxisSelector;
@@ -71,14 +79,16 @@ public class ExampleJCanvas_Grid extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
-//		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle);
+//		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
+		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle, boundSize);
 
 		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myOrigo = new JOrigo( myCanvas, origoColor, origoWidthInPixel, origoLength, origoPosition);
+		myOrigo = new JOrigo( myCanvas, origoPosition, origoColor, origoWidthInPixel, origoLength, origoPainterPosition);
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
+		
+		myScale = new JScale(myCanvas, pixelPerCm, unit, startScale);
 		
 		//
 		//Ujra rajzol minden statikus rajzi elemet

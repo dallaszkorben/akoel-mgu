@@ -16,14 +16,16 @@ public class JOrigo {
 	}
 	
 	private JCanvas canvas;
+	Position position;
 	private Color color;
 	private int widthInPixel;
 	private double length;
 	private PainterPosition painterPosition;
 	private PainterListener painterListener;
 
-	public JOrigo( JCanvas canvas, Color color, int widthInPixel, double length, PainterPosition painterPosition ){
+	public JOrigo( JCanvas canvas, Position position, Color color, int widthInPixel, double length, PainterPosition painterPosition ){
 		this.canvas = canvas;
+		this.position = position;
 		this.color = color;
 		this.length = length;  
 		this.widthInPixel = widthInPixel;
@@ -79,8 +81,8 @@ public class JOrigo {
 			g2.setColor( color );
 			g2.setStroke(new BasicStroke(widthInPixel));
 			
-			g2.drawLine( (0 - length/2.0), 0, (0 + length/2.0), 0 );
-			g2.drawLine( 0, (0 - length/2.0), 0, (0 + length/2.0) );
+			g2.drawLine( (position.getX() - length/2.0), position.getY(), (position.getX() + length/2.0), position.getY() );
+			g2.drawLine( position.getX(), (position.getY() - length/2.0), position.getX(), (position.getY() + length/2.0) );
 		}
 
 		@Override
