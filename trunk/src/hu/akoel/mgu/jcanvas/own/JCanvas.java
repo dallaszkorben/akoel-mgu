@@ -51,7 +51,7 @@ public class JCanvas extends JPanel {
 	private PossiblePixelPerUnits possiblePixelPerUnits;
 	
 	private ArrayList<PixelPerUnitChangeListener> pixelPerUnitChangeListenerList = new ArrayList<PixelPerUnitChangeListener>();
-	private ArrayList<PositionListener> positionListenerList = new ArrayList<PositionListener>();
+	private ArrayList<PositionChangeListener> positionChangeListenerList = new ArrayList<PositionChangeListener>();
 	
 	//PERMANENT listak
 	ArrayList<PainterListener> highestList = new ArrayList<PainterListener>();
@@ -94,8 +94,7 @@ public class JCanvas extends JPanel {
 
 		}else{
 			setWasTransferedToMiddle(false);
-		}
-		
+		}		
 	}
 	
 	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, Position positionToMiddle, Size boundSize ) {
@@ -162,8 +161,8 @@ public class JCanvas extends JPanel {
 		this.pixelPerUnitChangeListenerList.add(listener);
 	}
 	
-	public void addPositionListener( PositionListener listener ){
-		positionListenerList.add(listener);
+	public void addPositionChangeListener( PositionChangeListener positionChangeListener ){
+		positionChangeListenerList.add(positionChangeListener);
 	}
 	
 	public void refreshCoreCanvas(){
@@ -228,26 +227,6 @@ public class JCanvas extends JPanel {
 			listener.getPixelPerUnit( getPixelPerUnit());
 		}
 	}
-	
-//TODO meretarany kijelzes	
-/*	
-	public void setPixelPerUnit( double pixelPerUnitX, double pixelPerUnitY ){
-		pixelPerUnit.setX(pixelPerUnitX);
-		pixelPerUnit.setY(pixelPerUnitY);
-		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
-			listener.getPixelPerUnit(pixelPerUnitX, pixelPerUnitY);
-		}
-	}
-	
-	public void setPixelPerUnitX( double pixelPerUnit ){
-		setPixelPerUnit( pixelPerUnit, getPixelPerUnitY() );
-	}
-
-	public void setPixelPerUnitY( double pixelPerUnit ){
-		setPixelPerUnit(getPixelPerUnitX(), pixelPerUnit);
-	}
-*/	
-
 
 	public double getPositionToMiddleX(){
 		return this.positionToMiddle.getX();
@@ -738,7 +717,7 @@ public class JCanvas extends JPanel {
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			
-			for( PositionListener listener : positionListenerList){
+			for( PositionChangeListener listener : positionChangeListenerList){
 				listener.getWorldPosition( canvas.getWorldXByPixel(e.getX()), canvas.getWorldYByPixel(e.getY()));
 			}
 			

@@ -41,6 +41,8 @@ public class JScale {
 	private Position minScale;
 	private Position maxScale;
 	
+	private ArrayList<ScaleChangeListener> scaleChangeListenerList = new ArrayList<ScaleChangeListener>();
+	
 	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale){
 		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, pixelPerCm, unit, startScale, null, null, null );
 	}
@@ -107,7 +109,7 @@ public class JScale {
 		}
 
 		canvas.addPixelPerUnitChangeListener( new ScalePixelPerUnitChangeListener( pixelPerCmX, unitX, pixelPerCmY, unitY ));
-		canvas.addPositionListener( new ScalePositionListener() );
+
 	}
 	
 	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, ArrayList<Position> possibleScaleList, int pointerForPossibleScaleList){
@@ -131,13 +133,12 @@ public class JScale {
 		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits(possiblePPUList, pointerForPossibleScaleList));
 	
 		canvas.addPixelPerUnitChangeListener( new ScalePixelPerUnitChangeListener( pixelPerCmX, unitX, pixelPerCmY, unitY ));
-		canvas.addPositionListener( new ScalePositionListener() );
+
 	}
 	
-	
-	
-	
-	
+	public void addScaleChangeListener( ScaleChangeListener scaleChangeListener ){
+		scaleChangeListenerList.add(scaleChangeListener);
+	}	
 	
 	public double getPixelPerUnitByScale(double pixelPerCm, UNIT unit, double scale){
 		return pixelPerCm * unit.getExchange() / UNIT.cm.getExchange() / scale;
@@ -146,7 +147,7 @@ public class JScale {
 	public double getScaleByPixelPerUnit( double pixelPerCm, UNIT unit, double ppu){
 		return (pixelPerCm * unit.getExchange() / UNIT.cm.getExchange() / ppu	);
 	}
-	
+		
 	class ScalePixelPerUnitChangeListener implements PixelPerUnitChangeListener{
 		public double pixelPerCmX;
 		public UNIT unitX;
@@ -164,32 +165,16 @@ public class JScale {
 		
 		@Override
 		public void getPixelPerUnit( Position pixelPerUnit ) {
-			DecimalFormat df = new DecimalFormat("#.00");
 			
 			double scaleX = getScaleByPixelPerUnit(pixelPerCmX, unitX, pixelPerUnit.getX());
-			if( scaleX >= 1)
-				System.err.println( "X M= 1:" + df.format(scaleX));
-			else					
-				System.err.println( "X M= " + df.format(1/scaleX) + ":1" );
+			double scaleY = getScaleByPixelPerUnit(pixelPerCmY, unitY, pixelPerUnit.getY());
 			
-			double scaleY = getScaleByPixelPerUnit(pixelPerCmY, unitY, pixelPerUnit.getY());			
-			if( scaleY >= 1)
-				System.err.println( "Y M= 1:" + df.format(scaleY));
-			else					
-				System.err.println( "Y M= " + df.format(1/scaleY) + ":1" );
+			for( ScaleChangeListener listener : scaleChangeListenerList){
+				listener.getScale( new Position( scaleX, scaleY ) );
+			}
 			
-			System.out.println();
 		}
-	}
-	
-	class ScalePositionListener implements PositionListener{
-		DecimalFormat df = new DecimalFormat("#.0000");
-		
-		@Override
-		public void getWorldPosition(double xPosition, double yPosition) {
-			System.err.println( "X:" + df.format(xPosition) + " Y:" + df.format(yPosition) );			
-		}		
-	}
+	}	
 }
 
 	

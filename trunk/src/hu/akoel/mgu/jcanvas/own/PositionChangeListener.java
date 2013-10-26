@@ -1,6 +1,6 @@
 package hu.akoel.mgu.jcanvas.own;
 
-public interface PositionListener {
+public interface PositionChangeListener {
 
 	public void getWorldPosition( double xPosition, double yPosition );
 }

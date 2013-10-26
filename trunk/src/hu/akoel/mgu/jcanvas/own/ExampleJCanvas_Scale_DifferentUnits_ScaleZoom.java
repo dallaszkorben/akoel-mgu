@@ -2,17 +2,21 @@ package hu.akoel.mgu.jcanvas.own;
 
 
 import hu.akoel.mgu.jcanvas.own.JAxis.AxisPosition;
+import hu.akoel.mgu.jcanvas.own.JScale.UNIT;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -20,10 +24,14 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 
@@ -75,6 +83,13 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	private JRadioButton rtAxisSelector;
 	private JRadioButton zzAxisSelector;
 	
+	private JTextField xScaleField;
+	private JTextField yScaleField;
+	private JTextField xPositionField;
+	private JTextField yPositionField;
+	
+	private JComboBox<String> gridTypeSelector;
+	
 	public static void main(String[] args) {		
 		new ExampleJCanvas_Scale_DifferentUnits_ScaleZoom();
 	}
@@ -84,13 +99,22 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
 		this.setUndecorated(false);
-		this.setSize(500, 300);
+		this.setSize(500, 500);
 		this.createBufferStrategy(1);
 
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, boundSize);
 		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
-
+		myCanvas.addPositionChangeListener(new PositionChangeListener() {
+			
+			@Override
+			public void getWorldPosition(double xPosition, double yPosition) {
+				DecimalFormat df = new DecimalFormat("#.0000");				
+				xPositionField.setText("x: " + df.format(xPosition));
+				yPositionField.setText("y: " + df.format(yPosition));				
+			}
+		});
+		
 		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
 		myOrigo = new JOrigo( myCanvas, origoPosition, origoColor, origoWidthInPixel, origoLength, origoPainterPosition);
@@ -98,24 +122,21 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
 		myScale = new JScale(myCanvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY, rate, minScale, maxScale);
-		
-		//
-		//Ujra rajzol minden statikus rajzi elemet
-		//
-		JButton reprintButton = new JButton("reprint");
-		reprintButton.addActionListener(new ActionListener(){
+		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				myCanvas.repaint();				
-			}			
-		});	
+			public void getScale(Position scale) {
+				DecimalFormat df = new DecimalFormat("#.00");
+				xScaleField.setText( "xM=" + df.format(scale.getX() ) );
+				yScaleField.setText( "yM=" + df.format(scale.getY() ) );
+			}
+		});
 		
 		//
 		//Kirajzol eloterbe egy fuggvenyt
 		//
-		JButton drawFunctionButton = new JButton("draw Function");
-		drawFunctionButton.addActionListener(new ActionListener(){
+		JButton commandButtonDrawFunction = new JButton("draw Function");
+		commandButtonDrawFunction.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -155,9 +176,31 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 			
 		});
 
+		//-------------------
 		//
 		//Grid ki/be kapcsolo
 		//
+		//-------------------
+		String[] comboTypes = { "Solid", "Cross", "Dot" };
+		gridTypeSelector = new JComboBox<String>(comboTypes);
+		gridTypeSelector.setSelectedIndex(2);
+		gridTypeSelector.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
+				String cmbType = (String) jcmbType.getSelectedItem();
+				
+				if( cmbType.equals( "Solid")){
+					myGrid.setType( JGrid.Type.SOLID );
+				}else if( cmbType.equals( "Cross")){
+					myGrid.setType( JGrid.Type.CROSS );
+				}else if( cmbType.equals( "Dot")){
+					myGrid.setType( JGrid.Type.DOT );
+				}
+				myCanvas.refreshCoreCanvas();
+			}
+		});
+		
 		JCheckBox turnOnGrid = new JCheckBox("Turn On Grid");
 		turnOnGrid.setSelected(true);
 		turnOnGrid.addItemListener(new ItemListener() {
@@ -166,16 +209,49 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					myGrid.turnOff();
+					gridTypeSelector.setEnabled(false);
 				}else{
 					myGrid.turnOn();
+					gridTypeSelector.setEnabled(true);
 				}
 				myCanvas.repaint();
 			}
 		});
 		
+		
+		JPanel gridPanel = new JPanel();
+		gridPanel.setLayout(new GridBagLayout());
+		gridPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Grid", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints gridPanelConstraints = new GridBagConstraints();
+		
+		
+		
+		gridPanelConstraints.gridx = 0;
+		gridPanelConstraints.gridy = 0;
+		gridPanelConstraints.gridwidth = 2;
+		gridPanelConstraints.anchor = GridBagConstraints.WEST;
+		gridPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(turnOnGrid, gridPanelConstraints);
+		
+		gridPanelConstraints.gridx = 0;
+		gridPanelConstraints.gridy = 1;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add(new JLabel("     "),gridPanelConstraints );
+		
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy = 1;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanel.add(gridTypeSelector, gridPanelConstraints);
+		 
+		
+		
+		//--------------------
 		//
 		//Origo ki/be kapcsolo
 		//
+		//--------------------
 		JCheckBox turnOnOrigo = new JCheckBox("Turn On Origo");
 		turnOnOrigo.setSelected(true);
 		turnOnOrigo.addItemListener(new ItemListener() {
@@ -191,9 +267,34 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 			}
 		});
 		
+		JColorChooser origoColor = new JColorChooser();
+		
+		JPanel origoPanel = new JPanel();
+		origoPanel.setLayout(new GridBagLayout());
+		origoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Origo", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints origoPanelConstraints = new GridBagConstraints();
+		origoPanelConstraints.gridx = 0;
+		origoPanelConstraints.gridy = 0;
+		origoPanelConstraints.gridwidth = 2;
+		origoPanelConstraints.anchor = GridBagConstraints.WEST;
+		origoPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		origoPanelConstraints.weightx = 1;
+		origoPanelConstraints.anchor = GridBagConstraints.WEST;
+		origoPanel.add(turnOnOrigo, origoPanelConstraints);
+		
+		origoPanelConstraints.gridx = 0;
+		origoPanelConstraints.gridy = 1;
+		origoPanelConstraints.gridwidth = 1;
+		origoPanelConstraints.weightx = 0;
+		origoPanel.add(new JLabel("     "),origoPanelConstraints );
+		
+		
+		
+		//----
 		//
 		//Axis
 		//
+		//----
 		ActionListener axisSelectorActionListener = new ActionListener() {
 			
 			@Override
@@ -258,23 +359,56 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 			}
 		});
 		
-		JPanel controlPanel = new JPanel();
-		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
+		JPanel axisPanel = new JPanel();
+		axisPanel.setLayout(new GridBagLayout());
+		axisPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Axis", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints axisPanelConstraints = new GridBagConstraints();
 		
-		//Axis elemei
-		controlPanel.add(turnOnAxis);
-		controlPanel.add(lbAxisSelector);
-		controlPanel.add(rbAxisSelector);
-		controlPanel.add(ltAxisSelector);
-		controlPanel.add(rtAxisSelector);
-		controlPanel.add(zzAxisSelector);
+		axisPanelConstraints.gridx = 0;
+		axisPanelConstraints.gridy = 0;
+		axisPanelConstraints.gridwidth = 2;
+		axisPanelConstraints.anchor = GridBagConstraints.WEST;
+		axisPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		axisPanelConstraints.weightx = 1;
+		axisPanelConstraints.anchor = GridBagConstraints.WEST;				
+		axisPanel.add(turnOnAxis, axisPanelConstraints);
 		
-		controlPanel.add(turnOnOrigo);
-		controlPanel.add(turnOnGrid);
+		axisPanelConstraints.gridx = 0;
+		axisPanelConstraints.gridy = 1;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanelConstraints.weightx = 0;
+		axisPanel.add(new JLabel("     "), axisPanelConstraints );
 		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 1;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(lbAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 2;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(rbAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 3;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(ltAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 4;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(rtAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 5;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(zzAxisSelector, axisPanelConstraints );
+		
+		//----------------
 		//
 		// Iranyito gombok
 		//
+		//----------------
 		JButton upButton = new JButton("up");
 		upButton.addActionListener(new ActionListener(){
 			
@@ -310,39 +444,134 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 				myCanvas.moveLeft(1);
 			}
 		});
-				
-		JPanel translationPanel = new JPanel();	
-		translationPanel.setLayout(new GridLayout(3,3));
-		translationPanel.add(new JLabel());
-		translationPanel.add(upButton);
-		translationPanel.add(new JLabel());
-		translationPanel.add(leftButton);
-		translationPanel.add(new JLabel());
-		translationPanel.add(rightButton);
-		translationPanel.add(new JLabel());
-		translationPanel.add(downButton);
-		translationPanel.add(new JLabel());
 		
-		JPanel mainControlPanel = new JPanel();
-		mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.Y_AXIS	));
-		mainControlPanel.add(controlPanel);
-		mainControlPanel.add(translationPanel);
+		JPanel moverPanel = new JPanel();
+		moverPanel.setLayout(new GridBagLayout());
+		moverPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Move", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints moverPanelConstraints = new GridBagConstraints();
 		
-		JPanel drawPanel = new JPanel();
-		drawPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 2, 2));
+		moverPanelConstraints.gridx = 1;
+		moverPanelConstraints.gridy = 0;
+		moverPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		moverPanelConstraints.anchor = GridBagConstraints.WEST;				
+		moverPanel.add(upButton, moverPanelConstraints);
 		
-		drawPanel.add(reprintButton);
-		drawPanel.add(drawFunctionButton);
+		moverPanelConstraints.gridx = 0;
+		moverPanelConstraints.gridy = 1;
+		moverPanelConstraints.anchor = GridBagConstraints.WEST;				
+		moverPanel.add(leftButton, moverPanelConstraints);
 		
+		moverPanelConstraints.gridx = 2;
+		moverPanelConstraints.gridy = 1;
+		moverPanelConstraints.anchor = GridBagConstraints.WEST;				
+		moverPanel.add(rightButton, moverPanelConstraints);
+		
+		moverPanelConstraints.gridx = 1;
+		moverPanelConstraints.gridy = 3;
+		moverPanelConstraints.anchor = GridBagConstraints.WEST;				
+		moverPanel.add(downButton, moverPanelConstraints);
+		
+	
+		
+	
+
+		
+		
+		
+		
+		
+		//-------------------------
+		//
+		// Jobboldali vezerlo panel
+		//
+		//-------------------------
+		JPanel eastPanel = new JPanel();
+		eastPanel.setLayout(new GridBagLayout());
+		GridBagConstraints eastPanelConstraints = new GridBagConstraints();
+		
+		eastPanelConstraints.gridx = 0;
+		eastPanelConstraints.gridy = 0;
+		eastPanelConstraints.anchor = GridBagConstraints.NORTH;
+		eastPanelConstraints.weighty = 0;
+		eastPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		eastPanel.add(gridPanel, eastPanelConstraints);
+		
+		eastPanelConstraints.weighty = 0;
+		eastPanelConstraints.gridy++;
+		eastPanel.add(origoPanel, eastPanelConstraints);
+		
+		eastPanelConstraints.weighty = 0;
+		eastPanelConstraints.gridy++;
+		eastPanel.add(axisPanel, eastPanelConstraints);
+
+		eastPanelConstraints.weighty = 0;
+		eastPanelConstraints.gridy++;
+		eastPanel.add(moverPanel, eastPanelConstraints);
+
+		
+		
+		eastPanelConstraints.weighty = 1;
+		eastPanelConstraints.gridy++;
+		eastPanel.add(new JLabel(), eastPanelConstraints);
+		
+		
+
+		
+		
+		//----------------------------------------------------
+		//
+		// Legalso panel parncsgombokkal es a pozicio jelzovel
+		//
+		//----------------------------------------------------
+		JPanel southPanel = new JPanel();
+		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS	));
+		
+		//Parancsgomb panel
+		JPanel commandButtonPanel = new JPanel();
+		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
+		commandButtonPanel.add(commandButtonDrawFunction);
+		
+		//Kijelzo panel
+		JPanel statusPanel = new JPanel();
+		statusPanel.setLayout( new FlowLayout( FlowLayout.LEFT ));
+		xScaleField = new JTextField("xM=");
+		xScaleField.setColumns(10);
+		xScaleField.setBorder(BorderFactory.createLoweredBevelBorder());
+		xScaleField.setEditable(false);
+		yScaleField = new JTextField("yM=");
+		yScaleField.setColumns(10);
+		yScaleField.setBorder(BorderFactory.createLoweredBevelBorder());
+		yScaleField.setEditable(false);
+		xPositionField = new JTextField("x:");
+		xPositionField.setColumns(8);
+		xPositionField.setBorder(BorderFactory.createLoweredBevelBorder());
+		xPositionField.setEditable(false);
+		yPositionField = new JTextField("y:");
+		yPositionField.setColumns(8);
+		yPositionField.setBorder(BorderFactory.createLoweredBevelBorder());
+		yPositionField.setEditable(false);
+		
+		statusPanel.add(xScaleField);
+		statusPanel.add(yScaleField);
+		statusPanel.add(xPositionField);
+		statusPanel.add(yPositionField);
+		
+		southPanel.add(commandButtonPanel);
+		southPanel.add(statusPanel);
+	
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
-		this.getContentPane().add(new JLabel(), BorderLayout.NORTH);
-		this.getContentPane().add(drawPanel, BorderLayout.SOUTH);
-		this.getContentPane().add(mainControlPanel, BorderLayout.EAST);
-		this.getContentPane().add(new JLabel(), BorderLayout.WEST);
+		this.getContentPane().add(southPanel, BorderLayout.SOUTH);
+		this.getContentPane().add(eastPanel, BorderLayout.EAST);
 
+		//Kezdo ertekek kiirasa
+		DecimalFormat df = new DecimalFormat("#.00");
+		xScaleField.setText("xM=" + df.format( startScaleX ));
+		yScaleField.setText("yM=" + df.format( startScaleY ));
+		
 		this.setVisible(true);
-
+		
 	}
 }
+
 
