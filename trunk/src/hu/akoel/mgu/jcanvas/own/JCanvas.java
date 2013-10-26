@@ -75,16 +75,15 @@ public class JCanvas extends JPanel {
 	 * @param positionToMiddle Az itt megadott ertek legyen a canvas kozepen az indulaskor.
 	 * null eseten a 0,0 pozicio lesz a bal also sarokban
 	 */
-	public JCanvas(Border borderType, Color background, double pixelPerUnit, Position positionToMiddle ) {
+	public JCanvas(Border borderType, Color background, Position pixelPerUnit, Position positionToMiddle ) {
 		
-		if( pixelPerUnit <= 0 ){
+		if( null == pixelPerUnit || pixelPerUnit.getX() <= 0 || pixelPerUnit.getY() <= 0 ){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnit );
 		}
 		
 		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
 		
-		this.commonConstructor(borderType, background, null, null);
-		this.setPixelPerUnit(pixelPerUnit, pixelPerUnit);
+		this.commonConstructor(borderType, background, pixelPerUnit, null, null);
 		
 		this.positionToMiddle = positionToMiddle;
 		
@@ -98,56 +97,15 @@ public class JCanvas extends JPanel {
 		
 	}
 	
-	/**
-	 * 
-	 * Ez egy olyan canvas, melyben megadjuk hogy az egyes tengelyek beosztasa mekkora legyen. Ez azt jelenti, hogy a ket
-	 * tengely akar kulonbozo meretaranyu is lehet	 * 
-	 * Ezen kivul megadhatjuk azt is hogy a Canvas kozepere melyik vilagkoordinata keruljon
-	 * 
-	 * 
-	 * @param borderType
-	 * @param background
-	 * @param pixelPerUnitX
-	 * @param pixelPerUnitY
-	 * @param positionToMiddle
-	 */
-	public JCanvas(Border borderType, Color background, double pixelPerUnitX, double pixelPerUnitY, Position positionToMiddle ) {
+	public JCanvas(Border borderType, Color background, Position pixelPerUnit, Position positionToMiddle, Size boundSize ) {
 		
-		if( pixelPerUnitX <= 0 ){
-			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnitX );
-		}
-		
-		if( pixelPerUnitY <= 0 ){
-			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnitY );
-		}
-		
-		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
-		
-		this.commonConstructor(borderType, background, null, null);
-		this.setPixelPerUnit(pixelPerUnitX, pixelPerUnitY);
-		
-		this.positionToMiddle = positionToMiddle;
-		
-		//Ha nem adtam meg eltolast a koordinatarendszernek
-		if(null == positionToMiddle ){
-			setWasTransferedToMiddle(true);	
-
-		}else{
-			setWasTransferedToMiddle(false);
-		}
-		
-	}
-
-	public JCanvas(Border borderType, Color background, double pixelPerUnit, Position positionToMiddle, Size boundSize ) {
-		
-		if( pixelPerUnit <= 0 ){
+		if( null == pixelPerUnit || pixelPerUnit.getX() <= 0 || pixelPerUnit.getY() <= 0 ){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + pixelPerUnit );
 		}
 		
 		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
 		
-		this.commonConstructor(borderType, background, null, boundSize);
-		this.setPixelPerUnit(pixelPerUnit, pixelPerUnit);
+		this.commonConstructor(borderType, background, pixelPerUnit, null, boundSize);
 		
 		this.positionToMiddle = positionToMiddle;
 		
@@ -177,7 +135,7 @@ public class JCanvas extends JPanel {
 
 		this.setSidePortion( SIDES_PORTION.FIX_PORTION );
 		
-		this.commonConstructor(borderType, background, worldSize, worldSize);
+		this.commonConstructor(borderType, background, null, worldSize, worldSize);
 						
 		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
 		setWasTransferedToMiddle( true );
@@ -185,9 +143,12 @@ public class JCanvas extends JPanel {
 		setWorldTranslate( new Position( -worldSize.xMin, -worldSize.yMin ));
 	}
 	
-	private void commonConstructor(Border borderType, Color background, Size worldSize, Size boundSize ){
+	private void commonConstructor(Border borderType, Color background, Position pixelPerUnit, Size worldSize, Size boundSize ){
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		
+		if( null != pixelPerUnit )
+			this.setPixelPerUnit(pixelPerUnit.getX(), pixelPerUnit.getY());
 		this.setWorldSize( worldSize );
 		this.setBoundSize( boundSize );
 		this.add( getCoreCanvas( this, background ) );

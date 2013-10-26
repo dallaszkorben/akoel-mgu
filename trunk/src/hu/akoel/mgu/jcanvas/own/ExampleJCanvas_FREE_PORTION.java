@@ -22,7 +22,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 	
 	private Color background = Color.GREEN;
 	private Position positionToMiddle = new Position( 0, 0);
-	private double pixelPerUnit = 10;
+	private Position pixelPerUnit = new Position( 10, 10 );
 	
 	public static void main(String[] args) {
 		
