@@ -22,7 +22,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 	
 	private Color background = Color.GREEN;
 	private Position positionToMiddle = new Position( 0, 0);
-	private Position pixelPerUnit = new Position( 10, 10 );
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position( 1.2, 1.2));
+
 	
 	public static void main(String[] args) {
 		
@@ -37,7 +38,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), background, pixelPerUnit, positionToMiddle );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), background, possiblePixelPerUnits, positionToMiddle );
 
 		//Eloszorre kirajzolja az origot
 		myCanvas.addPainterListenerToDeepest(new PainterListener(){
