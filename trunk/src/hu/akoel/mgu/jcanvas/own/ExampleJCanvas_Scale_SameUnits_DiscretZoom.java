@@ -13,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -24,16 +25,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-public class ExampleJCanvas_Grid extends JFrame {
+public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
 	private JCanvas myCanvas;
 	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
-	private Size boundSize = new Size(0.0, 0.0, 40.0, 40);	
+	private Size boundSize = new Size(0.0, 0.0, 400.0, 400);	
 	private Color background = Color.black;
 	private Position positionToMiddle = null;//new Position( 10, 10);
-	private Position pixelPerUnit = new Position(1,1);
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1));
+	//private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position(1.2, 1.2), new Position(1,1), new Position(15,15));
 
 	private JGrid myGrid;	
 	private Color gridColor = Color.green;
@@ -56,13 +58,11 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
 	private JScale myScale;
-	private double pixelPerCmX = 42.1;
-	private JScale.UNIT unitX = JScale.UNIT.km;
-	private double startScaleX = 100000;
-	private double pixelPerCmY = 42.1;
-	private JScale.UNIT unitY = JScale.UNIT.m;
-	private double startScaleY = 100;
-	
+	private double pixelPerCm = 42.1;
+	private JScale.UNIT unit = JScale.UNIT.m;
+//	private double startScale = 100;
+//	private Position rate = new Position(1.2, 1.2);
+	private ArrayList<Position> possibleScaleList = new ArrayList<Position>();
 	
 	private JRadioButton lbAxisSelector;
 	private JRadioButton rbAxisSelector;
@@ -71,10 +71,10 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private JRadioButton zzAxisSelector;
 	
 	public static void main(String[] args) {		
-		new ExampleJCanvas_Grid();
+		new ExampleJCanvas_Scale_SameUnits_DiscretZoom();
 	}
 
-	public ExampleJCanvas_Grid() {
+	public ExampleJCanvas_Scale_SameUnits_DiscretZoom() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
@@ -83,7 +83,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 		this.createBufferStrategy(1);
 
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
-		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, pixelPerUnit, positionToMiddle, boundSize);
+		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, boundSize);
 
 		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
@@ -91,7 +91,19 @@ public class ExampleJCanvas_Grid extends JFrame {
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
-		myScale = new JScale(myCanvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY);
+		possibleScaleList.add( new Position( 2, 2 ));
+		possibleScaleList.add( new Position( 5, 5 ));
+		possibleScaleList.add( new Position( 8, 8 ));
+		possibleScaleList.add( new Position( 10, 10 ));
+		possibleScaleList.add( new Position( 20, 20 ));
+		possibleScaleList.add( new Position( 40, 40 ));
+		possibleScaleList.add( new Position( 50, 50 ));
+		possibleScaleList.add( new Position( 100, 100 ));
+		possibleScaleList.add( new Position( 200, 200 ));
+		possibleScaleList.add( new Position( 500, 500 ));
+		possibleScaleList.add( new Position( 1000, 1000 ));
+			
+		myScale = new JScale(myCanvas, pixelPerCm, unit, possibleScaleList, 7);
 		
 		//
 		//Ujra rajzol minden statikus rajzi elemet

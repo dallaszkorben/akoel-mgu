@@ -125,8 +125,8 @@ public class JGrid {
 		         
 			}else{
 				if(type.equals( Type.CROSS ) ){
-					crossXLength = crossLengthInPixel / canvas.getPixelPerUnitX();
-					crossYLength = crossLengthInPixel / canvas.getPixelPerUnitX();
+					crossXLength = crossLengthInPixel / canvas.getPixelPerUnit().getX();
+					crossYLength = crossLengthInPixel / canvas.getPixelPerUnit().getY();
 				}else{
 					crossXLength = 0;
 					crossYLength = 0;
