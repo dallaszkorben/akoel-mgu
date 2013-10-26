@@ -21,8 +21,7 @@ public class ExampleJCanvas_DifferentScale_FREE_PORTION extends JFrame {
 	
 	private Color background = Color.GREEN;
 	private Position positionToMiddle = new Position( 0, 0);
-	private double pixelPerUnitX = 10;
-	private double pixelPerUnitY = 5;
+	private Position pixelPerUnit = new Position( 10, 5 );
 	
 	public static void main(String[] args) {
 		
@@ -37,7 +36,7 @@ public class ExampleJCanvas_DifferentScale_FREE_PORTION extends JFrame {
 		this.setSize(500, 300);
 		this.createBufferStrategy(1);
 
-		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), background, pixelPerUnitX, pixelPerUnitY, positionToMiddle );
+		final JCanvas myCanvas = new JCanvas(BorderFactory.createLineBorder(Color.red, 1), background, pixelPerUnit, positionToMiddle );
 
 		//Eloszorre kirajzolja az origot
 		myCanvas.addPainterListenerToDeepest(new PainterListener(){

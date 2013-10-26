@@ -33,7 +33,7 @@ public class ExampleJCanvas_Grid extends JFrame {
 	private Size boundSize = new Size(0.0, 0.0, 40.0, 40);	
 	private Color background = Color.black;
 	private Position positionToMiddle = null;//new Position( 10, 10);
-	private double pixelPerUnit = 1;
+	private Position pixelPerUnit = new Position(1,1);
 
 	private JGrid myGrid;	
 	private Color gridColor = Color.green;
