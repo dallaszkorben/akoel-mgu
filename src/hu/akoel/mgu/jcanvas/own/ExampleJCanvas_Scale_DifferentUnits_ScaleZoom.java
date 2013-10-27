@@ -22,16 +22,20 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 
@@ -53,12 +57,12 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
-	private JOrigo myOrigo;
-	private Position origoPosition = new Position( 5, 5 );
-	private Color origoColor = Color.red;
-	private int origoWidthInPixel = 5;
-	private double origoLength = 1;
-	private JOrigo.PainterPosition origoPainterPosition = JOrigo.PainterPosition.DEEPEST;
+	private JCrossLine myCrossLine;
+	private Position crossLinePosition = new Position( 5, 5 );
+	private Color crossLineColor = Color.red;
+	private int crossLineWidthInPixel = 5;
+	private Position crossLineLength = new Position( 1, 1 );
+	private JCrossLine.PainterPosition crossLinePainterPosition = JCrossLine.PainterPosition.DEEPEST;
 	
 	private JAxis myAxis;
 	private Color axisColor = Color.yellow;
@@ -88,7 +92,17 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	private JTextField xPositionField;
 	private JTextField yPositionField;
 	
-	private JComboBox<String> gridTypeSelector;
+	private JComboBox<String> gridTypeCombo;
+	private JComboBox<String> gridWidthCombo;
+	private JComboBox<String> crossLineWidthCombo;
+	
+	private JTextField crossLineXPosField;
+	private JTextField crossLineYPosField;
+	private JTextField crossLineXLengthField;
+	private JTextField crossLineYLengthField;
+	
+	private JTextField gridXDeltaField;
+	private JTextField gridYDeltaField;
 	
 	public static void main(String[] args) {		
 		new ExampleJCanvas_Scale_DifferentUnits_ScaleZoom();
@@ -99,7 +113,7 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Proba");
 		this.setUndecorated(false);
-		this.setSize(500, 500);
+		this.setSize(700, 700);
 		this.createBufferStrategy(1);
 
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
@@ -117,7 +131,7 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		
 		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myOrigo = new JOrigo( myCanvas, origoPosition, origoColor, origoWidthInPixel, origoLength, origoPainterPosition);
+		myCrossLine = new JCrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
@@ -181,10 +195,74 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		//Grid ki/be kapcsolo
 		//
 		//-------------------
-		String[] comboTypes = { "Solid", "Cross", "Dot" };
-		gridTypeSelector = new JComboBox<String>(comboTypes);
-		gridTypeSelector.setSelectedIndex(2);
-		gridTypeSelector.addActionListener(new ActionListener() {
+		gridXDeltaField = new JTextField();
+		gridXDeltaField.setColumns( 8 );
+		gridXDeltaField.setText( String.valueOf( myGrid.getDeltaGridX() ) );
+		gridXDeltaField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( myGrid.getDeltaGridX() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            myGrid.setDeltaGridX( Double.valueOf(goodValue));
+	            myCanvas.refreshCoreCanvas();
+	            return true;
+			}
+		});
+		
+		gridYDeltaField = new JTextField();
+		gridYDeltaField.setColumns( 8 );
+		gridYDeltaField.setText( String.valueOf( myGrid.getDeltaGridY() ) );
+		gridYDeltaField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( myGrid.getDeltaGridY() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            myGrid.setDeltaGridY( Double.valueOf(goodValue));
+	            myCanvas.refreshCoreCanvas();
+	            return true;
+			}
+		});
+		
+		String[] gridWidthElements = { "1", "3" };
+		gridWidthCombo = new JComboBox<String>(gridWidthElements);
+		gridWidthCombo.setSelectedIndex(0);
+		gridWidthCombo.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
+				String cmbType = (String) jcmbType.getSelectedItem();
+				
+				if( cmbType.equals( "1")){					
+					myGrid.setWidthInPixel(1);
+				}else if( cmbType.equals( "3")){
+					myGrid.setWidthInPixel(3);
+				}
+				myCanvas.refreshCoreCanvas();
+			}
+		});		
+		
+		String[] gridTypeElements = { "Solid", "Cross", "Dot" };
+		gridTypeCombo = new JComboBox<String>(gridTypeElements);
+		gridTypeCombo.setSelectedIndex(2);
+		gridTypeCombo.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
@@ -209,10 +287,12 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					myGrid.turnOff();
-					gridTypeSelector.setEnabled(false);
+					gridTypeCombo.setEnabled(false);
+					gridWidthCombo.setEnabled(false);
 				}else{
 					myGrid.turnOn();
-					gridTypeSelector.setEnabled(true);
+					gridTypeCombo.setEnabled(true);
+					gridWidthCombo.setEnabled(true);
 				}
 				myCanvas.repaint();
 			}
@@ -224,70 +304,332 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		gridPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Grid", TitledBorder.LEFT, TitledBorder.TOP));
 		GridBagConstraints gridPanelConstraints = new GridBagConstraints();
 		
-		
-		
+		//1. sor - Turn on grid
 		gridPanelConstraints.gridx = 0;
 		gridPanelConstraints.gridy = 0;
-		gridPanelConstraints.gridwidth = 2;
+		gridPanelConstraints.gridwidth = 4;
 		gridPanelConstraints.anchor = GridBagConstraints.WEST;
 		gridPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
 		gridPanelConstraints.weightx = 1;
 		gridPanel.add(turnOnGrid, gridPanelConstraints);
 		
+		//2. sor - Type
 		gridPanelConstraints.gridx = 0;
-		gridPanelConstraints.gridy = 1;
+		gridPanelConstraints.gridy++;
 		gridPanelConstraints.gridwidth = 1;
 		gridPanelConstraints.weightx = 0;
 		gridPanel.add(new JLabel("     "),gridPanelConstraints );
-		
+
 		gridPanelConstraints.gridx = 1;
-		gridPanelConstraints.gridy = 1;
 		gridPanelConstraints.gridwidth = 1;
-		gridPanel.add(gridTypeSelector, gridPanelConstraints);
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Type: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridTypeCombo, gridPanelConstraints);
 		 
+		//3. sor - Width
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Width: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridWidthCombo, gridPanelConstraints);
 		
+		gridPanelConstraints.gridx = 3;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add(new JLabel(" px"),gridPanelConstraints );
+		
+		//4. sor - Grid delta x
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Delta X: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridXDeltaField, gridPanelConstraints);
+				
+		gridPanelConstraints.gridx = 3;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel(" " + myScale.getUnitX().getSign() ), gridPanelConstraints );	
+		
+		//5. sor - Grid delta y
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Delta Y: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridYDeltaField, gridPanelConstraints);
+				
+		gridPanelConstraints.gridx = 3;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel(" " + myScale.getUnitY().getSign() ), gridPanelConstraints );	
 		
 		//--------------------
 		//
 		//Origo ki/be kapcsolo
 		//
-		//--------------------
-		JCheckBox turnOnOrigo = new JCheckBox("Turn On Origo");
-		turnOnOrigo.setSelected(true);
-		turnOnOrigo.addItemListener(new ItemListener() {
+		//--------------------		
+		crossLineXPosField = new JTextField();
+		crossLineXPosField.setColumns( 8 );
+		crossLineXPosField.setText( String.valueOf(myCrossLine.getPositionX() ) );
+		crossLineXPosField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( myCrossLine.getPositionX() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            myCrossLine.setPositionX( Double.valueOf(goodValue));
+	            myCanvas.refreshCoreCanvas();
+	            return true;
+			}
+		});
+	
+		crossLineYPosField = new JTextField();
+		crossLineYPosField.setColumns( 8 );
+		crossLineYPosField.setText( String.valueOf(myCrossLine.getPositionY() ) );
+		crossLineYPosField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( myCrossLine.getPositionY() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            myCrossLine.setPositionY( Double.valueOf(goodValue));
+	            myCanvas.refreshCoreCanvas();
+	            return true;
+			}
+		});
+		
+		crossLineXLengthField = new JTextField();
+		crossLineXLengthField.setColumns( 8 );
+		crossLineXLengthField.setText( String.valueOf( myCrossLine.getLengthX() ) );
+		crossLineXLengthField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( myCrossLine.getLengthX() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            myCrossLine.setLengthX( Double.valueOf( goodValue ) );
+	            myCanvas.refreshCoreCanvas();
+	            return true;
+			}
+		});
+	
+		crossLineYLengthField = new JTextField();
+		crossLineYLengthField.setColumns( 8 );
+		crossLineYLengthField.setText( String.valueOf(myCrossLine.getLengthY()) );
+		crossLineYLengthField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( myCrossLine.getLengthY() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            myCrossLine.setLengthY( Double.valueOf( goodValue ) );
+	            myCanvas.refreshCoreCanvas();
+	            return true;
+			}
+		});
+		
+
+		String[] crossLineWidthElements = { "1", "3", "5" };
+		crossLineWidthCombo = new JComboBox<String>(crossLineWidthElements);
+		crossLineWidthCombo.setSelectedIndex(2);
+		crossLineWidthCombo.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
+				String cmbType = (String) jcmbType.getSelectedItem();
+				
+				if( cmbType.equals( "1")){					
+					myCrossLine.setWidthInPixel(1);
+				}else if( cmbType.equals( "3")){
+					myCrossLine.setWidthInPixel(3);
+				}else if( cmbType.equals( "5")){
+					myCrossLine.setWidthInPixel(5);
+				}
+				myCanvas.refreshCoreCanvas();
+			}
+		});		
+		
+		JCheckBox turnOnCrossLine = new JCheckBox("Turn On Crossline");
+		turnOnCrossLine.setSelected(true);
+		turnOnCrossLine.addItemListener(new ItemListener() {
 			
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
-					myOrigo.turnOff();
+					myCrossLine.turnOff();
+					crossLineWidthCombo.setEnabled(false);
+					crossLineXPosField.setEnabled(false);
+					crossLineYPosField.setEnabled(false);
+					crossLineXLengthField.setEnabled(false);
+					crossLineYLengthField.setEnabled(false);
 				}else{
-					myOrigo.turnOn();
+					myCrossLine.turnOn();
+					crossLineWidthCombo.setEnabled(true);
+					crossLineXPosField.setEnabled(true);
+					crossLineYPosField.setEnabled(true);
+					crossLineXLengthField.setEnabled(true);
+					crossLineYLengthField.setEnabled(true);
 				}
 				myCanvas.repaint();
 			}
 		});
 		
-		JColorChooser origoColor = new JColorChooser();
+		JColorChooser crossLineColor = new JColorChooser();
 		
-		JPanel origoPanel = new JPanel();
-		origoPanel.setLayout(new GridBagLayout());
-		origoPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Origo", TitledBorder.LEFT, TitledBorder.TOP));
-		GridBagConstraints origoPanelConstraints = new GridBagConstraints();
-		origoPanelConstraints.gridx = 0;
-		origoPanelConstraints.gridy = 0;
-		origoPanelConstraints.gridwidth = 2;
-		origoPanelConstraints.anchor = GridBagConstraints.WEST;
-		origoPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
-		origoPanelConstraints.weightx = 1;
-		origoPanelConstraints.anchor = GridBagConstraints.WEST;
-		origoPanel.add(turnOnOrigo, origoPanelConstraints);
+		JPanel crossLinePanel = new JPanel();
+		crossLinePanel.setLayout(new GridBagLayout());
+		crossLinePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Cross line", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints crossLinePanelConstraints = new GridBagConstraints();
 		
-		origoPanelConstraints.gridx = 0;
-		origoPanelConstraints.gridy = 1;
-		origoPanelConstraints.gridwidth = 1;
-		origoPanelConstraints.weightx = 0;
-		origoPanel.add(new JLabel("     "),origoPanelConstraints );
+		//1. sor - Turn on CrossLine
+		crossLinePanelConstraints.gridx = 0;
+		crossLinePanelConstraints.gridy = 0;
+		crossLinePanelConstraints.gridwidth = 4;
+		crossLinePanelConstraints.anchor = GridBagConstraints.WEST;
+		crossLinePanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanelConstraints.anchor = GridBagConstraints.WEST;
+		crossLinePanel.add(turnOnCrossLine, crossLinePanelConstraints);
 		
+		//2. sor - Position X
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Position X: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineXPosField, crossLinePanelConstraints);	
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + myScale.getUnitX().getSign() ), crossLinePanelConstraints );
+
+		//3. sor - Position Y
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Position Y: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineYPosField, crossLinePanelConstraints);	
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + myScale.getUnitY().getSign() ), crossLinePanelConstraints);
+		
+		//4. sor - Width
+		crossLinePanelConstraints.gridx = 0;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add(new JLabel("     "),crossLinePanelConstraints );
+		
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Width: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineWidthCombo, crossLinePanelConstraints);
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" px"), crossLinePanelConstraints);
+		
+		//5. sor - Length X
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Length X: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineXLengthField, crossLinePanelConstraints);
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + myScale.getUnitX().getSign() ), crossLinePanelConstraints);
+		
+		//6. sor - Length Y
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Length Y: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineYLengthField, crossLinePanelConstraints);
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + myScale.getUnitY().getSign() ), crossLinePanelConstraints);
 		
 		
 		//----
@@ -498,7 +840,7 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		
 		eastPanelConstraints.weighty = 0;
 		eastPanelConstraints.gridy++;
-		eastPanel.add(origoPanel, eastPanelConstraints);
+		eastPanel.add(crossLinePanel, eastPanelConstraints);
 		
 		eastPanelConstraints.weighty = 0;
 		eastPanelConstraints.gridy++;
