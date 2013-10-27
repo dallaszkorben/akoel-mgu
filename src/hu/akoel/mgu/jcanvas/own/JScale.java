@@ -1,6 +1,5 @@
 package hu.akoel.mgu.jcanvas.own;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class JScale {
@@ -121,7 +120,12 @@ public class JScale {
 	}
 	
 	private void commonConstructorForDiscrateScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double pixelPerCmY, UNIT unitY, ArrayList<Position> possibleScaleList, int pointerForPossibleScaleList ){
-
+		this.canvas = canvas;
+		this.pixelPerCmX = pixelPerCmX;
+		this.unitX = unitX;
+		this.pixelPerCmY = pixelPerCmY;
+		this.unitY = unitY;
+		
 		ArrayList<Position> possiblePPUList = new ArrayList<Position>();
 		
 		for( Position scale: possibleScaleList ){
@@ -182,7 +186,13 @@ public class JScale {
 			}
 			
 		}
-	}	
+	}
+	
+	public Position getScale(){
+		double scaleX = getScaleByPixelPerUnit(pixelPerCmX, unitX, canvas.getPixelPerUnit().getX());
+		double scaleY = getScaleByPixelPerUnit(pixelPerCmY, unitY, canvas.getPixelPerUnit().getY());
+		return new Position( scaleX, scaleY );
+	}
 }
 
 	
