@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 
 
-public class JOrigo {
+public class JCrossLine {
 	
 	public static enum PainterPosition{
 		DEEPEST,
@@ -16,14 +16,14 @@ public class JOrigo {
 	}
 	
 	private JCanvas canvas;
-	Position position;
+	private Position position;
 	private Color color;
 	private int widthInPixel;
-	private double length;
+	private Position length;
 	private PainterPosition painterPosition;
 	private PainterListener painterListener;
 
-	public JOrigo( JCanvas canvas, Position position, Color color, int widthInPixel, double length, PainterPosition painterPosition ){
+	public JCrossLine( JCanvas canvas, Position position, Color color, int widthInPixel, Position length, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.position = position;
 		this.color = color;
@@ -31,7 +31,7 @@ public class JOrigo {
 		this.widthInPixel = widthInPixel;
 		this.painterPosition = painterPosition;
 		
-		painterListener = new OrigoPainterListener( );
+		painterListener = new CrossLinePainterListener( );
 		
 		if( painterPosition.equals(PainterPosition.DEEPEST ) ){
 			canvas.addPainterListenerToDeepest(painterListener, Level.ABOVE);
@@ -66,23 +66,51 @@ public class JOrigo {
 		this.color = color;
 	}
 	
-	public void setLength( double length ){
-		this.length = length;
+	public double getPositionX(){
+		return position.getX();
 	}
 	
+	public double getPositionY(){
+		return position.getY();
+	}
+	
+	public void setPositionX( double positionX ){
+		this.position.setX( positionX );
+	}
+	
+	public void setPositionY( double positionY ){
+		this.position.setY( positionY );
+	}
+	
+	public double getLengthX(){
+		return length.getX();
+	}
+	
+	public double getLengthY(){
+		return length.getY();
+	}
+	
+	public void setLengthX( double lengthX ){
+		this.length.setX( lengthX );
+	}
+
+	public void setLengthY( double lengthY ){
+		this.length.setY( lengthY );
+	}
+
 	public void setWidthInPixel( int widthInPixel ){
 		this.widthInPixel = widthInPixel;
 	}
 	
-	class OrigoPainterListener implements PainterListener{
+	class CrossLinePainterListener implements PainterListener{
 
 		@Override
 		public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
 			g2.setColor( color );
 			g2.setStroke(new BasicStroke(widthInPixel));
 			
-			g2.drawLine( (position.getX() - length/2.0), position.getY(), (position.getX() + length/2.0), position.getY() );
-			g2.drawLine( position.getX(), (position.getY() - length/2.0), position.getX(), (position.getY() + length/2.0) );
+			g2.drawLine( (position.getX() - length.getX()/2.0), position.getY(), (position.getX() + length.getX()/2.0), position.getY() );
+			g2.drawLine( position.getX(), (position.getY() - length.getY()/2.0), position.getX(), (position.getY() + length.getY()/2.0) );
 		}
 
 		@Override

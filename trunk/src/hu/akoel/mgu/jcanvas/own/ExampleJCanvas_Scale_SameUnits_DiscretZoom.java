@@ -44,12 +44,12 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
-	private JOrigo myOrigo;
+	private JCrossLine myOrigo;
 	private Position origoPosition = new Position( 5, 5 );
 	private Color origoColor = Color.red;
 	private int origoWidthInPixel = 5;
 	private double origoLength = 1;
-	private JOrigo.PainterPosition origoPainterPosition = JOrigo.PainterPosition.DEEPEST;
+	private JCrossLine.PainterPosition origoPainterPosition = JCrossLine.PainterPosition.DEEPEST;
 	
 	private JAxis myAxis;
 	private Color axisColor = Color.yellow;
@@ -87,7 +87,7 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 
 		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myOrigo = new JOrigo( myCanvas, origoPosition, origoColor, origoWidthInPixel, origoLength, origoPainterPosition);
+		myOrigo = new JCrossLine( myCanvas, origoPosition, origoColor, origoWidthInPixel, origoLength, origoPainterPosition);
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		

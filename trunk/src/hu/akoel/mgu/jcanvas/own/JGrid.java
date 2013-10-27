@@ -73,8 +73,25 @@ public class JGrid {
 		this.crossLengthInPixel = crossLengthInPixel;
 	}
 	
-	public void setDeltaGrid( Position deltaGrid ){
+/*	public void setDeltaGrid( Position deltaGrid ){
 		this.deltaGrid = deltaGrid;
+	}
+*/
+	
+	public double getDeltaGridX(){
+		return this.deltaGrid.getX();
+	}
+
+	public double getDeltaGridY(){
+		return this.deltaGrid.getY();
+	}
+
+	public void setDeltaGridX( double deltaGridX ){
+		this.deltaGrid.setX( deltaGridX );
+	}
+	
+	public void setDeltaGridY( double deltaGridY ){
+		this.deltaGrid.setY( deltaGridY );
 	}
 	
 	public void setWidthInPixel( int widthInPixel ){

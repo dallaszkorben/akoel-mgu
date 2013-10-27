@@ -148,6 +148,14 @@ public class JScale {
 		return (pixelPerCm * unit.getExchange() / UNIT.cm.getExchange() / ppu	);
 	}
 		
+	public UNIT getUnitX(){
+		return unitX;
+	}
+	
+	public UNIT getUnitY(){
+		return unitY;
+	}
+	
 	class ScalePixelPerUnitChangeListener implements PixelPerUnitChangeListener{
 		public double pixelPerCmX;
 		public UNIT unitX;
