@@ -1,29 +1,21 @@
 package hu.akoel.mgu.jcanvas.own;
 
 
-import hu.akoel.mgu.jcanvas.own.JAxis.AxisPosition;
-
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 
 public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 
@@ -43,13 +35,13 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	private Position gridDelta = new Position(1.0, 1.0);
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
-	
-	private JCrossLine myOrigo;
-	private Position origoPosition = new Position( 5, 5 );
-	private Color origoColor = Color.red;
-	private int origoWidthInPixel = 5;
-	private double origoLength = 1;
-	private JCrossLine.PainterPosition origoPainterPosition = JCrossLine.PainterPosition.DEEPEST;
+
+	private JCrossLine myCrossLine;
+	private Position crossLinePosition = new Position( 5, 5 );
+	private Color crossLineColor = Color.red;
+	private int crossLineWidthInPixel = 5;
+	private Position crossLineLength = new Position( 1, 1 );
+	private JCrossLine.PainterPosition crossLinePainterPosition = JCrossLine.PainterPosition.DEEPEST;
 	
 	private JAxis myAxis;
 	private Color axisColor = Color.yellow;
@@ -64,11 +56,7 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 //	private Position rate = new Position(1.2, 1.2);
 	private ArrayList<Position> possibleScaleList = new ArrayList<Position>();
 	
-	private JRadioButton lbAxisSelector;
-	private JRadioButton rbAxisSelector;
-	private JRadioButton ltAxisSelector;
-	private JRadioButton rtAxisSelector;
-	private JRadioButton zzAxisSelector;
+	private CanvasControl canvasControl;
 	
 	public static void main(String[] args) {		
 		new ExampleJCanvas_Scale_SameUnits_DiscretZoom();
@@ -77,17 +65,26 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	public ExampleJCanvas_Scale_SameUnits_DiscretZoom() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("Proba");
+		this.setTitle("Example :: JCanvas with JGrid, JCrossLine, JAxis, Scale :: Bounds :: Discrate zoom values");
 		this.setUndecorated(false);
-		this.setSize(500, 300);
+		this.setSize(700, 700);
 		this.createBufferStrategy(1);
 
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
 		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, boundSize);
-
+		myCanvas.addPositionChangeListener(new PositionChangeListener() {
+			
+			@Override
+			public void getWorldPosition(double xPosition, double yPosition) {
+				DecimalFormat df = new DecimalFormat("#.0000");				
+				canvasControl.setStatusPanelXPosition( "x: " + df.format(xPosition));
+				canvasControl.setStatusPanelYPosition( "y: " + df.format(yPosition));				
+			}
+		});
+		
 		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myOrigo = new JCrossLine( myCanvas, origoPosition, origoColor, origoWidthInPixel, origoLength, origoPainterPosition);
+		myCrossLine = new JCrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
@@ -103,7 +100,18 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		possibleScaleList.add( new Position( 500, 500 ));
 		possibleScaleList.add( new Position( 1000, 1000 ));
 			
-		myScale = new JScale(myCanvas, pixelPerCm, unit, possibleScaleList, 7);
+		myScale = new JScale( myCanvas, pixelPerCm, unit, possibleScaleList, 7 );
+		myScale.addScaleChangeListener(new ScaleChangeListener() {
+			
+			@Override
+			public void getScale(Position scale) {
+				DecimalFormat df = new DecimalFormat("#.00");
+				canvasControl.setStatusPanelXScale( "xM=" + df.format(scale.getX() ) );
+				canvasControl.setStatusPanelYScale( "yM=" + df.format(scale.getY() ) );
+			}
+		});
+		
+		canvasControl = new CanvasControl( myCanvas, myCrossLine, myGrid, myAxis, myScale );
 		
 		//
 		//Ujra rajzol minden statikus rajzi elemet
@@ -120,8 +128,8 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		//
 		//Kirajzol eloterbe egy fuggvenyt
 		//
-		JButton drawFunctionButton = new JButton("draw Function");
-		drawFunctionButton.addActionListener(new ActionListener(){
+		JButton commandButtonDrawFunction = new JButton("draw Function");
+		commandButtonDrawFunction.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -161,193 +169,29 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 			
 		});
 
-		//
-		//Grid ki/be kapcsolo
-		//
-		JCheckBox turnOnGrid = new JCheckBox("Turn On Grid");
-		turnOnGrid.setSelected(true);
-		turnOnGrid.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if( e.getStateChange() == ItemEvent.DESELECTED){
-					myGrid.turnOff();
-				}else{
-					myGrid.turnOn();
-				}
-				myCanvas.repaint();
-			}
-		});
+
+		//Parancsgomb panel
+		JPanel commandButtonPanel = new JPanel();
+		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
+		commandButtonPanel.add(commandButtonDrawFunction);
 		
-		//
-		//Origo ki/be kapcsolo
-		//
-		JCheckBox turnOnOrigo = new JCheckBox("Turn On Origo");
-		turnOnOrigo.setSelected(true);
-		turnOnOrigo.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if( e.getStateChange() == ItemEvent.DESELECTED){
-					myOrigo.turnOff();
-				}else{
-					myOrigo.turnOn();
-				}
-				myCanvas.repaint();
-			}
-		});
+		JPanel southPanel = new JPanel();
+		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS	));
 		
-		//
-		//Axis
-		//
-		ActionListener axisSelectorActionListener = new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if( e.getSource() == lbAxisSelector){
-					myAxis.setAxisPosition( AxisPosition.AT_LEFT_BOTTOM );				
-				}else if( e.getSource() == rbAxisSelector){
-					myAxis.setAxisPosition( AxisPosition.AT_RIGHT_BOTTOM );
-				}else if( e.getSource() == ltAxisSelector){
-					myAxis.setAxisPosition( AxisPosition.AT_LEFT_TOP );
-				}else if( e.getSource() == rtAxisSelector){
-					myAxis.setAxisPosition( AxisPosition.AT_RIGHT_TOP );
-				}else if( e.getSource() == zzAxisSelector){
-					myAxis.setAxisPosition( AxisPosition.AT_ZERO_ZERO );
-				}
-				myAxis.refresh();
-			}
-		};
-		
-		ButtonGroup bg = new ButtonGroup();
-		lbAxisSelector = new JRadioButton( "LEFT BOTTOM", true);
-		bg.add(lbAxisSelector);
-		lbAxisSelector.addActionListener(axisSelectorActionListener);
-		rbAxisSelector = new JRadioButton( "RIGHT BOTTOM");
-		bg.add(rbAxisSelector);
-		rbAxisSelector.addActionListener(axisSelectorActionListener);
-		ltAxisSelector = new JRadioButton( "LEFT TOP");
-		bg.add(ltAxisSelector);
-		ltAxisSelector.addActionListener(axisSelectorActionListener);
-		rtAxisSelector = new JRadioButton( "RIGHT TOP");
-		bg.add(rtAxisSelector);
-		rtAxisSelector.addActionListener(axisSelectorActionListener);
-		zzAxisSelector = new JRadioButton( "ZERO ZERO");
-		bg.add(zzAxisSelector);
-		zzAxisSelector.addActionListener(axisSelectorActionListener);
-		
-		//
-		//Axis ki/be kapcsolo
-		//
-		JCheckBox turnOnAxis = new JCheckBox("Turn On Axis");
-		turnOnAxis.setSelected(true);
-		turnOnAxis.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				if( e.getStateChange() == ItemEvent.DESELECTED){
-					myAxis.turnOff();
-					lbAxisSelector.setEnabled(false);
-					rbAxisSelector.setEnabled(false);
-					ltAxisSelector.setEnabled(false);
-					rtAxisSelector.setEnabled(false);
-					zzAxisSelector.setEnabled(false);					
-				}else{
-					myAxis.turnOn();
-					lbAxisSelector.setEnabled(true);
-					rbAxisSelector.setEnabled(true);
-					ltAxisSelector.setEnabled(true);
-					rtAxisSelector.setEnabled(true);
-					zzAxisSelector.setEnabled(true);
-				}
-				myCanvas.repaint();
-			}
-		});
-		
-		JPanel controlPanel = new JPanel();
-		controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
-		
-		//Axis elemei
-		controlPanel.add(turnOnAxis);
-		controlPanel.add(lbAxisSelector);
-		controlPanel.add(rbAxisSelector);
-		controlPanel.add(ltAxisSelector);
-		controlPanel.add(rtAxisSelector);
-		controlPanel.add(zzAxisSelector);
-		
-		controlPanel.add(turnOnOrigo);
-		controlPanel.add(turnOnGrid);
-		
-		//
-		// Iranyito gombok
-		//
-		JButton upButton = new JButton("up");
-		upButton.addActionListener(new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0 ){			
-				myCanvas.moveUp(1);
-			}
-		});
-		
-		JButton downButton = new JButton("down");
-		downButton.addActionListener(new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0 ){
-				myCanvas.moveDown(1);
-			}
-		});
-		
-		JButton rightButton = new JButton("right");
-		rightButton.addActionListener(new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0 ){
-				myCanvas.moveRight(1);
-			}
-		});
-		
-		JButton leftButton = new JButton("left");
-		leftButton.addActionListener(new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0 ){
-				myCanvas.moveLeft(1);
-			}
-		});
-				
-		JPanel translationPanel = new JPanel();	
-		translationPanel.setLayout(new GridLayout(3,3));
-		translationPanel.add(new JLabel());
-		translationPanel.add(upButton);
-		translationPanel.add(new JLabel());
-		translationPanel.add(leftButton);
-		translationPanel.add(new JLabel());
-		translationPanel.add(rightButton);
-		translationPanel.add(new JLabel());
-		translationPanel.add(downButton);
-		translationPanel.add(new JLabel());
-		
-		JPanel mainControlPanel = new JPanel();
-		mainControlPanel.setLayout(new BoxLayout(mainControlPanel, BoxLayout.Y_AXIS	));
-		mainControlPanel.add(controlPanel);
-		mainControlPanel.add(translationPanel);
-		
-		JPanel drawPanel = new JPanel();
-		drawPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 2, 2));
-		
-		drawPanel.add(reprintButton);
-		drawPanel.add(drawFunctionButton);
-		
+		southPanel.add(commandButtonPanel);
+		southPanel.add( canvasControl.getStatusPanel() );
+	
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
-		this.getContentPane().add(new JLabel(), BorderLayout.NORTH);
-		this.getContentPane().add(drawPanel, BorderLayout.SOUTH);
-		this.getContentPane().add(mainControlPanel, BorderLayout.EAST);
-		this.getContentPane().add(new JLabel(), BorderLayout.WEST);
+		this.getContentPane().add(southPanel, BorderLayout.SOUTH);
+		this.getContentPane().add(canvasControl.getControlPanel(), BorderLayout.EAST);
 
-		this.setVisible(true);
+		//Kezdo ertekek kiirasa
+		DecimalFormat df = new DecimalFormat("#.00");
+		canvasControl.setStatusPanelXScale( "xM=" + df.format( myScale.getScale().getX() ));
+		canvasControl.setStatusPanelYScale( "yM=" + df.format( myScale.getScale().getY() ));
+		
+		this.setVisible(true);		
 
 	}
 }
