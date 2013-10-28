@@ -48,7 +48,7 @@ public class JCanvas extends JPanel {
 	private TranslateValue worldTranslate = new TranslateValue( 0.0, 0.0 );
 	private TranslateValue positionToMiddle = null;
 	private boolean wasTransferedToMiddle = false;
-	private PossiblePixelPerUnits possiblePixelPerUnits;
+	private PossiblePixelPerUnits possiblePixelPerUnits = null;
 	
 	private ArrayList<PixelPerUnitChangeListener> pixelPerUnitChangeListenerList = new ArrayList<PixelPerUnitChangeListener>();
 	private ArrayList<PositionChangeListener> positionChangeListenerList = new ArrayList<PositionChangeListener>();
@@ -215,8 +215,12 @@ public class JCanvas extends JPanel {
 		return possiblePixelPerUnits.getActualPixelPerUnit().getY();
 	}
 */	
-	public Value2D getPixelPerUnit(){
-		return possiblePixelPerUnits.getActualPixelPerUnit();
+	public PixelPerUnitValue getPixelPerUnit(){
+		if( getSidePortion().equals(sidePortion.FREE_PORTION)){
+			return possiblePixelPerUnits.getActualPixelPerUnit();
+		}else{
+			return new PixelPerUnitValue( getViewableSize().width/worldSize.getWidth(), getViewableSize().height/worldSize.getHeight() );
+		}
 	}
 
 	/**

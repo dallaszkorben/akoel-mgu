@@ -76,7 +76,7 @@ public class JScale {
 		this.maxScale = maxScale;
 		
 		double startPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), startScale.getX());
-		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getX());
+		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getY());
 
 		//Ha adtam meg nagyitasi hatarokat
 		if( null != minScale && null != maxScale ){
@@ -174,8 +174,7 @@ public class JScale {
 			
 			for( ScaleChangeListener listener : scaleChangeListenerList){
 				listener.getScale( new ScaleValue( scaleX, scaleY ) );
-			}
-			
+			}			
 		}
 	}
 	

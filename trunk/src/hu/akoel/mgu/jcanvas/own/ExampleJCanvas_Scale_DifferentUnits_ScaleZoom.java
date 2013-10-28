@@ -24,23 +24,23 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
 	private Size boundSize = new Size(0.0, 0.0, 40.0, 40);	
 	private Color background = Color.black;
-	private Value2D positionToMiddle = null;//new Position( 10, 10);
-	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Value2D(1,1));
+	private TranslateValue positionToMiddle = null;//new TranslateValue( 10, 10);
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(1,1));
 	//private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position(1.2, 1.2), new Position(1,1), new Position(15,15));
 	//private Position pixelPerUnit = new Position(1,1);
 
 	private JGrid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
-	private Value2D gridDelta = new Value2D(1.0, 1.0);
+	private DeltaValue gridDelta = new DeltaValue(1.0, 1.0);
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 	
 	private JCrossLine myCrossLine;
-	private Value2D crossLinePosition = new Value2D( 5, 5 );
+	private PositionValue crossLinePosition = new PositionValue( 5, 5 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 5;
-	private Value2D crossLineLength = new Value2D( 1, 1 );
+	private LengthValue crossLineLength = new LengthValue( 1, 1 );
 	private JCrossLine.PainterPosition crossLinePainterPosition = JCrossLine.PainterPosition.DEEPEST;
 	
 	private JAxis myAxis;
@@ -50,15 +50,12 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
 		
 	private JScale myScale;
-	private double pixelPerCmX = 42.1;
-	private JScale.UNIT unitX = JScale.UNIT.km;
-	private double startScaleX = 100000;
-	private double pixelPerCmY = 42.1;
-	private JScale.UNIT unitY = JScale.UNIT.m;
-	private double startScaleY = 100;
-	private Value2D rate = new Value2D(1.2, 1.2);
-	private Value2D minScale = new Value2D( 2000, 2);
-	private Value2D maxScale = new Value2D( 600000, 600);
+	private PixelPerCmValue pixelPerCm = new PixelPerCmValue(42.1, 42.1);
+	private UnitValue unit = new UnitValue(JScale.UNIT.km, JScale.UNIT.m ); 
+	private ScaleValue startScale = new ScaleValue( 100000, 100 );
+	private RateValue rate = new RateValue(1.2, 1.2);
+	private ScaleValue minScale = new ScaleValue( 2000, 2);
+	private ScaleValue maxScale = new ScaleValue( 600000, 600);
 	
 	private CanvasControl canvasControl;
 	
@@ -93,14 +90,24 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
-		myScale = new JScale(myCanvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY, rate, minScale, maxScale);
+		myScale = new JScale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
 			public void getScale(Value2D scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
-				canvasControl.setStatusPanelXScale( "xM=" + df.format(scale.getX() ) );
-				canvasControl.setStatusPanelYScale( "yM=" + df.format(scale.getY() ) );
+				
+				if( scale.getX() < 1.0 ){
+					canvasControl.setStatusPanelXScale( "xM=" + df.format(1/scale.getX() ) + ":1" );
+				}else{
+					canvasControl.setStatusPanelXScale( "xM=1:" + df.format(scale.getX() ) );
+				}
+
+				if( scale.getY() < 1.0 ){
+					canvasControl.setStatusPanelYScale( "yM=" + df.format(1/scale.getY() ) + ":1" );
+				}else{				
+					canvasControl.setStatusPanelYScale( "yM=1:" + df.format(scale.getY() ) );
+				}
 			}
 		});
 		
@@ -123,17 +130,17 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
-						Value2D previous = null;
+						PositionValue previous = null;
 						double increment = canvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
 						for( double x=start; x<=stop; x+=increment ){
 							double y = 0.01*(x*x*x) - 0.07*(x*x) + 0.1*(x) - 0;
 							if( null == previous ){
-								previous = new Value2D(x, y);
+								previous = new PositionValue(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
-							previous = new Value2D(x, y);
+							previous = new PositionValue(x, y);
 						}
 						
 						g2.setColor(Color.blue);
@@ -168,8 +175,17 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 
 		//Kezdo ertekek kiirasa
 		DecimalFormat df = new DecimalFormat("#.00");
-		canvasControl.setStatusPanelXScale( "xM=" + df.format( myScale.getScale().getX() ));
-		canvasControl.setStatusPanelYScale( "yM=" + df.format( myScale.getScale().getY() ));
+		if( myScale.getScale().getX() < 1.0 ){
+			canvasControl.setStatusPanelXScale( "xM=" + df.format(1/myScale.getScale().getX() ) + ":1" );
+		}else{
+			canvasControl.setStatusPanelXScale( "xM=1:" + df.format(myScale.getScale().getX() ) );
+		}
+
+		if( myScale.getScale().getY() < 1.0 ){
+			canvasControl.setStatusPanelYScale( "yM=" + df.format(1/myScale.getScale().getY() ) + ":1" );
+		}else{				
+			canvasControl.setStatusPanelYScale( "yM=1:" + df.format(myScale.getScale().getY() ) );
+		}
 		
 		this.setVisible(true);
 		

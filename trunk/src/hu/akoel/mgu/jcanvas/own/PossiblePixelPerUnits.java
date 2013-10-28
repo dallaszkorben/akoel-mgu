@@ -3,9 +3,9 @@ package hu.akoel.mgu.jcanvas.own;
 import java.util.ArrayList;
 
 public class PossiblePixelPerUnits {
-	private Value2D actualPixelPerUnit;
-	private Value2D maxPixelPerUnit;
-	private Value2D minPixelPerUnit;
+	private PixelPerUnitValue actualPixelPerUnit;
+	private PixelPerUnitValue maxPixelPerUnit;
+	private PixelPerUnitValue minPixelPerUnit;
 	private RateValue actualRate;
 		
 	private ArrayList<PixelPerUnitValue> inPPU = new ArrayList<PixelPerUnitValue>();
@@ -70,7 +70,7 @@ public class PossiblePixelPerUnits {
 		this.actualRate = rate;
 	}
 	
-	public Value2D getActualPixelPerUnit(){
+	public PixelPerUnitValue getActualPixelPerUnit(){
 		return actualPixelPerUnit;
 	}
 	
@@ -94,7 +94,7 @@ public class PossiblePixelPerUnits {
 			//Van meg lehetoseg nagyitani a lista alapjan
 			if( pointerForPossiblePPUs > 0 ){
 				pointerForPossiblePPUs--;
-				Value2D newPPU = possiblePPUList.get(pointerForPossiblePPUs);
+				PixelPerUnitValue newPPU = possiblePPUList.get(pointerForPossiblePPUs);
 				actualRate = new RateValue( newPPU.getX()/actualPixelPerUnit.getX(), newPPU.getY()/actualPixelPerUnit.getY() );
 				actualPixelPerUnit = newPPU;
 			}else{
@@ -158,7 +158,7 @@ public class PossiblePixelPerUnits {
 			//Van meg lehetoseg kicsinyiteni a lista alapjan
 			if( pointerForPossiblePPUs < possiblePPUList.size() - 1 ){
 				pointerForPossiblePPUs++;
-				Value2D newPPU = possiblePPUList.get(pointerForPossiblePPUs);
+				PixelPerUnitValue newPPU = possiblePPUList.get(pointerForPossiblePPUs);
 				actualRate = new RateValue( actualPixelPerUnit.getX()/newPPU.getX(), actualPixelPerUnit.getY()/newPPU.getY() );
 				actualPixelPerUnit = newPPU;
 			}else{

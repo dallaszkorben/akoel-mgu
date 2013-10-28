@@ -98,7 +98,6 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 							g2.drawLine(worldSize.getXMax() - 5, worldSize.getYMax(), worldSize.getXMax(), worldSize.getYMax());
 							g2.drawLine(worldSize.getXMax(), worldSize.getYMax() - 5, worldSize.getXMax(), worldSize.getYMax());
 							
-//System.err.println("ppu:" + canvas.getPixelPerUnit() + " Width:" + (canvas.getViewableSize().width) + " Value:" + worldSize.getXMax() + " Position: " + canvas.getPixelXPositionByWorld(worldSize.getXMax()));
 						}
 						
 					}
@@ -128,19 +127,18 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
-						Value2D previous = null;
+						PositionValue previous = null;
 						double increment = canvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
-//System.out.println(" increment: " + increment + " width: " + canvas.getViewableSize().width + " ppu:" + canvas.getPixelPerUnit() + " stop: " + stop);						
+
 						for( double x=start; x<=stop; x+=increment ){
 							double y = (0.5*x)*(0.5*x);
 							if( null == previous ){
-								previous = new Value2D(x, y);
+								previous = new PositionValue(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
-							previous = new Value2D(x, y);
-//System.err.println(previous);							
+							previous = new PositionValue(x, y);						
 						}
 						
 						g2.setColor(Color.blue);
