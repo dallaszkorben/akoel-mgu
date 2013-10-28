@@ -28,115 +28,110 @@ public class JScale {
 	}
 	
 	private JCanvas canvas;
-	private double pixelPerCmX;
-	private UNIT unitX;
-	private double startScaleX;
-	
-	private double pixelPerCmY;
-	private UNIT unitY;
-	private  double startScaleY;
-	
-	private Position rate;
-	private Position minScale;
-	private Position maxScale;
+	private PixelPerCmValue pixelPerCm;
+	private UnitValue unit;
+	private ScaleValue startScale;
+	private RateValue rate;
+	private ScaleValue minScale;
+	private ScaleValue maxScale;
 	
 	private ArrayList<ScaleChangeListener> scaleChangeListenerList = new ArrayList<ScaleChangeListener>();
 	
 	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale){
-		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, pixelPerCm, unit, startScale, null, null, null );
+		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), null, null, null );
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale, Position rate ){
-		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, pixelPerCm, unit, startScale, rate, null, null );		
+	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate ){
+		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new RateValue(rate, rate), null, null );
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale, Position rate, Position minScale, Position maxScale ){
-		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, pixelPerCm, unit, startScale, rate, minScale, maxScale );		
-	}
-
-	public JScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY ){
-		commonConstructorForFreeScale(canvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY, null, null, null);
+	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate, double minScale, double maxScale ){
+		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new RateValue(rate, rate), new ScaleValue(minScale, minScale), new ScaleValue(maxScale, maxScale) );
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY, Position rate){
-		commonConstructorForFreeScale(canvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY, rate, null, null);
+	
+	
+	
+	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale){
+		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, null, null, null );
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY, Position rate, Position minScale, Position maxScale){
-		commonConstructorForFreeScale(canvas, pixelPerCmX, unitX, startScaleX, pixelPerCmY, unitY, startScaleY, rate, minScale, maxScale);
+	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate ){
+		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, rate, null, null );		
 	}
 	
-	private void commonConstructorForFreeScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY, Position rate, Position minScale, Position maxScale ){
+	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
+		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, rate, minScale, maxScale );		
+	}
+	
+	private void commonConstructorForFreeScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){ 
+//JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
 		this.canvas = canvas;
-		this.pixelPerCmX = pixelPerCmX;
-		this.unitX = unitX;
-		this.startScaleX = startScaleX;
-		
-		this.pixelPerCmY = pixelPerCmY;
-		this.unitY = unitY;
-		this.startScaleY = startScaleY;
-		
+		this.pixelPerCm = pixelPerCm;
+		this.unit = unit;
+		this.startScale = startScale;
+	
 		this.rate = rate;
 		this.minScale = minScale;
 		this.maxScale = maxScale;
 		
-		double startPPUX = getPixelPerUnitByScale(pixelPerCmX, unitX, startScaleX);
-		double startPPUY = getPixelPerUnitByScale(pixelPerCmY, unitY, startScaleY);
+		double startPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), startScale.getX());
+		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getX());
 
 		//Ha adtam meg nagyitasi hatarokat
 		if( null != minScale && null != maxScale ){
 		
-			double minPPUX = getPixelPerUnitByScale(pixelPerCmX, unitX, maxScale.getX());
-			double minPPUY = getPixelPerUnitByScale(pixelPerCmY, unitY, maxScale.getY());
+			double minPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), maxScale.getX());
+			double minPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), maxScale.getY());
 			
-			double maxPPUX = getPixelPerUnitByScale(pixelPerCmX, unitX, minScale.getX());
-			double maxPPUY = getPixelPerUnitByScale(pixelPerCmY, unitY, minScale.getY());
+			double maxPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), minScale.getX());
+			double maxPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), minScale.getY());
 
 			canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( 
-				new Position(startPPUX, startPPUY), 
+				new PixelPerUnitValue(startPPUX, startPPUY), 
 				rate, 
-				new Position(minPPUX, minPPUY), 
-				new Position(maxPPUX, maxPPUY)
+				new PixelPerUnitValue(minPPUX, minPPUY), 
+				new PixelPerUnitValue(maxPPUX, maxPPUY)
 			));
 		
 		//Ha nem voltak nagyitasi hatarok
 		}else{
 			canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( 
-					new Position(startPPUX, startPPUY), 
+					new PixelPerUnitValue(startPPUX, startPPUY), 
 					rate					
 				));
 		}
 
-		canvas.addPixelPerUnitChangeListener( new ScalePixelPerUnitChangeListener( pixelPerCmX, unitX, pixelPerCmY, unitY ));
+		canvas.addPixelPerUnitChangeListener( new ScalePixelPerUnitChangeListener( pixelPerCm, unit ));
 
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, ArrayList<Position> possibleScaleList, int pointerForPossibleScaleList){
-		commonConstructorForDiscrateScale(canvas, pixelPerCm, unit, pixelPerCm, unit, possibleScaleList, pointerForPossibleScaleList);
+	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList){
+		commonConstructorForDiscrateScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue( unit, unit ), possibleScaleList, pointerForPossibleScaleList);
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double pixelPerCmY, UNIT unitY, ArrayList<Position> possibleScaleList, int pointerForPossibleScaleList){
-		commonConstructorForDiscrateScale(canvas, pixelPerCmX, unitX, pixelPerCmY, unitY, possibleScaleList, pointerForPossibleScaleList);
+	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList){
+		commonConstructorForDiscrateScale(canvas, pixelPerCm, unit, possibleScaleList, pointerForPossibleScaleList);
 	}
 	
-	private void commonConstructorForDiscrateScale( JCanvas canvas, double pixelPerCmX, UNIT unitX, double pixelPerCmY, UNIT unitY, ArrayList<Position> possibleScaleList, int pointerForPossibleScaleList ){
+	private void commonConstructorForDiscrateScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList ){
 		this.canvas = canvas;
-		this.pixelPerCmX = pixelPerCmX;
-		this.unitX = unitX;
-		this.pixelPerCmY = pixelPerCmY;
-		this.unitY = unitY;
+		this.pixelPerCm = pixelPerCm;
+		this.unit = unit;
 		
-		ArrayList<Position> possiblePPUList = new ArrayList<Position>();
+		ArrayList<PixelPerUnitValue> possiblePPUList = new ArrayList<PixelPerUnitValue>();
 		
-		for( Position scale: possibleScaleList ){
+		for( Value2D scale: possibleScaleList ){
 			possiblePPUList.add(
-					new Position(getPixelPerUnitByScale(pixelPerCmX, unitX, scale.getX()), getPixelPerUnitByScale(pixelPerCmY, unitY, scale.getY()))				
+					new PixelPerUnitValue(
+							getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), scale.getX()), getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), scale.getY() )
+					)				
 			);
 		}
 		
 		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits(possiblePPUList, pointerForPossibleScaleList));
 	
-		canvas.addPixelPerUnitChangeListener( new ScalePixelPerUnitChangeListener( pixelPerCmX, unitX, pixelPerCmY, unitY ));
+		canvas.addPixelPerUnitChangeListener( new ScalePixelPerUnitChangeListener( pixelPerCm, unit ));
 
 	}
 	
@@ -153,45 +148,41 @@ public class JScale {
 	}
 		
 	public UNIT getUnitX(){
-		return unitX;
+		return unit.getUnitX();
 	}
 	
 	public UNIT getUnitY(){
-		return unitY;
+		return unit.getUnitY();
 	}
 	
 	class ScalePixelPerUnitChangeListener implements PixelPerUnitChangeListener{
-		public double pixelPerCmX;
-		public UNIT unitX;
+		public PixelPerUnitValue pixelPerCm;
+		public UnitValue unit;
 		
-		public double pixelPerCmY;
-		public UNIT unitY;
-		
-		public ScalePixelPerUnitChangeListener( double pixelPerCmX, UNIT unitX, double pixelPerCmY, UNIT unitY){
-			this.pixelPerCmX = pixelPerCmX;
-			this.unitX = unitX;
+		public ScalePixelPerUnitChangeListener( PixelPerCmValue pixelPerCm, UnitValue unit){
+			this.pixelPerCm = new PixelPerUnitValue( pixelPerCm.getX(), pixelPerCm.getY() );
 			
-			this.pixelPerCmY = pixelPerCmY;
-			this.unitY = unitY;
+			this.unit = new UnitValue( unit.getUnitX(), unit.getUnitY() );
+			
 		}
 		
 		@Override
-		public void getPixelPerUnit( Position pixelPerUnit ) {
+		public void getPixelPerUnit( Value2D pixelPerUnit ) {
 			
-			double scaleX = getScaleByPixelPerUnit(pixelPerCmX, unitX, pixelPerUnit.getX());
-			double scaleY = getScaleByPixelPerUnit(pixelPerCmY, unitY, pixelPerUnit.getY());
+			double scaleX = getScaleByPixelPerUnit(pixelPerCm.getX(), unit.getUnitX(), pixelPerUnit.getX());
+			double scaleY = getScaleByPixelPerUnit(pixelPerCm.getY(), unit.getUnitY(), pixelPerUnit.getY());
 			
 			for( ScaleChangeListener listener : scaleChangeListenerList){
-				listener.getScale( new Position( scaleX, scaleY ) );
+				listener.getScale( new ScaleValue( scaleX, scaleY ) );
 			}
 			
 		}
 	}
 	
-	public Position getScale(){
-		double scaleX = getScaleByPixelPerUnit(pixelPerCmX, unitX, canvas.getPixelPerUnit().getX());
-		double scaleY = getScaleByPixelPerUnit(pixelPerCmY, unitY, canvas.getPixelPerUnit().getY());
-		return new Position( scaleX, scaleY );
+	public ScaleValue getScale(){
+		double scaleX = getScaleByPixelPerUnit(pixelPerCm.getX(), unit.getUnitX(), canvas.getPixelPerUnit().getX());
+		double scaleY = getScaleByPixelPerUnit(pixelPerCm.getY(), unit.getUnitY(), canvas.getPixelPerUnit().getY());
+		return new ScaleValue( scaleX, scaleY );
 	}
 }
 

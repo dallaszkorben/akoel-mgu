@@ -21,8 +21,8 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 
 	
 	private Color background = Color.GREEN;
-	private Position positionToMiddle = new Position( 0, 0);
-	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position( 1.2, 1.2));
+	private Value2D positionToMiddle = new Value2D( 0, 0);
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Value2D(1,1), new Value2D( 1.2, 1.2));
 
 	
 	public static void main(String[] args) {
@@ -147,17 +147,17 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
-						Position previous = null;
+						Value2D previous = null;
 						double increment = myCanvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getWidth()	);
 						for( double x=start; x<=stop; x+=increment ){
 							double y = 0.3*x * x;
 							if( null == previous ){
-								previous = new Position(x, y);
+								previous = new Value2D(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
-							previous = new Position(x, y);
+							previous = new Value2D(x, y);
 						}
 						
 						g2.setColor(Color.blue);

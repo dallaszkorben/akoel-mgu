@@ -26,11 +26,11 @@ public class JGrid {
 	private Color color;
 	private int widthInPixel;
 	private PainterPosition painterPosition;
-	private Position deltaGrid;
+	private Value2D deltaGrid;
 	int crossLengthInPixel = 3;
 	PainterListener painterListener;
 
-	public JGrid( JCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Position deltaGrid ){
+	public JGrid( JCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value2D deltaGrid ){
 		this.canvas = canvas;
 		this.type = type;
 		this.color = color;

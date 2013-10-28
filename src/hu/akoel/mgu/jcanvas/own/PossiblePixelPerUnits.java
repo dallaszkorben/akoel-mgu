@@ -3,22 +3,22 @@ package hu.akoel.mgu.jcanvas.own;
 import java.util.ArrayList;
 
 public class PossiblePixelPerUnits {
-	private Position actualPixelPerUnit;
-	private Position maxPixelPerUnit;
-	private Position minPixelPerUnit;
-	private Position actualRate;
+	private Value2D actualPixelPerUnit;
+	private Value2D maxPixelPerUnit;
+	private Value2D minPixelPerUnit;
+	private RateValue actualRate;
 		
-	private ArrayList<Position> inPPU = new ArrayList<Position>();
-	private ArrayList<Position> outPPU = new ArrayList<Position>();
+	private ArrayList<PixelPerUnitValue> inPPU = new ArrayList<PixelPerUnitValue>();
+	private ArrayList<PixelPerUnitValue> outPPU = new ArrayList<PixelPerUnitValue>();
 	
-	private ArrayList<Position> possiblePPUList = new ArrayList<Position>();
+	private ArrayList<PixelPerUnitValue> possiblePPUList = new ArrayList<PixelPerUnitValue>();
 	private int pointerForPossiblePPUs = -1;
 	
-	public PossiblePixelPerUnits( ArrayList<Position> possiblePPUs, int pointerForPossiblePPUs ){
+	public PossiblePixelPerUnits( ArrayList<PixelPerUnitValue> possiblePPUs, int pointerForPossiblePPUs ){
 		this.possiblePPUList = possiblePPUs;
 		this.pointerForPossiblePPUs = pointerForPossiblePPUs;
 		this.actualPixelPerUnit = possiblePPUs.get(pointerForPossiblePPUs);
-		this.actualRate = new Position(1,1);
+		this.actualRate = new RateValue(1,1);
 	}
 	
 	/**
@@ -33,7 +33,7 @@ public class PossiblePixelPerUnits {
 	 * @param maxPixelPerUnit
 	 * @param rate
 	 */
-	public PossiblePixelPerUnits( Position actualPixelPerUnit, Position rate, Position minPixelPerUnit, Position maxPixelPerUnit ){
+	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit, RateValue rate, PixelPerUnitValue minPixelPerUnit, PixelPerUnitValue maxPixelPerUnit ){
 		commonConstructor( actualPixelPerUnit, rate, minPixelPerUnit, maxPixelPerUnit);
 	}
 	
@@ -45,7 +45,7 @@ public class PossiblePixelPerUnits {
 	 * @param actualPixelPerUnit
 	 * @param rate
 	 */
-	public PossiblePixelPerUnits( Position actualPixelPerUnit, Position rate ){
+	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit, RateValue rate ){
 		commonConstructor( actualPixelPerUnit, rate, null, null );
 
 	}
@@ -59,22 +59,22 @@ public class PossiblePixelPerUnits {
 	 * @param minPixelPerUnit
 	 * @param maxPixelPerUnit
 	 */
-	public PossiblePixelPerUnits( Position actualPixelPerUnit){
+	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit){
 		commonConstructor( actualPixelPerUnit, null, null, null );		
 	}
 	
-	private void commonConstructor( Position actualPixelPerUnit, Position rate, Position minPixelPerUnit, Position maxPixelPerUnit){
+	private void commonConstructor( PixelPerUnitValue actualPixelPerUnit, RateValue rate, PixelPerUnitValue minPixelPerUnit, PixelPerUnitValue maxPixelPerUnit){
 		this.actualPixelPerUnit = actualPixelPerUnit;
 		this.maxPixelPerUnit = maxPixelPerUnit;
 		this.minPixelPerUnit = minPixelPerUnit;	
 		this.actualRate = rate;
 	}
 	
-	public Position getActualPixelPerUnit(){
+	public Value2D getActualPixelPerUnit(){
 		return actualPixelPerUnit;
 	}
 	
-	public Position getActualRate(){
+	public Value2D getActualRate(){
 		return actualRate;
 	}
 	
@@ -94,8 +94,8 @@ public class PossiblePixelPerUnits {
 			//Van meg lehetoseg nagyitani a lista alapjan
 			if( pointerForPossiblePPUs > 0 ){
 				pointerForPossiblePPUs--;
-				Position newPPU = possiblePPUList.get(pointerForPossiblePPUs);
-				actualRate = new Position( newPPU.getX()/actualPixelPerUnit.getX(), newPPU.getY()/actualPixelPerUnit.getY() );
+				Value2D newPPU = possiblePPUList.get(pointerForPossiblePPUs);
+				actualRate = new RateValue( newPPU.getX()/actualPixelPerUnit.getX(), newPPU.getY()/actualPixelPerUnit.getY() );
 				actualPixelPerUnit = newPPU;
 			}else{
 				return false;
@@ -111,7 +111,7 @@ public class PossiblePixelPerUnits {
 		}else if( outPPU.isEmpty() ){
 			
 			possibleX = actualPixelPerUnit.getX() * actualRate.getX();
-			possibleY = actualPixelPerUnit.getY() * actualRate.getX();
+			possibleY = actualPixelPerUnit.getY() * actualRate.getY();
 			
 			//Csak ha lehetseges a kert nagyitas, nem korlatozza a maximalis ertek
 			if( 					
@@ -121,7 +121,7 @@ public class PossiblePixelPerUnits {
 			){
 			
 				//Elmentem az aktualis erteket
-				inPPU.add( new Position(actualPixelPerUnit.getX(), actualPixelPerUnit.getY() ) );
+				inPPU.add( new PixelPerUnitValue(actualPixelPerUnit.getX(), actualPixelPerUnit.getY() ) );
 			
 				//Az aktualis ertek lesz a nagyitasi ertek
 				actualPixelPerUnit.setX( possibleX );
@@ -158,8 +158,8 @@ public class PossiblePixelPerUnits {
 			//Van meg lehetoseg kicsinyiteni a lista alapjan
 			if( pointerForPossiblePPUs < possiblePPUList.size() - 1 ){
 				pointerForPossiblePPUs++;
-				Position newPPU = possiblePPUList.get(pointerForPossiblePPUs);
-				actualRate = new Position( actualPixelPerUnit.getX()/newPPU.getX(), actualPixelPerUnit.getY()/newPPU.getY() );
+				Value2D newPPU = possiblePPUList.get(pointerForPossiblePPUs);
+				actualRate = new RateValue( actualPixelPerUnit.getX()/newPPU.getX(), actualPixelPerUnit.getY()/newPPU.getY() );
 				actualPixelPerUnit = newPPU;
 			}else{
 				return false;
@@ -175,7 +175,7 @@ public class PossiblePixelPerUnits {
 		} else if( inPPU.isEmpty() ){
 
 			possibleX = actualPixelPerUnit.getX() / actualRate.getX();
-			possibleY = actualPixelPerUnit.getY() / actualRate.getX();
+			possibleY = actualPixelPerUnit.getY() / actualRate.getY();
 			
 			//Csak ha lehetseges a kert kicsinyites, nem korlatozza a minimalis ertek
 			if( 
@@ -185,7 +185,7 @@ public class PossiblePixelPerUnits {
 			){
 
 				//Es jelzem, hogy van befele mozgas
-				outPPU.add( new Position(actualPixelPerUnit.getX(), actualPixelPerUnit.getY() ) );
+				outPPU.add( new PixelPerUnitValue(actualPixelPerUnit.getX(), actualPixelPerUnit.getY() ) );
 			
 				//Tehat akkor batran ranagyithatok
 				actualPixelPerUnit.setX( possibleX );

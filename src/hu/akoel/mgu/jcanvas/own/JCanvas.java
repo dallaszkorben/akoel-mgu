@@ -45,8 +45,8 @@ public class JCanvas extends JPanel {
 	private Size boundSize;
 	//private double pixelPerUnitX, pixelPerUnitY;
 //	private Position pixelPerUnit = new Position(0,0);
-	private Position worldTranslate = new Position( 0.0, 0.0 );
-	private Position positionToMiddle = null;
+	private TranslateValue worldTranslate = new TranslateValue( 0.0, 0.0 );
+	private TranslateValue positionToMiddle = null;
 	private boolean wasTransferedToMiddle = false;
 	private PossiblePixelPerUnits possiblePixelPerUnits;
 	
@@ -76,7 +76,7 @@ public class JCanvas extends JPanel {
 	 * @param positionToMiddle Az itt megadott ertek legyen a canvas kozepen az indulaskor.
 	 * null eseten a 0,0 pozicio lesz a bal also sarokban
 	 */
-	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, Position positionToMiddle ) {
+	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
 		
 		if( null == possiblePixelPerUnits){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
@@ -97,7 +97,7 @@ public class JCanvas extends JPanel {
 		}		
 	}
 	
-	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, Position positionToMiddle, Size boundSize ) {
+	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, Size boundSize ) {
 		
 		if( null == possiblePixelPerUnits ){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
@@ -140,7 +140,7 @@ public class JCanvas extends JPanel {
 		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
 		setWasTransferedToMiddle( true );
 		
-		setWorldTranslate( new Position( -worldSize.xMin, -worldSize.yMin ));
+		setWorldTranslate( new TranslateValue( -worldSize.xMin, -worldSize.yMin ));
 	}
 	
 	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, Size worldSize, Size boundSize ){
@@ -178,11 +178,11 @@ public class JCanvas extends JPanel {
 		this.sidePortion = sidePortion;
 	}
 	
-	public Position getWorldTranslate(){
+	public Value2D getWorldTranslate(){
 		return worldTranslate;
 	}
 	
-	public void setWorldTranslate(Position worldTranslate){
+	public void setWorldTranslate(TranslateValue worldTranslate){
 		this.worldTranslate = worldTranslate;
 	}
 	
@@ -215,7 +215,7 @@ public class JCanvas extends JPanel {
 		return possiblePixelPerUnits.getActualPixelPerUnit().getY();
 	}
 */	
-	public Position getPixelPerUnit(){
+	public Value2D getPixelPerUnit(){
 		return possiblePixelPerUnits.getActualPixelPerUnit();
 	}
 
@@ -236,7 +236,7 @@ public class JCanvas extends JPanel {
 		return this.positionToMiddle.getY();
 	}
 	
-	public void setPositionToMiddle( Position positionToMiddle ){
+	public void setPositionToMiddle( TranslateValue positionToMiddle ){
 		this.positionToMiddle = positionToMiddle;
 	}
 	
@@ -804,7 +804,7 @@ public class JCanvas extends JPanel {
 			 //Ertesiti a pixelPerUnit valtozasfigyelot
 			 firePixelPerUnitChangeListener();
 			 
-			 Position rate = possiblePixelPerUnits.getActualRate();		 
+			 Value2D rate = possiblePixelPerUnits.getActualRate();		 
 		 
 			 double possibleXTranslate = getWorldTranslateX() - getWorldXLengthByPixel(xPoint) * (rate.getX()-1);
 			 double possibleYTranslate = getWorldTranslateY() - getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate.getY()-1);
@@ -823,7 +823,7 @@ public class JCanvas extends JPanel {
 		 
 		 if( possiblePixelPerUnits.doNextZoomOut() ){
 		 
-			 Position rate = possiblePixelPerUnits.getActualRate();		 
+			 Value2D rate = possiblePixelPerUnits.getActualRate();		 
 		 
 			 double originalXTranslate = getWorldTranslateX();
 			 double possibleXTranslate = originalXTranslate + getWorldXLengthByPixel(xPoint) * (rate.getX()-1)/rate.getX();
@@ -966,7 +966,7 @@ public class JCanvas extends JPanel {
 
 			if( !getWasTransferedToMiddle() ){
 				setWasTransferedToMiddle( true );
-				setWorldTranslate( new Position( 
+				setWorldTranslate( new TranslateValue( 
 						( getWorldXLengthByPixel( (int)(getViewerWidth()/2) ) - getPositionToMiddleX() ), 
 						( getWorldYLengthByPixel( (int)(getViewerHeight()/2) ) - getPositionToMiddleY() )  
 						) );

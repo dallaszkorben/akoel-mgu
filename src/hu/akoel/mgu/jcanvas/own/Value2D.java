@@ -1,11 +1,11 @@
 package hu.akoel.mgu.jcanvas.own;
 
-public class Position {
+public abstract class Value2D {
 
 	private double x;
 	private double y;
 	
-	public Position( double x, double y ){
+	public Value2D( double x, double y ){
 		this.x = x;
 		this.y = y;
 	}

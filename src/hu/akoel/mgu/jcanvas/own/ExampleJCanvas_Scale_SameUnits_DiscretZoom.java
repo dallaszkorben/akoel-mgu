@@ -25,22 +25,22 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
 	private Size boundSize = new Size(0.0, 0.0, 400.0, 400);	
 	private Color background = Color.black;
-	private Position positionToMiddle = null;//new Position( 10, 10);
-	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1));
+	private TranslateValue positionToMiddle = null;//new Position( 10, 10);
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(1,1));
 	//private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position(1.2, 1.2), new Position(1,1), new Position(15,15));
 
 	private JGrid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
-	private Position gridDelta = new Position(1.0, 1.0);
+	private DeltaValue gridDelta = new DeltaValue(1.0, 1.0);
 	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
 	private JGrid.Type gridType = JGrid.Type.DOT;
 
 	private JCrossLine myCrossLine;
-	private Position crossLinePosition = new Position( 5, 5 );
+	private PositionValue crossLinePosition = new PositionValue( 5, 5 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 5;
-	private Position crossLineLength = new Position( 1, 1 );
+	private Value2D crossLineLength = new LengthValue( 1, 1 );
 	private JCrossLine.PainterPosition crossLinePainterPosition = JCrossLine.PainterPosition.DEEPEST;
 	
 	private JAxis myAxis;
@@ -54,7 +54,7 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	private JScale.UNIT unit = JScale.UNIT.m;
 //	private double startScale = 100;
 //	private Position rate = new Position(1.2, 1.2);
-	private ArrayList<Position> possibleScaleList = new ArrayList<Position>();
+	private ArrayList<ScaleValue> possibleScaleList = new ArrayList<ScaleValue>();
 	
 	private CanvasControl canvasControl;
 	
@@ -88,23 +88,23 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	
 		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
-		possibleScaleList.add( new Position( 2, 2 ));
-		possibleScaleList.add( new Position( 5, 5 ));
-		possibleScaleList.add( new Position( 8, 8 ));
-		possibleScaleList.add( new Position( 10, 10 ));
-		possibleScaleList.add( new Position( 20, 20 ));
-		possibleScaleList.add( new Position( 40, 40 ));
-		possibleScaleList.add( new Position( 50, 50 ));
-		possibleScaleList.add( new Position( 100, 100 ));
-		possibleScaleList.add( new Position( 200, 200 ));
-		possibleScaleList.add( new Position( 500, 500 ));
-		possibleScaleList.add( new Position( 1000, 1000 ));
+		possibleScaleList.add( new ScaleValue( 2, 2 ));
+		possibleScaleList.add( new ScaleValue( 5, 5 ));
+		possibleScaleList.add( new ScaleValue( 8, 8 ));
+		possibleScaleList.add( new ScaleValue( 10, 10 ));
+		possibleScaleList.add( new ScaleValue( 20, 20 ));
+		possibleScaleList.add( new ScaleValue( 40, 40 ));
+		possibleScaleList.add( new ScaleValue( 50, 50 ));
+		possibleScaleList.add( new ScaleValue( 100, 100 ));
+		possibleScaleList.add( new ScaleValue( 200, 200 ));
+		possibleScaleList.add( new ScaleValue( 500, 500 ));
+		possibleScaleList.add( new ScaleValue( 1000, 1000 ));
 			
 		myScale = new JScale( myCanvas, pixelPerCm, unit, possibleScaleList, 7 );
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
-			public void getScale(Position scale) {
+			public void getScale(Value2D scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				canvasControl.setStatusPanelXScale( "xM=" + df.format(scale.getX() ) );
 				canvasControl.setStatusPanelYScale( "yM=" + df.format(scale.getY() ) );
@@ -142,17 +142,17 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
-						Position previous = null;
+						PositionValue previous = null;
 						double increment = canvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
 						for( double x=start; x<=stop; x+=increment ){
 							double y = 0.01*(x*x*x) - 0.07*(x*x) + 0.1*(x) - 0;
 							if( null == previous ){
-								previous = new Position(x, y);
+								previous = new PositionValue(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
-							previous = new Position(x, y);
+							previous = new PositionValue(x, y);
 						}
 						
 						g2.setColor(Color.blue);
