@@ -166,9 +166,9 @@ public class CanvasControl {
 			}
 		});		
 		
-		String[] gridTypeElements = { "Solid", "Cross", "Dot" };
+		String[] gridTypeElements = { "Solid", "Dashed", "Cross", "Dot" };
 		gridTypeCombo = new JComboBox<String>(gridTypeElements);
-		gridTypeCombo.setSelectedIndex(2);
+		gridTypeCombo.setSelectedIndex(3);
 		gridTypeCombo.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -177,6 +177,8 @@ public class CanvasControl {
 				
 				if( cmbType.equals( "Solid")){
 					myGrid.setType( JGrid.Type.SOLID );
+				}else if( cmbType.equals( "Dashed")){
+					myGrid.setType( JGrid.Type.DASHED );
 				}else if( cmbType.equals( "Cross")){
 					myGrid.setType( JGrid.Type.CROSS );
 				}else if( cmbType.equals( "Dot")){

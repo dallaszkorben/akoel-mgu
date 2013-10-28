@@ -10,6 +10,7 @@ public class JGrid {
 	
 	public static enum Type{
 		SOLID,
+		DASHED,
 		CROSS,
 		DOT,
 	}
@@ -123,7 +124,12 @@ public class JGrid {
 			g2.setColor( color );
 			g2.setStroke(new BasicStroke(widthInPixel));
 			
-			if(type.equals( Type.SOLID ) ){
+			if(type.equals( Type.SOLID ) || type.equals( Type.DASHED ) ){
+				
+				if( type.equals( Type.DASHED )){
+					g2.setStroke( new BasicStroke( widthInPixel, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{1,4}, 0) );
+				}
+				
 				m = 1;
 				xPosition = xStart;
 				while ( xPosition <= size.xMax ){
