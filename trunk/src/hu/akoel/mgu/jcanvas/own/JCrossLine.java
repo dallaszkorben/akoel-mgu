@@ -16,14 +16,14 @@ public class JCrossLine {
 	}
 	
 	private JCanvas canvas;
-	private Position position;
+	private Value2D position;
 	private Color color;
 	private int widthInPixel;
-	private Position length;
+	private Value2D length;
 	private PainterPosition painterPosition;
 	private PainterListener painterListener;
 
-	public JCrossLine( JCanvas canvas, Position position, Color color, int widthInPixel, Position length, PainterPosition painterPosition ){
+	public JCrossLine( JCanvas canvas, Value2D position, Color color, int widthInPixel, Value2D length, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.position = position;
 		this.color = color;

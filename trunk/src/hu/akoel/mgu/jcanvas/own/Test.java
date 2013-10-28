@@ -6,7 +6,7 @@ public class Test {
 	
 	private Size worldSize = null;
 	private double pixelPerUnit;
-	private Position worldTranslate = new Position( 0.0, 0.0 );
+	private Value2D worldTranslate = new Value2D( 0.0, 0.0 );
 	private Dimension viewableSize;
 	private int viewableWidth;
 	

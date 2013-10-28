@@ -2,6 +2,6 @@ package hu.akoel.mgu.jcanvas.own;
 
 public interface ScaleChangeListener {
 
-	public void getScale( Position scale );
+	public void getScale( Value2D scale );
 	
 }

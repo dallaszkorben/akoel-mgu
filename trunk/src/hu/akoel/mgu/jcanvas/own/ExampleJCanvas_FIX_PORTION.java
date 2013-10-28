@@ -128,7 +128,7 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
-						Position previous = null;
+						Value2D previous = null;
 						double increment = canvas.getWorldXLengthByPixel(2);
 						double start = canvas.getWorldXByPixel(0);
 						double stop = canvas.getWorldXByPixel(canvas.getViewableSize().width );
@@ -136,10 +136,10 @@ public class ExampleJCanvas_FIX_PORTION extends JFrame {
 						for( double x=start; x<=stop; x+=increment ){
 							double y = (0.5*x)*(0.5*x);
 							if( null == previous ){
-								previous = new Position(x, y);
+								previous = new Value2D(x, y);
 							}
 							g2.drawLine(previous.getX(), previous.getY(), x, y);
-							previous = new Position(x, y);
+							previous = new Value2D(x, y);
 //System.err.println(previous);							
 						}
 						
