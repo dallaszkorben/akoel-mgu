@@ -1,13 +1,17 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu.crossline;
 
-import hu.akoel.mgu.jcanvas.own.JCanvas.Level;
+import hu.akoel.mgu.JGraphics;
+import hu.akoel.mgu.MCanvas;
+import hu.akoel.mgu.PainterListener;
+import hu.akoel.mgu.Value2D;
+import hu.akoel.mgu.MCanvas.Level;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 
-public class JCrossLine {
+public class MCrossLine {
 	
 	public static enum PainterPosition{
 		DEEPEST,
@@ -15,7 +19,7 @@ public class JCrossLine {
 		HIGHEST
 	}
 	
-	private JCanvas canvas;
+	private MCanvas canvas;
 	private Value2D position;
 	private Color color;
 	private int widthInPixel;
@@ -23,7 +27,7 @@ public class JCrossLine {
 	private PainterPosition painterPosition;
 	private PainterListener painterListener;
 
-	public JCrossLine( JCanvas canvas, Value2D position, Color color, int widthInPixel, Value2D length, PainterPosition painterPosition ){
+	public MCrossLine( MCanvas canvas, Value2D position, Color color, int widthInPixel, Value2D length, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.position = position;
 		this.color = color;
@@ -105,7 +109,7 @@ public class JCrossLine {
 	class CrossLinePainterListener implements PainterListener{
 
 		@Override
-		public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
+		public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {
 			g2.setColor( color );
 			g2.setStroke(new BasicStroke(widthInPixel));
 			
@@ -114,7 +118,7 @@ public class JCrossLine {
 		}
 
 		@Override
-		public void paintByViewer(JCanvas canvas, Graphics2D g2) {}
+		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
 	}
 	
 }

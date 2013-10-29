@@ -1,4 +1,5 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
+
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,7 +18,7 @@ import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
 
 
-public class JCanvas extends JPanel {
+public class MCanvas extends JPanel {
 
 	public static enum Level {
 		UNDER, ABOVE
@@ -76,7 +77,7 @@ public class JCanvas extends JPanel {
 	 * @param positionToMiddle Az itt megadott ertek legyen a canvas kozepen az indulaskor.
 	 * null eseten a 0,0 pozicio lesz a bal also sarokban
 	 */
-	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
+	public MCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
 		
 		if( null == possiblePixelPerUnits){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
@@ -97,7 +98,7 @@ public class JCanvas extends JPanel {
 		}		
 	}
 	
-	public JCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, Size boundSize ) {
+	public MCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, Size boundSize ) {
 		
 		if( null == possiblePixelPerUnits ){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
@@ -127,7 +128,7 @@ public class JCanvas extends JPanel {
 	 * @param background
 	 * @param worldSize
 	 */
-	public JCanvas(Border borderType, Color background, Size worldSize) {
+	public MCanvas(Border borderType, Color background, Size worldSize) {
 		
 		if( null == worldSize ){
 			throw new Error("In case of FIX_PORTION it is required to set the worldSize. Now it is null.");
@@ -252,7 +253,7 @@ public class JCanvas extends JPanel {
 		return this.wasTransferedToMiddle;
 	}
 	
-	public CoreCanvas getCoreCanvas(JCanvas canvas, Color background ){
+	public CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
 		if( null == coreCanvas ){
 			coreCanvas = new CoreCanvas( this, background );
 		}
@@ -709,9 +710,9 @@ public class JCanvas extends JPanel {
 	 *
 	 */
 	class MousePositionListener implements MouseMotionListener{
-		private JCanvas canvas;
+		private MCanvas canvas;
 		
-		public MousePositionListener( JCanvas canvas ){
+		public MousePositionListener( MCanvas canvas ){
 			this.canvas = canvas;
 		}
 		
@@ -926,10 +927,10 @@ public class JCanvas extends JPanel {
 
 		private static final long serialVersionUID = 5336269435310911828L;
 
-		private JCanvas parent;
+		private MCanvas parent;
 		private BufferedImage offImage;
 
-		public CoreCanvas(JCanvas parent, Color background) {
+		public CoreCanvas(MCanvas parent, Color background) {
 			super();
 			this.parent = parent;
 			

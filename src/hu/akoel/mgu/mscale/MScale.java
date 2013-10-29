@@ -1,8 +1,19 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu.mscale;
+
+
+import hu.akoel.mgu.MCanvas;
+import hu.akoel.mgu.PixelPerCmValue;
+import hu.akoel.mgu.PixelPerUnitChangeListener;
+import hu.akoel.mgu.PixelPerUnitValue;
+import hu.akoel.mgu.PossiblePixelPerUnits;
+import hu.akoel.mgu.RateValue;
+import hu.akoel.mgu.ScaleValue;
+import hu.akoel.mgu.UnitValue;
+import hu.akoel.mgu.Value2D;
 
 import java.util.ArrayList;
 
-public class JScale {
+public class MScale {
 
 	public static enum UNIT{
 		mm(0.001, "mm"),
@@ -27,7 +38,7 @@ public class JScale {
 		}
 	}
 	
-	private JCanvas canvas;
+	private MCanvas canvas;
 	private PixelPerCmValue pixelPerCm;
 	private UnitValue unit;
 	private ScaleValue startScale;
@@ -37,34 +48,34 @@ public class JScale {
 	
 	private ArrayList<ScaleChangeListener> scaleChangeListenerList = new ArrayList<ScaleChangeListener>();
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale){
+	public MScale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale){
 		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), null, null, null );
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate ){
+	public MScale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate ){
 		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new RateValue(rate, rate), null, null );
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate, double minScale, double maxScale ){
+	public MScale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate, double minScale, double maxScale ){
 		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new RateValue(rate, rate), new ScaleValue(minScale, minScale), new ScaleValue(maxScale, maxScale) );
 	}
 	
 	
 	
 	
-	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale){
+	public MScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale){
 		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, null, null, null );
 	}
 	
-	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate ){
+	public MScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate ){
 		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, rate, null, null );		
 	}
 	
-	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
+	public MScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
 		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, rate, minScale, maxScale );		
 	}
 	
-	private void commonConstructorForFreeScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){ 
+	private void commonConstructorForFreeScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){ 
 //JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
 		this.canvas = canvas;
 		this.pixelPerCm = pixelPerCm;
@@ -106,15 +117,15 @@ public class JScale {
 
 	}
 	
-	public JScale( JCanvas canvas, double pixelPerCm, UNIT unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList){
+	public MScale( MCanvas canvas, double pixelPerCm, UNIT unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList){
 		commonConstructorForDiscrateScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue( unit, unit ), possibleScaleList, pointerForPossibleScaleList);
 	}
 	
-	public JScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList){
+	public MScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList){
 		commonConstructorForDiscrateScale(canvas, pixelPerCm, unit, possibleScaleList, pointerForPossibleScaleList);
 	}
 	
-	private void commonConstructorForDiscrateScale( JCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList ){
+	private void commonConstructorForDiscrateScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ArrayList<ScaleValue> possibleScaleList, int pointerForPossibleScaleList ){
 		this.canvas = canvas;
 		this.pixelPerCm = pixelPerCm;
 		this.unit = unit;

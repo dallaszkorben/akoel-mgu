@@ -1,4 +1,4 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
 
 public class TranslateValue extends Value2D{
 

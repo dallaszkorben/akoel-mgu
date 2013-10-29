@@ -1,4 +1,5 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
+
 
 
 import java.awt.Color;
@@ -10,10 +11,10 @@ import java.math.BigDecimal;
 
 public class JGraphics {
 
-	private JCanvas canvas;
+	private MCanvas canvas;
 	private Graphics2D g2;
 		
-	public JGraphics(JCanvas canvas, Graphics2D g2){
+	public JGraphics(MCanvas canvas, Graphics2D g2){
 		this.canvas = canvas;
 		this.g2 = g2;
 	}

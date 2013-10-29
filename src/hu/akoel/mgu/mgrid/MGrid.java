@@ -1,12 +1,18 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu.mgrid;
 
-import hu.akoel.mgu.jcanvas.own.JCanvas.Level;
+import hu.akoel.mgu.JGraphics;
+import hu.akoel.mgu.MCanvas;
+import hu.akoel.mgu.PainterListener;
+import hu.akoel.mgu.Size;
+import hu.akoel.mgu.Value2D;
+import hu.akoel.mgu.MCanvas.Level;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 
-public class JGrid {
+public class MGrid {
 	
 	public static enum Type{
 		SOLID,
@@ -21,7 +27,7 @@ public class JGrid {
 		HIGHEST
 	}
 	
-	private JCanvas canvas;
+	private MCanvas canvas;
 	private Type type;
 	private Color color;
 	private int widthInPixel;
@@ -30,7 +36,7 @@ public class JGrid {
 	int crossLengthInPixel = 3;
 	PainterListener painterListener;
 
-	public JGrid( JCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value2D deltaGrid ){
+	public MGrid( MCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value2D deltaGrid ){
 		this.canvas = canvas;
 		this.type = type;
 		this.color = color;
@@ -110,7 +116,7 @@ public class JGrid {
 	class GridPainterListener implements PainterListener{
 
 		@Override
-		public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
+		public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {
 			int n, m;
 			double xStart, yStart;
 			double yPosition, xPosition;
@@ -176,7 +182,7 @@ public class JGrid {
 		}
 
 		@Override
-		public void paintByViewer(JCanvas canvas, Graphics2D g2) {	}
+		public void paintByViewer(MCanvas canvas, Graphics2D g2) {	}
 		
 	}
 	

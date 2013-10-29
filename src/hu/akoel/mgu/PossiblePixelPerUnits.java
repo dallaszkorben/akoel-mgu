@@ -1,4 +1,4 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
 
 import java.util.ArrayList;
 
