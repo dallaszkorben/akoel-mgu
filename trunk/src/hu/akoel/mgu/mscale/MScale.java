@@ -2,14 +2,14 @@ package hu.akoel.mgu.mscale;
 
 
 import hu.akoel.mgu.MCanvas;
-import hu.akoel.mgu.PixelPerCmValue;
 import hu.akoel.mgu.PixelPerUnitChangeListener;
-import hu.akoel.mgu.PixelPerUnitValue;
 import hu.akoel.mgu.PossiblePixelPerUnits;
-import hu.akoel.mgu.RateValue;
-import hu.akoel.mgu.ScaleValue;
-import hu.akoel.mgu.UnitValue;
-import hu.akoel.mgu.Value2D;
+import hu.akoel.mgu.scale.values.PixelPerCmValue;
+import hu.akoel.mgu.scale.values.ScaleValue;
+import hu.akoel.mgu.scale.values.UnitValue;
+import hu.akoel.mgu.values.PixelPerUnitValue;
+import hu.akoel.mgu.values.RateValue;
+import hu.akoel.mgu.values.Value2D;
 
 import java.util.ArrayList;
 

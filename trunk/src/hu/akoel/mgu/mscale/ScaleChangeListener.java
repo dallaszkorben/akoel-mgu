@@ -1,6 +1,6 @@
 package hu.akoel.mgu.mscale;
 
-import hu.akoel.mgu.Value2D;
+import hu.akoel.mgu.values.Value2D;
 
 public interface ScaleChangeListener {
 
