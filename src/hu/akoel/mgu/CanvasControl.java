@@ -1,8 +1,8 @@
 package hu.akoel.mgu;
 
-import hu.akoel.mgu.crossline.MCrossLine;
 import hu.akoel.mgu.maxis.MAxis;
 import hu.akoel.mgu.maxis.MAxis.AxisPosition;
+import hu.akoel.mgu.mcrossline.MCrossLine;
 import hu.akoel.mgu.mgrid.MGrid;
 import hu.akoel.mgu.mscale.MScale;
 
