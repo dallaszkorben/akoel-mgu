@@ -222,7 +222,7 @@ public class MCanvas extends JPanel {
 	}
 */	
 	public PixelPerUnitValue getPixelPerUnit(){
-		if( getSidePortion().equals(sidePortion.FREE_PORTION)){
+		if( getSidePortion().equals(SIDES_PORTION.FREE_PORTION)){
 			return possiblePixelPerUnits.getActualPixelPerUnit();
 		}else{
 			return new PixelPerUnitValue( getViewableSize().width/worldSize.getWidth(), getViewableSize().height/worldSize.getHeight() );
@@ -1007,21 +1007,21 @@ public class MCanvas extends JPanel {
 				
 				if (null != deepestList) {
 					for (PainterListener painter : deepestList) {
-						painter.paintByWorldPosition(parent, new JGraphics(parent, offg2));
+						painter.paintByWorldPosition(parent, new MGraphics(parent, offg2));
 						painter.paintByViewer(parent, offg2);
 					}
 				}
 
 				if (null != middleList) {
 					for (PainterListener painter : middleList) {
-						painter.paintByWorldPosition(parent, new JGraphics(parent, offg2));
+						painter.paintByWorldPosition(parent, new MGraphics(parent, offg2));
 						painter.paintByViewer(parent, offg2);
 					}
 				}
 
 				if (null != highestList) {
 					for (PainterListener painter : highestList) {
-						painter.paintByWorldPosition(parent, new JGraphics(parent, offg2));
+						painter.paintByWorldPosition(parent, new MGraphics(parent, offg2));
 						painter.paintByViewer(parent, offg2);
 					}
 				}
@@ -1038,7 +1038,7 @@ public class MCanvas extends JPanel {
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
-						painter.paintByWorldPosition(parent, new JGraphics(parent, g2));
+						painter.paintByWorldPosition(parent, new MGraphics(parent, g2));
 					}
 					temporaryList.clear();
 				}					
