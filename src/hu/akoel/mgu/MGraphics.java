@@ -30,7 +30,14 @@ public class MGraphics {
 		g2.drawOval(canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelXLengthByWorld(width)-1, canvas.getPixelYLengthByWorld(height)-1);
 	}
 
-	
+	public void drawRectangle( double x, double y, double width, double height ){
+		g2.drawRect( canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelXLengthByWorld(width), canvas.getPixelYLengthByWorld(height));
+	}
+
+	public void fillRectangle( double x, double y, double width, double height ){
+		g2.fillRect( canvas.getPixelXPositionByWorld(x), canvas.getPixelYPositionByWorldBeforeTranslate(y), canvas.getPixelXLengthByWorld(width), canvas.getPixelYLengthByWorld(height));
+	}
+
 	public void setColor( Color color ){
 		g2.setColor( color );
 	}

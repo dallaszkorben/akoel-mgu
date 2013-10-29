@@ -1,7 +1,6 @@
 package hu.akoel.mgu.example;
 
 
-import hu.akoel.mgu.CanvasControl;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
