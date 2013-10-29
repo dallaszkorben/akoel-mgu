@@ -1,5 +1,6 @@
-package hu.akoel.mgu;
+package hu.akoel.mgu.example;
 
+import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.axis.Axis.AxisPosition;
 import hu.akoel.mgu.crossline.CrossLine;
