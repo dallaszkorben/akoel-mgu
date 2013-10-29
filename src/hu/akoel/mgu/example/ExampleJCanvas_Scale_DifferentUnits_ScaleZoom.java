@@ -2,16 +2,16 @@ package hu.akoel.mgu.example;
 
 
 import hu.akoel.mgu.CanvasControl;
-import hu.akoel.mgu.JGraphics;
+import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
-import hu.akoel.mgu.maxis.MAxis;
-import hu.akoel.mgu.mcrossline.MCrossLine;
-import hu.akoel.mgu.mgrid.MGrid;
-import hu.akoel.mgu.mscale.MScale;
-import hu.akoel.mgu.mscale.ScaleChangeListener;
+import hu.akoel.mgu.axis.Axis;
+import hu.akoel.mgu.crossline.CrossLine;
+import hu.akoel.mgu.grid.Grid;
+import hu.akoel.mgu.scale.Scale;
+import hu.akoel.mgu.scale.ScaleChangeListener;
 import hu.akoel.mgu.scale.values.PixelPerCmValue;
 import hu.akoel.mgu.scale.values.ScaleValue;
 import hu.akoel.mgu.scale.values.UnitValue;
@@ -51,29 +51,29 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	//private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position(1.2, 1.2), new Position(1,1), new Position(15,15));
 	//private Position pixelPerUnit = new Position(1,1);
 
-	private MGrid myGrid;	
+	private Grid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
 	private DeltaValue gridDelta = new DeltaValue(1.0, 1.0);
-	private MGrid.PainterPosition gridPosition = MGrid.PainterPosition.DEEPEST; 
-	private MGrid.Type gridType = MGrid.Type.DOT;
+	private Grid.PainterPosition gridPosition = Grid.PainterPosition.DEEPEST; 
+	private Grid.Type gridType = Grid.Type.DOT;
 	
-	private MCrossLine myCrossLine;
+	private CrossLine myCrossLine;
 	private PositionValue crossLinePosition = new PositionValue( 5, 5 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 5;
 	private LengthValue crossLineLength = new LengthValue( 1, 1 );
-	private MCrossLine.PainterPosition crossLinePainterPosition = MCrossLine.PainterPosition.DEEPEST;
+	private CrossLine.PainterPosition crossLinePainterPosition = CrossLine.PainterPosition.DEEPEST;
 	
-	private MAxis myAxis;
+	private Axis myAxis;
 	private Color axisColor = Color.yellow;
 	private int axisWidthInPixel = 1;
-	private MAxis.AxisPosition axisPosition = MAxis.AxisPosition.AT_LEFT_BOTTOM;
-	private MAxis.PainterPosition painterPosition = MAxis.PainterPosition.HIGHEST;
+	private Axis.AxisPosition axisPosition = Axis.AxisPosition.AT_LEFT_BOTTOM;
+	private Axis.PainterPosition painterPosition = Axis.PainterPosition.HIGHEST;
 		
-	private MScale myScale;
+	private Scale myScale;
 	private PixelPerCmValue pixelPerCm = new PixelPerCmValue(42.1, 42.1);
-	private UnitValue unit = new UnitValue(MScale.UNIT.km, MScale.UNIT.m ); 
+	private UnitValue unit = new UnitValue(Scale.UNIT.km, Scale.UNIT.m ); 
 	private ScaleValue startScale = new ScaleValue( 100000, 100 );
 	private RateValue rate = new RateValue(1.2, 1.2);
 	private ScaleValue minScale = new ScaleValue( 2000, 2);
@@ -106,13 +106,13 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 			}
 		});
 		
-		myGrid = new MGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
+		myGrid = new Grid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myCrossLine = new MCrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
+		myCrossLine = new CrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
 	
-		myAxis = new MAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
+		myAxis = new Axis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
-		myScale = new MScale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
+		myScale = new Scale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
@@ -148,7 +148,7 @@ public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {					
+					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
