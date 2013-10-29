@@ -165,29 +165,29 @@ public class MAxis {
 
 			}else if( axisPosition.equals( AxisPosition.AT_LEFT_BOTTOM )){
 				positionXVerticalAxis = canvas.getWorldXByPixel( 0 );
-				positionYHorizontalAxis = canvas.getWorldSize().yMin;
+				positionYHorizontalAxis = canvas.getWorldSize().getYMin();
 								
 				positionXVerticalNumber = positionXVerticalAxis + canvas.getWorldXLengthByPixel( mainStickSizeInPixel );
 				positionYHorizontalNumber = positionYHorizontalAxis + canvas.getWorldYLengthByPixel( mainStickSizeInPixel );
 				
 			}else if( axisPosition.equals( AxisPosition.AT_LEFT_TOP)){
 				positionXVerticalAxis = canvas.getWorldXByPixel( 0 );
-				positionYHorizontalAxis = canvas.getWorldSize().yMax;	
+				positionYHorizontalAxis = canvas.getWorldSize().getYMax();	
 				
 				positionXVerticalNumber = positionXVerticalAxis + canvas.getWorldXLengthByPixel( mainStickSizeInPixel );
 				positionYHorizontalNumber = positionYHorizontalAxis - canvas.getWorldYLengthByPixel( mainStickSizeInPixel + mainStickNumberSize );								
 
 			}else if( axisPosition.equals( AxisPosition.AT_RIGHT_BOTTOM ) ){
-				positionXVerticalAxis = canvas.getWorldSize().xMax;
-				positionYHorizontalAxis = canvas.getWorldSize().yMin;
+				positionXVerticalAxis = canvas.getWorldSize().getXMax();
+				positionYHorizontalAxis = canvas.getWorldSize().getYMin();
 				
 				//TODO Ki kell talalni valamit ra hogy a szam valodi szelessegetol fuggjon
 				positionXVerticalNumber = positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel + 20 );
 				positionYHorizontalNumber = positionYHorizontalAxis + canvas.getWorldYLengthByPixel( mainStickSizeInPixel );					
 				
 			}else if( axisPosition.equals( AxisPosition.AT_RIGHT_TOP ) ){
-				positionXVerticalAxis = canvas.getWorldSize().xMax;
-				positionYHorizontalAxis = canvas.getWorldSize().yMax;
+				positionXVerticalAxis = canvas.getWorldSize().getXMax();
+				positionYHorizontalAxis = canvas.getWorldSize().getYMax();
 				
 				positionXVerticalNumber = positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel + 20 );
 				positionYHorizontalNumber = positionYHorizontalAxis - canvas.getWorldYLengthByPixel( mainStickSizeInPixel + mainStickNumberSize );				
@@ -198,20 +198,20 @@ public class MAxis {
 			g2.setStroke(new BasicStroke(axisWidthInPixel));
 
 			//Vizszintes axis rajzolasa
-			g2.drawLine(canvas.getWorldSize().xMin, positionYHorizontalAxis, canvas.getWorldSize().xMax, positionYHorizontalAxis);
+			g2.drawLine(canvas.getWorldSize().getXMin(), positionYHorizontalAxis, canvas.getWorldSize().getXMax(), positionYHorizontalAxis);
 			
 			//Fuggoleges axis rajzolasa
-			g2.drawLine(positionXVerticalAxis, canvas.getWorldSize().yMin, positionXVerticalAxis, canvas.getWorldSize().yMax);
+			g2.drawLine(positionXVerticalAxis, canvas.getWorldSize().getYMin(), positionXVerticalAxis, canvas.getWorldSize().getYMax());
 			
 			//Vizszintes fobeosztasok es feliratok
-			mainXStick = ((new BigDecimal(canvas.getWorldSize().xMin)).divide(xSteps, 0, BigDecimal.ROUND_CEILING)).multiply(xSteps);
+			mainXStick = ((new BigDecimal(canvas.getWorldSize().getXMin())).divide(xSteps, 0, BigDecimal.ROUND_CEILING)).multiply(xSteps);
 			mainXStick = mainXStick.subtract(xSteps);
 			
 			g2.setStroke(new BasicStroke(1));
-			while(mainXStick.doubleValue() <= canvas.getWorldSize().xMax){
+			while(mainXStick.doubleValue() <= canvas.getWorldSize().getXMax()){
 			
 				//Alathato reszen kivuli elemeket ne rajzolja ki
-				if( mainXStick.doubleValue() >= canvas.getWorldSize().xMin ){
+				if( mainXStick.doubleValue() >= canvas.getWorldSize().getXMin() ){
 				
 					//Vizszintes fobeosztas
 					g2.setColor(stickColor);
@@ -238,14 +238,14 @@ public class MAxis {
 			}
 
 			//Fuggoleges fobeosztasok es feliratok
-			mainYStick = ((new BigDecimal(canvas.getWorldSize().yMin)).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
+			mainYStick = ((new BigDecimal(canvas.getWorldSize().getYMin())).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
 			mainYStick = mainYStick.subtract(ySteps);
 
 			g2.setStroke(new BasicStroke(1));
-			while(mainYStick.doubleValue() <= canvas.getWorldSize().yMax){
+			while(mainYStick.doubleValue() <= canvas.getWorldSize().getYMax()){
 			
 				//Alathato reszen kivuli elemeket ne rajzolja ki
-				if( mainYStick.doubleValue() >= canvas.getWorldSize().yMin ){
+				if( mainYStick.doubleValue() >= canvas.getWorldSize().getYMin() ){
 				
 					//Fuggoleges fobeosztas
 					g2.setColor(stickColor);
