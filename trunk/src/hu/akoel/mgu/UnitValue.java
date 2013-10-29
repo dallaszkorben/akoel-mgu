@@ -1,6 +1,6 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
 
-import hu.akoel.mgu.jcanvas.own.JScale.UNIT;
+import hu.akoel.mgu.mscale.MScale.UNIT;
 
 public class UnitValue {
 

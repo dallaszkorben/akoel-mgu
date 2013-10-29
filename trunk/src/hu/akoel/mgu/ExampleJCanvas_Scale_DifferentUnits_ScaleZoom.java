@@ -1,5 +1,11 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
 
+
+import hu.akoel.mgu.crossline.MCrossLine;
+import hu.akoel.mgu.maxis.MAxis;
+import hu.akoel.mgu.mgrid.MGrid;
+import hu.akoel.mgu.mscale.MScale;
+import hu.akoel.mgu.mscale.ScaleChangeListener;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -9,69 +15,71 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
+public class ExampleJCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	private JCanvas myCanvas;
+	private MCanvas myCanvas;
 	private Size worldSize = new Size(-10.0, -10.0, 10.0, 30);	
-	private Size boundSize = new Size(0.0, 0.0, 400.0, 400);	
+	private Size boundSize = new Size(0.0, 0.0, 40.0, 40);	
 	private Color background = Color.black;
-	private TranslateValue positionToMiddle = null;//new Position( 10, 10);
+	private TranslateValue positionToMiddle = null;//new TranslateValue( 10, 10);
 	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(1,1));
 	//private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position(1.2, 1.2), new Position(1,1), new Position(15,15));
+	//private Position pixelPerUnit = new Position(1,1);
 
-	private JGrid myGrid;	
+	private MGrid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
 	private DeltaValue gridDelta = new DeltaValue(1.0, 1.0);
-	private JGrid.PainterPosition gridPosition = JGrid.PainterPosition.DEEPEST; 
-	private JGrid.Type gridType = JGrid.Type.DOT;
-
-	private JCrossLine myCrossLine;
+	private MGrid.PainterPosition gridPosition = MGrid.PainterPosition.DEEPEST; 
+	private MGrid.Type gridType = MGrid.Type.DOT;
+	
+	private MCrossLine myCrossLine;
 	private PositionValue crossLinePosition = new PositionValue( 5, 5 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 5;
-	private Value2D crossLineLength = new LengthValue( 1, 1 );
-	private JCrossLine.PainterPosition crossLinePainterPosition = JCrossLine.PainterPosition.DEEPEST;
+	private LengthValue crossLineLength = new LengthValue( 1, 1 );
+	private MCrossLine.PainterPosition crossLinePainterPosition = MCrossLine.PainterPosition.DEEPEST;
 	
-	private JAxis myAxis;
+	private MAxis myAxis;
 	private Color axisColor = Color.yellow;
 	private int axisWidthInPixel = 1;
-	private JAxis.AxisPosition axisPosition = JAxis.AxisPosition.AT_LEFT_BOTTOM;
-	private JAxis.PainterPosition painterPosition = JAxis.PainterPosition.HIGHEST;
+	private MAxis.AxisPosition axisPosition = MAxis.AxisPosition.AT_LEFT_BOTTOM;
+	private MAxis.PainterPosition painterPosition = MAxis.PainterPosition.HIGHEST;
 		
-	private JScale myScale;
-	private double pixelPerCm = 42.1;
-	private JScale.UNIT unit = JScale.UNIT.m;
-//	private double startScale = 100;
-//	private Position rate = new Position(1.2, 1.2);
-	private ArrayList<ScaleValue> possibleScaleList = new ArrayList<ScaleValue>();
+	private MScale myScale;
+	private PixelPerCmValue pixelPerCm = new PixelPerCmValue(42.1, 42.1);
+	private UnitValue unit = new UnitValue(MScale.UNIT.km, MScale.UNIT.m ); 
+	private ScaleValue startScale = new ScaleValue( 100000, 100 );
+	private RateValue rate = new RateValue(1.2, 1.2);
+	private ScaleValue minScale = new ScaleValue( 2000, 2);
+	private ScaleValue maxScale = new ScaleValue( 600000, 600);
 	
 	private CanvasControl canvasControl;
 	
 	public static void main(String[] args) {		
-		new ExampleJCanvas_Scale_SameUnits_DiscretZoom();
+		new ExampleJCanvas_Scale_DifferentUnits_ScaleZoom();
 	}
 
-	public ExampleJCanvas_Scale_SameUnits_DiscretZoom() {
+	public ExampleJCanvas_Scale_DifferentUnits_ScaleZoom() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("Example :: JCanvas with JGrid, JCrossLine, JAxis, Scale :: Bounds :: Discrate zoom values");
+		this.setTitle("Example :: JCanvas with JGrid, JCrossLine, JAxis, Scale :: Different units");
 		this.setUndecorated(false);
 		this.setSize(700, 700);
 		this.createBufferStrategy(1);
 
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
-		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, boundSize);
+//		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, boundSize);
+		myCanvas = new MCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
 		myCanvas.addPositionChangeListener(new PositionChangeListener() {
 			
 			@Override
@@ -82,48 +90,34 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 			}
 		});
 		
-		myGrid = new JGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
+		myGrid = new MGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myCrossLine = new JCrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
+		myCrossLine = new MCrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
 	
-		myAxis = new JAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
+		myAxis = new MAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
-		possibleScaleList.add( new ScaleValue( 2, 2 ));
-		possibleScaleList.add( new ScaleValue( 5, 5 ));
-		possibleScaleList.add( new ScaleValue( 8, 8 ));
-		possibleScaleList.add( new ScaleValue( 10, 10 ));
-		possibleScaleList.add( new ScaleValue( 20, 20 ));
-		possibleScaleList.add( new ScaleValue( 40, 40 ));
-		possibleScaleList.add( new ScaleValue( 50, 50 ));
-		possibleScaleList.add( new ScaleValue( 100, 100 ));
-		possibleScaleList.add( new ScaleValue( 200, 200 ));
-		possibleScaleList.add( new ScaleValue( 500, 500 ));
-		possibleScaleList.add( new ScaleValue( 1000, 1000 ));
-			
-		myScale = new JScale( myCanvas, pixelPerCm, unit, possibleScaleList, 7 );
+		myScale = new MScale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
 			public void getScale(Value2D scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
-				canvasControl.setStatusPanelXScale( "xM=" + df.format(scale.getX() ) );
-				canvasControl.setStatusPanelYScale( "yM=" + df.format(scale.getY() ) );
+				
+				if( scale.getX() < 1.0 ){
+					canvasControl.setStatusPanelXScale( "xM=" + df.format(1/scale.getX() ) + ":1" );
+				}else{
+					canvasControl.setStatusPanelXScale( "xM=1:" + df.format(scale.getX() ) );
+				}
+
+				if( scale.getY() < 1.0 ){
+					canvasControl.setStatusPanelYScale( "yM=" + df.format(1/scale.getY() ) + ":1" );
+				}else{				
+					canvasControl.setStatusPanelYScale( "yM=1:" + df.format(scale.getY() ) );
+				}
 			}
 		});
 		
 		canvasControl = new CanvasControl( myCanvas, myCrossLine, myGrid, myAxis, myScale );
-		
-		//
-		//Ujra rajzol minden statikus rajzi elemet
-		//
-		JButton reprintButton = new JButton("reprint");
-		reprintButton.addActionListener(new ActionListener(){
-			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				myCanvas.repaint();				
-			}			
-		});	
 		
 		//
 		//Kirajzol eloterbe egy fuggvenyt
@@ -138,7 +132,7 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {					
+					public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
@@ -161,15 +155,14 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 					}
 
 					@Override
-					public void paintByViewer(JCanvas canvas, Graphics2D g2) {}	
+					public void paintByViewer(MCanvas canvas, Graphics2D g2) {}	
 					
-				}, JCanvas.Level.UNDER);		
+				}, MCanvas.Level.UNDER);		
 				myCanvas.repaint();
 			}
 			
 		});
-
-
+		
 		//Parancsgomb panel
 		JPanel commandButtonPanel = new JPanel();
 		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
@@ -188,11 +181,21 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 
 		//Kezdo ertekek kiirasa
 		DecimalFormat df = new DecimalFormat("#.00");
-		canvasControl.setStatusPanelXScale( "xM=" + df.format( myScale.getScale().getX() ));
-		canvasControl.setStatusPanelYScale( "yM=" + df.format( myScale.getScale().getY() ));
-		
-		this.setVisible(true);		
+		if( myScale.getScale().getX() < 1.0 ){
+			canvasControl.setStatusPanelXScale( "xM=" + df.format(1/myScale.getScale().getX() ) + ":1" );
+		}else{
+			canvasControl.setStatusPanelXScale( "xM=1:" + df.format(myScale.getScale().getX() ) );
+		}
 
+		if( myScale.getScale().getY() < 1.0 ){
+			canvasControl.setStatusPanelYScale( "yM=" + df.format(1/myScale.getScale().getY() ) + ":1" );
+		}else{				
+			canvasControl.setStatusPanelYScale( "yM=1:" + df.format(myScale.getScale().getY() ) );
+		}
+		
+		this.setVisible(true);
+		
 	}
 }
+
 

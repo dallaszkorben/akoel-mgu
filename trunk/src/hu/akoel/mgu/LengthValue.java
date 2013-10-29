@@ -1,4 +1,4 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu;
 
 public class LengthValue extends Value2D{
 

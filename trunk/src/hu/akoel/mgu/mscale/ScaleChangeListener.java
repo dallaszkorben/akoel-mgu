@@ -1,4 +1,6 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu.mscale;
+
+import hu.akoel.mgu.Value2D;
 
 public interface ScaleChangeListener {
 

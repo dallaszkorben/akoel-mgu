@@ -1,6 +1,9 @@
-package hu.akoel.mgu.jcanvas.own;
+package hu.akoel.mgu.maxis;
 
-import hu.akoel.mgu.jcanvas.own.JCanvas.Level;
+import hu.akoel.mgu.JGraphics;
+import hu.akoel.mgu.MCanvas;
+import hu.akoel.mgu.PainterListener;
+import hu.akoel.mgu.MCanvas.Level;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -11,7 +14,7 @@ import java.awt.font.TextLayout;
 import java.math.BigDecimal;
 
 
-public class JAxis {
+public class MAxis {
 	
 	public static enum AxisPosition{
 		AT_ZERO_ZERO,
@@ -33,7 +36,7 @@ public class JAxis {
     double[] mainStickBaseNumbers = new double[]{0.25, 0.5, 1};//{0.25, 0.5, 1};
     int minimalDistanceInPixel = 40;
     
-	JCanvas canvas;
+	MCanvas canvas;
 	AxisPosition axisPosition;
 	Color axisColor;
 	Color stickColor;
@@ -43,7 +46,7 @@ public class JAxis {
 	PainterListener painterListener;
 	PainterPosition painterPosition;
 	 
-	public JAxis( JCanvas canvas, AxisPosition axisPosition, Color axisColor, int axisWidthInPixel, PainterPosition painterPosition ){
+	public MAxis( MCanvas canvas, AxisPosition axisPosition, Color axisColor, int axisWidthInPixel, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.axisPosition = axisPosition;
 		this.axisColor = axisColor;
@@ -139,7 +142,7 @@ public class JAxis {
     	}
     	
 		@Override
-		public void paintByWorldPosition(JCanvas canvas, JGraphics g2) {
+		public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {
 			double positionXVerticalAxis = 0;
 			double positionYHorizontalAxis = 0;
 			
@@ -273,7 +276,7 @@ public class JAxis {
 		}
 
 		@Override
-		public void paintByViewer(JCanvas canvas, Graphics2D g2) {}
+		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
 		
 		/**
 		 * Visszaadja a parameterkent megadott szamhoz legkozelebbi jobb oldali
