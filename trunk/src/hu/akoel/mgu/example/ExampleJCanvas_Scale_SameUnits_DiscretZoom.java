@@ -2,17 +2,16 @@ package hu.akoel.mgu.example;
 
 
 import hu.akoel.mgu.CanvasControl;
-import hu.akoel.mgu.JGraphics;
+import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
-import hu.akoel.mgu.MCanvas.Level;
-import hu.akoel.mgu.maxis.MAxis;
-import hu.akoel.mgu.mcrossline.MCrossLine;
-import hu.akoel.mgu.mgrid.MGrid;
-import hu.akoel.mgu.mscale.MScale;
-import hu.akoel.mgu.mscale.ScaleChangeListener;
+import hu.akoel.mgu.axis.Axis;
+import hu.akoel.mgu.crossline.CrossLine;
+import hu.akoel.mgu.grid.Grid;
+import hu.akoel.mgu.scale.Scale;
+import hu.akoel.mgu.scale.ScaleChangeListener;
 import hu.akoel.mgu.scale.values.ScaleValue;
 import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
@@ -50,29 +49,29 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(1,1));
 	//private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new Position(1,1), new Position(1.2, 1.2), new Position(1,1), new Position(15,15));
 
-	private MGrid myGrid;	
+	private Grid myGrid;	
 	private Color gridColor = Color.green;
 	private int gridWidth = 1;
 	private DeltaValue gridDelta = new DeltaValue(1.0, 1.0);
-	private MGrid.PainterPosition gridPosition = MGrid.PainterPosition.DEEPEST; 
-	private MGrid.Type gridType = MGrid.Type.DOT;
+	private Grid.PainterPosition gridPosition = Grid.PainterPosition.DEEPEST; 
+	private Grid.Type gridType = Grid.Type.DOT;
 
-	private MCrossLine myCrossLine;
+	private CrossLine myCrossLine;
 	private PositionValue crossLinePosition = new PositionValue( 5, 5 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 5;
 	private Value2D crossLineLength = new LengthValue( 1, 1 );
-	private MCrossLine.PainterPosition crossLinePainterPosition = MCrossLine.PainterPosition.DEEPEST;
+	private CrossLine.PainterPosition crossLinePainterPosition = CrossLine.PainterPosition.DEEPEST;
 	
-	private MAxis myAxis;
+	private Axis myAxis;
 	private Color axisColor = Color.yellow;
 	private int axisWidthInPixel = 1;
-	private MAxis.AxisPosition axisPosition = MAxis.AxisPosition.AT_LEFT_BOTTOM;
-	private MAxis.PainterPosition painterPosition = MAxis.PainterPosition.HIGHEST;
+	private Axis.AxisPosition axisPosition = Axis.AxisPosition.AT_LEFT_BOTTOM;
+	private Axis.PainterPosition painterPosition = Axis.PainterPosition.HIGHEST;
 		
-	private MScale myScale;
+	private Scale myScale;
 	private double pixelPerCm = 42.1;
-	private MScale.UNIT unit = MScale.UNIT.m;
+	private Scale.UNIT unit = Scale.UNIT.m;
 //	private double startScale = 100;
 //	private Position rate = new Position(1.2, 1.2);
 	private ArrayList<ScaleValue> possibleScaleList = new ArrayList<ScaleValue>();
@@ -103,11 +102,11 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 			}
 		});
 		
-		myGrid = new MGrid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
+		myGrid = new Grid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
-		myCrossLine = new MCrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
+		myCrossLine = new CrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
 	
-		myAxis = new MAxis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
+		myAxis = new Axis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 		
 		possibleScaleList.add( new ScaleValue( 2, 2 ));
 		possibleScaleList.add( new ScaleValue( 5, 5 ));
@@ -121,7 +120,7 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		possibleScaleList.add( new ScaleValue( 500, 500 ));
 		possibleScaleList.add( new ScaleValue( 1000, 1000 ));
 			
-		myScale = new MScale( myCanvas, pixelPerCm, unit, possibleScaleList, 7 );
+		myScale = new Scale( myCanvas, pixelPerCm, unit, possibleScaleList, 7 );
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
@@ -159,7 +158,7 @@ public class ExampleJCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {					
+					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						

@@ -2,11 +2,10 @@ package hu.akoel.mgu.example;
 
 
 
-import hu.akoel.mgu.JGraphics;
+import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
-import hu.akoel.mgu.MCanvas.Level;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.RateValue;
@@ -55,7 +54,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 		myCanvas.addPainterListenerToDeepest(new PainterListener(){
 			
 			@Override
-			public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {}
+			public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {}
 
 			@Override
 			public void paintByViewer(MCanvas canvas, Graphics2D g2) {	
@@ -98,7 +97,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {
+					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
 //						if( null == worldSize ){
@@ -154,7 +153,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
 					@Override
-					public void paintByWorldPosition(MCanvas canvas, JGraphics g2) {					
+					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
 						
