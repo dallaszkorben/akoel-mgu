@@ -3,9 +3,9 @@ package hu.akoel.mgu.mgrid;
 import hu.akoel.mgu.JGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
-import hu.akoel.mgu.Size;
-import hu.akoel.mgu.Value2D;
 import hu.akoel.mgu.MCanvas.Level;
+import hu.akoel.mgu.values.SizeValue;
+import hu.akoel.mgu.values.Value2D;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -122,10 +122,10 @@ public class MGrid {
 			double yPosition, xPosition;
 			double crossXLength, crossYLength;
 			
-			Size size = canvas.getWorldSize();
+			SizeValue size = canvas.getWorldSize();
 			
-			xStart = (int)(size.xMin / deltaGrid.getX()) * deltaGrid.getX();
-			yStart = (int)(size.yMin / deltaGrid.getY()) * deltaGrid.getY();				
+			xStart = (int)(size.getXMin() / deltaGrid.getX()) * deltaGrid.getX();
+			yStart = (int)(size.getYMin() / deltaGrid.getY()) * deltaGrid.getY();				
 			
 			g2.setColor( color );
 			g2.setStroke(new BasicStroke(widthInPixel));
@@ -138,16 +138,16 @@ public class MGrid {
 				
 				m = 1;
 				xPosition = xStart;
-				while ( xPosition <= size.xMax ){
-					g2.drawLine(xPosition, size.yMin, xPosition, size.yMax);
+				while ( xPosition <= size.getXMax() ){
+					g2.drawLine(xPosition, size.getYMin(), xPosition, size.getYMax());
 					xPosition = xStart + m * deltaGrid.getX(); //!!!!!!!!
 		           m++;
 		         }
 
 		         n = 1;
 		         yPosition = yStart;
-		         while ( yPosition <= size.yMax ){
-		           g2.drawLine( size.xMin, yPosition, size.xMax, yPosition );
+		         while ( yPosition <= size.getYMax() ){
+		           g2.drawLine( size.getXMin(), yPosition, size.getXMax(), yPosition );
 		           yPosition = yStart + n * deltaGrid.getY(); //!!!!!!!!
 		           n++;
 		         }
@@ -163,10 +163,10 @@ public class MGrid {
 		        
 		    	 n = 1;
 		    	 xPosition = xStart;
-		    	 while (xPosition <= size.xMax ){
+		    	 while (xPosition <= size.getXMax() ){
 		    		 m = 1;
 		    		 yPosition = yStart;
-		    		 while (yPosition <= size.yMax ){
+		    		 while (yPosition <= size.getYMax() ){
 		    			 g2.drawLine( xPosition - crossXLength, yPosition, xPosition + crossXLength, yPosition );
 		    			 g2.drawLine( xPosition, yPosition - crossYLength, xPosition, yPosition + crossYLength );
 
