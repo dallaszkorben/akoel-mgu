@@ -1,6 +1,6 @@
 package hu.akoel.mgu.scale.values;
 
-import hu.akoel.mgu.mscale.MScale.UNIT;
+import hu.akoel.mgu.scale.Scale.UNIT;
 
 public class UnitValue {
 
