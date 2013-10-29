@@ -1,6 +1,11 @@
 package hu.akoel.mgu;
 
 
+import hu.akoel.mgu.values.PixelPerUnitValue;
+import hu.akoel.mgu.values.SizeValue;
+import hu.akoel.mgu.values.TranslateValue;
+import hu.akoel.mgu.values.Value2D;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -42,8 +47,8 @@ public class MCanvas extends JPanel {
 	
 	private static final long serialVersionUID = 44576557802932936L;
 
-	private Size worldSize;
-	private Size boundSize;
+	private SizeValue worldSize;
+	private SizeValue boundSize;
 	//private double pixelPerUnitX, pixelPerUnitY;
 //	private Position pixelPerUnit = new Position(0,0);
 	private TranslateValue worldTranslate = new TranslateValue( 0.0, 0.0 );
@@ -98,7 +103,7 @@ public class MCanvas extends JPanel {
 		}		
 	}
 	
-	public MCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, Size boundSize ) {
+	public MCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, SizeValue boundSize ) {
 		
 		if( null == possiblePixelPerUnits ){
 			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
@@ -128,7 +133,7 @@ public class MCanvas extends JPanel {
 	 * @param background
 	 * @param worldSize
 	 */
-	public MCanvas(Border borderType, Color background, Size worldSize) {
+	public MCanvas(Border borderType, Color background, SizeValue worldSize) {
 		
 		if( null == worldSize ){
 			throw new Error("In case of FIX_PORTION it is required to set the worldSize. Now it is null.");
@@ -141,10 +146,10 @@ public class MCanvas extends JPanel {
 		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
 		setWasTransferedToMiddle( true );
 		
-		setWorldTranslate( new TranslateValue( -worldSize.xMin, -worldSize.yMin ));
+		setWorldTranslate( new TranslateValue( -worldSize.getXMin(), -worldSize.getYMin() ));
 	}
 	
-	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, Size worldSize, Size boundSize ){
+	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, SizeValue worldSize, SizeValue boundSize ){
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
@@ -396,7 +401,7 @@ public class MCanvas extends JPanel {
 			setWorldTranslateX( possibleXTranslate );
 			
 			if( null != boundSize ){
-				if( getWorldSize().xMax > getBoundSize().xMax ||	getWorldSize().xMin < getBoundSize().xMin ){
+				if( getWorldSize().getXMax() > getBoundSize().getXMax() ||	getWorldSize().getXMin() < getBoundSize().getXMin() ){
 					setWorldTranslateX( originalXTranslate );
 				}
 			}
@@ -421,7 +426,7 @@ public class MCanvas extends JPanel {
 		
 			setWorldTranslateY( possibleYTranslate );
 			if( null != boundSize ){
-				if( getWorldSize().yMax > getBoundSize().yMax ||	getWorldSize().yMin < getBoundSize().yMin ){
+				if( getWorldSize().getYMax() > getBoundSize().getYMax() ||	getWorldSize().getYMin() < getBoundSize().getYMin() ){
 					setWorldTranslateY( originalYTranslate );
 				}
 			}	
@@ -449,7 +454,7 @@ public class MCanvas extends JPanel {
 			//Ha van hatar definialva
 			if( null != boundSize ){
 				//Akkor megnezi, hogy tul ment-e a hataron
-				if( getWorldSize().xMax > getBoundSize().xMax || getWorldSize().xMin < getBoundSize().xMin ){
+				if( getWorldSize().getXMax() > getBoundSize().getXMax() || getWorldSize().getXMin() < getBoundSize().getXMin() ){
 				
 					//Ha igen, akkor visszavonja a muveletet
 					setWorldTranslateX( originalXTranslate );
@@ -471,7 +476,7 @@ public class MCanvas extends JPanel {
 			if( null != boundSize ){
 				
 				//Akkor megnezi, hogy tul ment-e a hataron
-				if( getWorldSize().yMax > getBoundSize().yMax || getWorldSize().yMin < getBoundSize().yMin ){
+				if( getWorldSize().getYMax() > getBoundSize().getYMax() || getWorldSize().getYMin() < getBoundSize().getYMin() ){
 					
 					//Ha igen, akkor visszavonja a muveletet
 					setWorldTranslateY( originalYTranslate );
@@ -569,7 +574,7 @@ public class MCanvas extends JPanel {
 	 * Visszaadja teljes vilag meretet
 	 * @return
 	 */
-	public Size getWorldSize(){
+	public SizeValue getWorldSize(){
 		
 		if( null == getSidePortion() ){
 			return null;
@@ -585,22 +590,22 @@ public class MCanvas extends JPanel {
 			double yMax = getWorldYByPixel(0);
 			double yMin = getWorldYByPixel((int)height-1);
 			
-			Size size = new Size(xMin, yMin, xMax, yMax);
+			SizeValue size = new SizeValue(xMin, yMin, xMax, yMax);
 			return size;
 		}else{
 			return null;
 		}
 	}
 
-	public Size getBoundSize(){
+	public SizeValue getBoundSize(){
 		return this.boundSize;
 	}
 	
-	public void setBoundSize( Size boundSize ){
+	public void setBoundSize( SizeValue boundSize ){
 		this.boundSize = boundSize;
 	}
 	
-	public void setWorldSize( Size worldSize ){
+	public void setWorldSize( SizeValue worldSize ){
 		this.worldSize = worldSize;
 	}
 
@@ -847,20 +852,20 @@ public class MCanvas extends JPanel {
 				 boolean overlapBottom = false;
 			 
 				 //Eloszor letolom az egeszet a bal also sarokba, ha a bal also koordinatak esetleg tullognanak
-				 if( getWorldSize().xMin < getBoundSize().xMin ){
-					 setWorldTranslateX( possibleXTranslate - (getBoundSize().xMin - getWorldSize().xMin) );
+				 if( getWorldSize().getXMin() < getBoundSize().getXMin() ){
+					 setWorldTranslateX( possibleXTranslate - (getBoundSize().getXMin() - getWorldSize().getXMin() ) );
 					 overlapLeft = true;
 				 }
 			 
-				 if( getWorldSize().yMin < getBoundSize().yMin ){
-					 setWorldTranslateY( possibleYTranslate - (getBoundSize().yMin - getWorldSize().yMin) );
+				 if( getWorldSize().getYMin() < getBoundSize().getYMin() ){
+					 setWorldTranslateY( possibleYTranslate - (getBoundSize().getYMin() - getWorldSize().getYMin()) );
 					 overlapBottom = true;
 				 }
 			 
 				 //Ha a jobb felso sarok igy is kilog, akkor a zoom nem megengedett
-				 if( overlapLeft && getWorldSize().xMax > getBoundSize().xMax ){
+				 if( overlapLeft && getWorldSize().getXMax() > getBoundSize().getXMax() ){
 					 ok = false;
-				 }else if( overlapBottom && getWorldSize().yMax > getBoundSize().yMax){
+				 }else if( overlapBottom && getWorldSize().getYMax() > getBoundSize().getYMax()){
 					 ok = false;
 				 }
 			 			 
@@ -869,20 +874,20 @@ public class MCanvas extends JPanel {
 					 boolean overlapRight = false;
 					 boolean overlapTop = false;
 				 
-					 if( getWorldSize().xMax > getBoundSize().xMax ){
-						 setWorldTranslateX( possibleXTranslate + (getWorldSize().xMax - getBoundSize().xMax) );
+					 if( getWorldSize().getXMax() > getBoundSize().getXMax() ){
+						 setWorldTranslateX( possibleXTranslate + (getWorldSize().getXMax() - getBoundSize().getXMax()) );
 						 overlapRight = true;
 					 }
 			 
-					 if( getWorldSize().yMax > getBoundSize().yMax ){
-						 setWorldTranslateY( possibleYTranslate + (getWorldSize().yMax - getBoundSize().yMax) );
+					 if( getWorldSize().getYMax() > getBoundSize().getYMax() ){
+						 setWorldTranslateY( possibleYTranslate + (getWorldSize().getYMax() - getBoundSize().getYMax()) );
 						 overlapTop = true;
 					 }
 				 
 					 //Ha a bal also sarok igy is kilog, akkor a zoom nem megengedett
-					 if( overlapRight && getWorldSize().xMin < getBoundSize().xMin ){
+					 if( overlapRight && getWorldSize().getXMin() < getBoundSize().getXMin() ){
 						 ok = false;
-					 }else if( overlapTop && getWorldSize().yMin < getBoundSize().yMin ){
+					 }else if( overlapTop && getWorldSize().getYMin() < getBoundSize().getYMin() ){
 						 ok = false;
 					 }
 				 }
@@ -1069,7 +1074,7 @@ public class MCanvas extends JPanel {
 		         * Az abrazolando vilag oldalainak aranya (world meret)
 		         */
 		        //wH = parentWorldSize.getWidth() / parentWorldSize.getHeight();
-		        Size parentWorldSize = parent.getWorldSize();
+		        SizeValue parentWorldSize = parent.getWorldSize();
 		        wH = parentWorldSize.getWidth() / parentWorldSize.getHeight();
 		        
 
