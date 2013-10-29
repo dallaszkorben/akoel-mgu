@@ -1,10 +1,10 @@
 package hu.akoel.mgu;
 
-import hu.akoel.mgu.maxis.MAxis;
-import hu.akoel.mgu.maxis.MAxis.AxisPosition;
-import hu.akoel.mgu.mcrossline.MCrossLine;
-import hu.akoel.mgu.mgrid.MGrid;
-import hu.akoel.mgu.mscale.MScale;
+import hu.akoel.mgu.axis.Axis;
+import hu.akoel.mgu.axis.Axis.AxisPosition;
+import hu.akoel.mgu.crossline.CrossLine;
+import hu.akoel.mgu.grid.Grid;
+import hu.akoel.mgu.scale.Scale;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -32,10 +32,10 @@ import javax.swing.border.TitledBorder;
 public class CanvasControl {
 
 	private MCanvas myCanvas;
-	private MCrossLine myCrossLine;
-	private MGrid myGrid;
-	private MAxis myAxis;
-	private MScale myScale;
+	private CrossLine myCrossLine;
+	private Grid myGrid;
+	private Axis myAxis;
+	private Scale myScale;
 	
 	private JPanel controlPanel;
 	private JPanel statusPanel;
@@ -63,7 +63,7 @@ public class CanvasControl {
 	private JTextField xPositionField;
 	private JTextField yPositionField;
 	
-	public CanvasControl( MCanvas myCanvas, MCrossLine myCrossLine, MGrid myGrid, MAxis myAxis, MScale myScale ){
+	public CanvasControl( MCanvas myCanvas, CrossLine myCrossLine, Grid myGrid, Axis myAxis, Scale myScale ){
 		this.myCanvas = myCanvas;
 		this.myCrossLine = myCrossLine;
 		this.myGrid = myGrid;
@@ -180,13 +180,13 @@ public class CanvasControl {
 				String cmbType = (String) jcmbType.getSelectedItem();
 				
 				if( cmbType.equals( "Solid")){
-					myGrid.setType( MGrid.Type.SOLID );
+					myGrid.setType( Grid.Type.SOLID );
 				}else if( cmbType.equals( "Dashed")){
-					myGrid.setType( MGrid.Type.DASHED );
+					myGrid.setType( Grid.Type.DASHED );
 				}else if( cmbType.equals( "Cross")){
-					myGrid.setType( MGrid.Type.CROSS );
+					myGrid.setType( Grid.Type.CROSS );
 				}else if( cmbType.equals( "Dot")){
-					myGrid.setType( MGrid.Type.DOT );
+					myGrid.setType( Grid.Type.DOT );
 				}
 				myCanvas.refreshCoreCanvas();
 			}

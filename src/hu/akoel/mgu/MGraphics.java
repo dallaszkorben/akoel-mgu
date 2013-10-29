@@ -7,14 +7,13 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
-import java.math.BigDecimal;
 
-public class JGraphics {
+public class MGraphics {
 
 	private MCanvas canvas;
 	private Graphics2D g2;
 		
-	public JGraphics(MCanvas canvas, Graphics2D g2){
+	public MGraphics(MCanvas canvas, Graphics2D g2){
 		this.canvas = canvas;
 		this.g2 = g2;
 	}
