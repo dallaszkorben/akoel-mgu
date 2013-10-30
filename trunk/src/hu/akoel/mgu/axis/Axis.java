@@ -68,7 +68,7 @@ public class Axis {
 	};
 	
 	public void refresh(){
-		canvas.refreshCoreCanvas();
+		canvas.revalidateAndRepaintCoreCanvas();
 	}
 	
 	public void turnOff(){
