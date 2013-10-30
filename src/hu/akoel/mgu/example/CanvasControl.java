@@ -125,7 +125,7 @@ public class CanvasControl {
 	            	return false;
 	            }
 	            myGrid.setDeltaGridX( Double.valueOf(goodValue));
-	            myCanvas.refreshCoreCanvas();
+	            myCanvas.revalidateAndRepaintCoreCanvas();
 	            return true;
 			}
 		});
@@ -148,7 +148,7 @@ public class CanvasControl {
 	            	return false;
 	            }
 	            myGrid.setDeltaGridY( Double.valueOf(goodValue));
-	            myCanvas.refreshCoreCanvas();
+	            myCanvas.revalidateAndRepaintCoreCanvas();
 	            return true;
 			}
 		});
@@ -167,7 +167,7 @@ public class CanvasControl {
 				}else if( cmbType.equals( "3")){
 					myGrid.setWidthInPixel(3);
 				}
-				myCanvas.refreshCoreCanvas();
+				myCanvas.revalidateAndRepaintCoreCanvas();
 			}
 		});		
 		
@@ -189,7 +189,7 @@ public class CanvasControl {
 				}else if( cmbType.equals( "Dot")){
 					myGrid.setType( Grid.Type.DOT );
 				}
-				myCanvas.refreshCoreCanvas();
+				myCanvas.revalidateAndRepaintCoreCanvas();
 			}
 		});
 		
@@ -318,7 +318,7 @@ public class CanvasControl {
 	            	return false;
 	            }
 	            myCrossLine.setPositionX( Double.valueOf(goodValue));
-	            myCanvas.refreshCoreCanvas();
+	            myCanvas.revalidateAndRepaintCoreCanvas();
 	            return true;
 			}
 		});
@@ -341,7 +341,7 @@ public class CanvasControl {
 	            	return false;
 	            }
 	            myCrossLine.setPositionY( Double.valueOf(goodValue));
-	            myCanvas.refreshCoreCanvas();
+	            myCanvas.revalidateAndRepaintCoreCanvas();
 	            return true;
 			}
 		});
@@ -364,7 +364,7 @@ public class CanvasControl {
 	            	return false;
 	            }
 	            myCrossLine.setLengthX( Double.valueOf( goodValue ) );
-	            myCanvas.refreshCoreCanvas();
+	            myCanvas.revalidateAndRepaintCoreCanvas();
 	            return true;
 			}
 		});
@@ -387,7 +387,7 @@ public class CanvasControl {
 	            	return false;
 	            }
 	            myCrossLine.setLengthY( Double.valueOf( goodValue ) );
-	            myCanvas.refreshCoreCanvas();
+	            myCanvas.revalidateAndRepaintCoreCanvas();
 	            return true;
 			}
 		});
@@ -409,7 +409,7 @@ public class CanvasControl {
 				}else if( cmbType.equals( "5")){
 					myCrossLine.setWidthInPixel(5);
 				}
-				myCanvas.refreshCoreCanvas();
+				myCanvas.revalidateAndRepaintCoreCanvas();
 			}
 		});		
 		

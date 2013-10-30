@@ -11,7 +11,10 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -183,8 +186,12 @@ public class MCanvas extends JPanel {
 		positionChangeListenerList.add(positionChangeListener);
 	}
 	
-	public void refreshCoreCanvas(){
+	public void revalidateAndRepaintCoreCanvas(){
 		coreCanvas.revalidate();
+		coreCanvas.repaint();
+	}
+	
+	public void repaintCoreCanvas(){
 		coreCanvas.repaint();
 	}
 	
@@ -277,8 +284,27 @@ public class MCanvas extends JPanel {
 		return coreCanvas;
 	}
 	
+	//
+	// Figyelok kivulrol
+	//
+	
+	/**
+	 * Egermozgas figyelo hozzaadasa
+	 */
 	public void addMouseMotionListener( MouseMotionListener listener ){
 		coreCanvas.addMouseMotionListener( listener );
+	}
+	
+	/**
+	 * Eger drag figyelo hozzaadasa
+	 * A hatterben hozzaadja a listenert a coreCanvas ket mouse figyelojehez is:
+	 * addMouseListener(listener)
+	 * addMouseMotionListener(listener)
+	 * @param listener
+	 */
+	public void addMouseInputListener( MouseInputListener listener ){
+		coreCanvas.addMouseListener(listener);
+		coreCanvas.addMouseMotionListener(listener);
 	}
 	
 	//
@@ -803,6 +829,16 @@ public class MCanvas extends JPanel {
 		
 	}
 	
+	public void fireMouseMoved(){
+		
+		Point position = coreCanvas.getMousePosition(false);
+	
+		MouseEvent me = new MouseEvent(coreCanvas, 0, 0, 0, position.x, position.y, 1, false);
+		for(MouseMotionListener ml: coreCanvas.getMouseMotionListeners()){
+		    ml.mouseMoved(me);
+		}
+	}
+	
 	/**
 	 * Az eger kormanya altal letrehozott zoom figyelo osztaly
 	 */
@@ -813,12 +849,15 @@ public class MCanvas extends JPanel {
 			yCenter = getWorldYByPixel(e.getY());
 
 	      //Felfele tekeres -> ZoomIn
-	      if (e.getWheelRotation() < 0)
+	      if (e.getWheelRotation() < 0){
 	    	  zoomIn(xCenter, yCenter, e.getX(), e.getY() );
+
 	      //Lefele tekeres -> ZoomOut
-	      else
+	      }else{
 	    	  zoomOut(xCenter, yCenter, e.getX(), e.getY() );
 
+	      }
+	      
 		}//mouseWheelMoved(MouseWheelEvent e)
 
 	}//class WheelZoomListener
@@ -842,6 +881,7 @@ public class MCanvas extends JPanel {
 			 coreCanvas.invalidate();
 			 coreCanvas.repaint();
 			 revalidate();
+			 
 		 }
 	 }	
 	 
@@ -931,7 +971,7 @@ public class MCanvas extends JPanel {
 			 }
 		 
 			 this.getParent().repaint();
-			 this.refreshCoreCanvas();
+			 this.revalidateAndRepaintCoreCanvas();
 
 			 revalidate();
 		 }
