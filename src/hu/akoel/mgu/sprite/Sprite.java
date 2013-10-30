@@ -3,14 +3,20 @@ package hu.akoel.mgu.sprite;
 import java.util.ArrayList;
 
 import hu.akoel.mgu.MGraphics;
+import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
 
 public class Sprite {
+	private SizeValue boundBox;
 	private TranslateValue translate = new TranslateValue(0,0);
 	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
 
-	public Sprite(){
-		
+	public Sprite( SizeValue boundBox ){
+		this.boundBox = boundBox;
+	}
+	
+	public SizeValue getBoundBox(){
+		return this.boundBox;
 	}
 	
 	public void addElement( SpriteElement element ){

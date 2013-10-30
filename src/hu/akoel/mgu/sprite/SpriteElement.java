@@ -21,4 +21,8 @@ public abstract class SpriteElement {
 	}
 	
 	public abstract void draw( MGraphics g2 );
+	
+	public abstract void drawFocus( MGraphics g2);
+	
+	public abstract void drawGhost( MGraphics g2);
 }
