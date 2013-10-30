@@ -12,14 +12,13 @@ import hu.akoel.mgu.example.CanvasControl;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
-import hu.akoel.mgu.scale.values.ScaleValue;
 import hu.akoel.mgu.sprite.RectangleElement;
 import hu.akoel.mgu.sprite.Sprite;
+import hu.akoel.mgu.sprite.SpriteCanvas;
 import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
-import hu.akoel.mgu.values.RateValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
 import hu.akoel.mgu.values.Value2D;
@@ -32,8 +31,6 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -44,7 +41,7 @@ public class ExampleSprite extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	private MCanvas myCanvas;
+	private SpriteCanvas myCanvas;
 	//private SizeValue worldSize = new SizeValue(-10.0, -10.0, 10.0, 30);	
 	//private SizeValue boundSize = new SizeValue(0.0, 0.0, 400.0, 400);	
 	private Color background = Color.black;
@@ -93,7 +90,7 @@ public class ExampleSprite extends JFrame {
 		this.setSize(700, 700);
 		this.createBufferStrategy(1);
 
-		myCanvas = new MCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
+		myCanvas = new SpriteCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
 		myCanvas.addPositionChangeListener(new PositionChangeListener() {
 			
 			@Override
@@ -144,11 +141,11 @@ public class ExampleSprite extends JFrame {
 			}			
 		});	
 		
-		final Sprite sprite = new Sprite();
+		final Sprite sprite1 = new Sprite(new SizeValue(-1, -1, 1, 1));
 		RectangleElement rect1 = new RectangleElement(-1,-1,2,2,Color.blue, new BasicStroke(3f));
 		RectangleElement rect2 = new RectangleElement(-0.5,-0.5,1,1,Color.yellow, new BasicStroke(7f));
-		sprite.addElement(rect1);
-		sprite.addElement(rect2);
+		sprite1.addElement(rect1);
+		sprite1.addElement(rect2);
 		
 		
 		//
@@ -159,22 +156,10 @@ public class ExampleSprite extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
-				//myCanvas.removePainterListenersFromHighest();
-				myCanvas.addPainterListenerToHighest(new PainterListener(){
-					
-					@Override
-					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {					
-						
-						sprite.draw(g2);
+	
+				myCanvas.addSprite(sprite1);
 
-					}
-
-					@Override
-					public void paintByViewer(MCanvas canvas, Graphics2D g2) {}	
-					
-				}, MCanvas.Level.ABOVE);		
-				myCanvas.repaint();
+				myCanvas.refreshCoreCanvas();
 			}
 			
 		});

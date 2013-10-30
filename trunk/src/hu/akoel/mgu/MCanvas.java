@@ -159,6 +159,18 @@ public class MCanvas extends JPanel {
 		this.add( getCoreCanvas( this, background ) );
 	}
 	
+	public ArrayList<PainterListener> getHighestList(){
+		return highestList;
+	}
+	
+	public ArrayList<PainterListener> getMiddleList(){
+		return middleList;
+	}
+	
+	public ArrayList<PainterListener> getDeepestList(){
+		return deepestList;
+	}
+	
 	public void setPossiblePixelPerUnits( PossiblePixelPerUnits possiblePixelPerUnits ){
 		this.possiblePixelPerUnits = possiblePixelPerUnits;
 	}
@@ -258,11 +270,15 @@ public class MCanvas extends JPanel {
 		return this.wasTransferedToMiddle;
 	}
 	
-	public CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
+	private CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
 		if( null == coreCanvas ){
 			coreCanvas = new CoreCanvas( this, background );
 		}
 		return coreCanvas;
+	}
+	
+	public void addMouseMotionListener( MouseMotionListener listener ){
+		coreCanvas.addMouseMotionListener( listener );
 	}
 	
 	//

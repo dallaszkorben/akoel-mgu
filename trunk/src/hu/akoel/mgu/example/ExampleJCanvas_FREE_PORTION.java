@@ -149,7 +149,7 @@ public class ExampleJCanvas_FREE_PORTION extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				myCanvas.removePainterListenersFromTemporary();
+				//myCanvas.removePainterListenersFromTemporary();
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
 					@Override
