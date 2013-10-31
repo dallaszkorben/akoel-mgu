@@ -1,9 +1,6 @@
 package hu.akoel.mgu.sprite.example;
 
 
-import hu.akoel.mgu.MGraphics;
-import hu.akoel.mgu.MCanvas;
-import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
@@ -27,7 +24,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -141,40 +137,24 @@ public class ExampleSprite extends JFrame {
 			}			
 		});	
 		
-		final Sprite sprite1 = new Sprite(new SizeValue(-1, -1, 1, 1));
-		RectangleElement rect11 = new RectangleElement(-1,-1,2,2,Color.blue, new BasicStroke(3f), Color.red, new BasicStroke(3));
-		RectangleElement rect12 = new RectangleElement(-0.5,-0.5,1,1,Color.yellow, new BasicStroke(7f), Color.red, new BasicStroke(7));
-		sprite1.addElement(rect11);
-		sprite1.addElement(rect12);
-		sprite1.setPosition( 0, -2 );
-		
-		final Sprite sprite2 = new Sprite(new SizeValue(-1, -1, 1, 1));
-		RectangleElement rect21 = new RectangleElement(-1,-1,2,2,Color.green, new BasicStroke(3f), Color.red, new BasicStroke(3));
-		RectangleElement rect22 = new RectangleElement(-0.5,-0.5,1,1,Color.blue, new BasicStroke(7f), Color.red, new BasicStroke(7));
-		sprite2.addElement(rect21);
-		sprite2.addElement(rect22);
-		sprite2.setPosition( 0, 2 );
-		
-		final Sprite sprite3 = new Sprite(new SizeValue(-1, -1, 1, 1));
-		RectangleElement rect31 = new RectangleElement(-1,-1,2,2,Color.CYAN, new BasicStroke(3f), Color.red, new BasicStroke(3));
-		RectangleElement rect32 = new RectangleElement(-0.5,-0.5,1,1,Color.MAGENTA, new BasicStroke(7f), Color.red, new BasicStroke(7));
-		sprite3.addElement(rect31);
-		sprite3.addElement(rect32);
-		sprite3.setPosition( 2, 0 );
-		
+
 		//
 		//Elhelyezi az eloterbe a Sprite-okat
 		//
-		JButton commandButtonDrawFunction = new JButton("draw Sprite");
+		JButton commandButtonDrawFunction = new JButton("add new Sprite");
 		commandButtonDrawFunction.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 	
-				myCanvas.addSprite(sprite1);
-				myCanvas.addSprite(sprite2);
-				myCanvas.addSprite(sprite3);
+				final Sprite sprite1 = new Sprite(new SizeValue(-1, -1, 1, 1));
+				RectangleElement rect11 = new RectangleElement(-1,-1,2,2,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3));
+				RectangleElement rect12 = new RectangleElement(-0.5,-0.5,1,1,Color.yellow, new BasicStroke(7f), Color.red, new BasicStroke(7));
+				sprite1.addElement(rect11);
+				sprite1.addElement(rect12);
+				sprite1.setPosition( 0, 0 );
 				
+				myCanvas.addSprite(sprite1);				
 				
 				myCanvas.revalidateAndRepaintCoreCanvas();
 				

@@ -36,7 +36,7 @@ public class Sprite {
 	}
 	
 	public PositionValue getPosition(){
-		return position;
+		return new PositionValue(position.getX(), position.getY());
 	}
 	
 	public void draw( MGraphics g2 ){
