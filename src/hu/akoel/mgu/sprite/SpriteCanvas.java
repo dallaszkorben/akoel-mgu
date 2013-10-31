@@ -110,7 +110,7 @@ public class SpriteCanvas extends MCanvas{
 		private PositionValue originalPosition;
 		private DeltaValue initialDelta;
 
-		private boolean canBeDragged = false;
+		private boolean draggStarted = false;
 		private Sprite sprite;
 		
 		@Override
@@ -120,7 +120,7 @@ public class SpriteCanvas extends MCanvas{
 		@Override
 		public void mousePressed(MouseEvent e) {
 			
-			canBeDragged = false;
+			draggStarted = false;
 			
 			//Ha a baleger gombot nyomtam be
 			if( e.getButton() == MouseEvent.BUTTON1){
@@ -149,7 +149,7 @@ public class SpriteCanvas extends MCanvas{
 												
 						//El kell menteni az eredeti poziciojat
 						originalPosition = sprite.getPosition();
-						
+					
 						//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
 						initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
 						
@@ -164,7 +164,7 @@ public class SpriteCanvas extends MCanvas{
 						//repaintCoreCanvas();
 
 						
-						canBeDragged = true;
+						draggStarted = true;
 					
 						
 						break;
@@ -177,33 +177,60 @@ public class SpriteCanvas extends MCanvas{
 		@Override
 		public void mouseReleased(MouseEvent e) {	
 
-			//Jelzem, hogy vege a dragg-nek
-			canBeDragged = false;
-			
-			//Engedelyezem a fokusz mukodeset
-			setNeedFocus(true);
-			
-			//El kell helyezni a vegleges taroloba az uj pozicioval			
-			addSprite(sprite);
-			
-			//Es meg kell jeleniteni
-			revalidateAndRepaintCoreCanvas();
-			
-			//Es mivel fokuszban lesz ezert egy egermozgast is szimulalni kell
-			fireMouseMoved();
 
+			if( draggStarted ){
+			
+				//Engedelyezem a fokusz mukodeset
+				setNeedFocus(true);
+			
+				//El kell helyezni a vegleges taroloba az uj pozicioval			
+				addSprite(sprite);
+			
+				//Es meg kell jeleniteni
+				revalidateAndRepaintCoreCanvas();
+			
+				//Es mivel fokuszban lesz ezert egy egermozgast is szimulalni kell
+				fireMouseMoved();
+			}
+			
+			//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
+			draggStarted = false;
 			
 		}
 		@Override
 		public void mouseEntered(MouseEvent e) {			
 		}
+		
 		@Override
 		public void mouseExited(MouseEvent e) {	
+		
+			//Ha elindult mar a mozgatas
+			if( draggStarted ){
+				
+				//Ujra engedelyezem a fokusz mukodeset
+				setNeedFocus(true);
+				
+				//Jelzem, hogy vege a dragg-nek
+				draggStarted = false;
+			
+				//Visszairom az eredeti poziciot
+				sprite.setPosition( originalPosition );
+				
+				//Visszahelyezem a vegleges taroloba az eredeti pozicioval			
+				addSprite(sprite);
+				
+				//Es meg kell jeleniteni
+				revalidateAndRepaintCoreCanvas();
+				
+			}
+			
+			
 		}
+		
 		@Override
 		public void mouseDragged(MouseEvent e) {
 		
-			if( canBeDragged ){
+			if( draggStarted ){
 				
 				double xValue = getWorldXByPixel(e.getX() );
 				double yValue = getWorldYByPixel(e.getY());
