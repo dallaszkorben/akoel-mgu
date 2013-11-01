@@ -11,10 +11,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -31,26 +29,9 @@ public class MCanvas extends JPanel {
 	public static enum Level {
 		UNDER, ABOVE
 	}
-
-	//Az oldalak aranyara vonatkozo szabaly a befoglalo kontener meretvaltozasanak fuggvenyeben
-	public static enum SIDES_PORTION{
-		
-		//Az ablakban latszik a teljes definialt vilag. Ez egyben azt jelenti, hogy
-		//a meretarany az ablak meretenek valtoztatasaval valtozik, es az ablak
-		//oldalainak aranya nem kotott
-		//SHOW_WHOLE_WORLD,
-		FIX_PORTION,
-		  
-		//Az ablak merete szabadon valtozhat
-		//a meretarany nem valtozik
-		//Nem feltetlenullatom a teljes meretet
-		FREE_PORTION,		  
-		
-	}
 	
 	private static final long serialVersionUID = 44576557802932936L;
 
-	private SizeValue worldSize;
 	private SizeValue boundSize;
 	//private double pixelPerUnitX, pixelPerUnitY;
 //	private Position pixelPerUnit = new Position(0,0);
@@ -71,7 +52,6 @@ public class MCanvas extends JPanel {
 	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
 
 	CoreCanvas coreCanvas;
-	SIDES_PORTION sidePortion;
 	
 	/**
 	 * Ez egy olyan canvas, melyben megadjuk hogy mind ket tengely beosztasa a parameterben megadott meretu.
@@ -87,13 +67,7 @@ public class MCanvas extends JPanel {
 	 */
 	public MCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
 		
-		if( null == possiblePixelPerUnits){
-			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
-		}
-		
-		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
-		
-		this.commonConstructor(borderType, background, possiblePixelPerUnits, null, null);
+		this.commonConstructor(borderType, background, possiblePixelPerUnits, null);
 		
 		this.positionToMiddle = positionToMiddle;
 		
@@ -108,13 +82,7 @@ public class MCanvas extends JPanel {
 	
 	public MCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, SizeValue boundSize ) {
 		
-		if( null == possiblePixelPerUnits ){
-			throw new Error("In case of FREE_PORTION it is required to set the pixelPerUnit to a real number. Now it is: " + possiblePixelPerUnits );
-		}
-		
-		this.setSidePortion( SIDES_PORTION.FREE_PORTION );
-		
-		this.commonConstructor(borderType, background, possiblePixelPerUnits, null, boundSize);
+		this.commonConstructor(borderType, background, possiblePixelPerUnits, boundSize);
 		
 		this.positionToMiddle = positionToMiddle;
 		
@@ -128,36 +96,11 @@ public class MCanvas extends JPanel {
 		
 	}
 	
-	
-	/**
-	 * If the unitToPixelPortion is missing then the sidePortion is FIX_PORTION
-	 * 
-	 * @param borderType
-	 * @param background
-	 * @param worldSize
-	 */
-	public MCanvas(Border borderType, Color background, SizeValue worldSize) {
-		
-		if( null == worldSize ){
-			throw new Error("In case of FIX_PORTION it is required to set the worldSize. Now it is null.");
-		}
-
-		this.setSidePortion( SIDES_PORTION.FIX_PORTION );
-		
-		this.commonConstructor(borderType, background, null, worldSize, worldSize);
-						
-		//Jelzem, hogy megtorent az eltolas. Persze nem volt, csak nem akarom, hogy megtortenjen
-		setWasTransferedToMiddle( true );
-		
-		setWorldTranslate( new TranslateValue( -worldSize.getXMin(), -worldSize.getYMin() ));
-	}
-	
-	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, SizeValue worldSize, SizeValue boundSize ){
+	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, SizeValue boundSize ){
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
 		this.possiblePixelPerUnits = possiblePixelPerUnits;
-		this.setWorldSize( worldSize );
 		this.setBoundSize( boundSize );
 		this.add( getCoreCanvas( this, background ) );
 	}
@@ -195,14 +138,6 @@ public class MCanvas extends JPanel {
 		coreCanvas.repaint();
 	}
 	
-	public SIDES_PORTION getSidePortion(){
-		return sidePortion;
-	}
-	
-	public void setSidePortion( SIDES_PORTION sidePortion ){
-		this.sidePortion = sidePortion;
-	}
-	
 	public Value2D getWorldTranslate(){
 		return worldTranslate;
 	}
@@ -231,21 +166,9 @@ public class MCanvas extends JPanel {
 	public double getWorldTranslateY(){
 		return this.worldTranslate.getY();
 	}
-	
-/*	public double getPixelPerUnitX(){
-		return possiblePixelPerUnits.getActualPixelPerUnit().getX();
-	}
-	
-	public double getPixelPerUnitY(){
-		return possiblePixelPerUnits.getActualPixelPerUnit().getY();
-	}
-*/	
+		
 	public PixelPerUnitValue getPixelPerUnit(){
-		if( getSidePortion().equals(SIDES_PORTION.FREE_PORTION)){
-			return possiblePixelPerUnits.getActualPixelPerUnit();
-		}else{
-			return new PixelPerUnitValue( getViewableSize().width/worldSize.getWidth(), getViewableSize().height/worldSize.getHeight() );
-		}
+		return possiblePixelPerUnits.getActualPixelPerUnit();
 	}
 
 	/**
@@ -429,105 +352,97 @@ public class MCanvas extends JPanel {
 	// Mozgatas
 	//---------
 	public void moveX( int pixel ){
-		if( !getSidePortion().equals( SIDES_PORTION.FIX_PORTION )){
 		
-			double originalXTranslate = getWorldTranslate().getX();
-			double possibleXTranslate = originalXTranslate;
+		double originalXTranslate = getWorldTranslate().getX();
+		double possibleXTranslate = originalXTranslate;
 		
-			if( pixel > 0){
-				possibleXTranslate -= getWorldXLengthByPixel(pixel + 1);
-			}else{
-				possibleXTranslate += getWorldXLengthByPixel(-pixel + 1);
-			}
-
-			setWorldTranslateX( possibleXTranslate );
-			
-			if( null != boundSize ){
-				if( getWorldSize().getXMax() > getBoundSize().getXMax() ||	getWorldSize().getXMin() < getBoundSize().getXMin() ){
-					setWorldTranslateX( originalXTranslate );
-				}
-			}
-			
-			coreCanvas.invalidate();
-			coreCanvas.repaint();
+		if( pixel > 0){
+			possibleXTranslate -= getWorldXLengthByPixel(pixel + 1);
+		}else{
+			possibleXTranslate += getWorldXLengthByPixel(-pixel + 1);
 		}
+
+		setWorldTranslateX( possibleXTranslate );
+			
+		if( null != boundSize ){
+			if( getWorldSize().getXMax() > getBoundSize().getXMax() ||	getWorldSize().getXMin() < getBoundSize().getXMin() ){
+				setWorldTranslateX( originalXTranslate );
+			}
+		}
+			
+		coreCanvas.invalidate();
+		coreCanvas.repaint();
 	}
 	
 	public void moveY( int pixel ){
 
-		if( !getSidePortion().equals( SIDES_PORTION.FIX_PORTION )){
-
-			double originalYTranslate = getWorldTranslateY();
-			double possibleYTranslate = originalYTranslate;
+		double originalYTranslate = getWorldTranslateY();
+		double possibleYTranslate = originalYTranslate;
 		
-			if( pixel > 0){
-				possibleYTranslate += getWorldYLengthByPixel(pixel + 1);
-			}else{
-				possibleYTranslate -= getWorldYLengthByPixel(-pixel + 1);
-			}
-		
-			setWorldTranslateY( possibleYTranslate );
-			if( null != boundSize ){
-				if( getWorldSize().getYMax() > getBoundSize().getYMax() ||	getWorldSize().getYMin() < getBoundSize().getYMin() ){
-					setWorldTranslateY( originalYTranslate );
-				}
-			}	
-			
-			coreCanvas.invalidate();
-			coreCanvas.repaint();
+		if( pixel > 0){
+			possibleYTranslate += getWorldYLengthByPixel(pixel + 1);
+		}else{
+			possibleYTranslate -= getWorldYLengthByPixel(-pixel + 1);
 		}
 		
+		setWorldTranslateY( possibleYTranslate );
+		if( null != boundSize ){
+			if( getWorldSize().getYMax() > getBoundSize().getYMax() ||	getWorldSize().getYMin() < getBoundSize().getYMin() ){
+				setWorldTranslateY( originalYTranslate );
+			}
+		}	
+			
+		coreCanvas.invalidate();
+		coreCanvas.repaint();
 	}
 	
 	public void moveXY(int pixelX, int pixelY){
-		if( !getSidePortion().equals( SIDES_PORTION.FIX_PORTION )){
 		
-			double originalXTranslate = getWorldTranslateX();
-			double possibleXTranslate = originalXTranslate;
+		double originalXTranslate = getWorldTranslateX();
+		double possibleXTranslate = originalXTranslate;
 		
-			if( pixelX > 0){
-				possibleXTranslate -= getWorldXLengthByPixel(pixelX + 1);
-			}else{
-				possibleXTranslate += getWorldXLengthByPixel(-pixelX + 1);
-			}
-
-			setWorldTranslateX( possibleXTranslate );
-			
-			//Ha van hatar definialva
-			if( null != boundSize ){
-				//Akkor megnezi, hogy tul ment-e a hataron
-				if( getWorldSize().getXMax() > getBoundSize().getXMax() || getWorldSize().getXMin() < getBoundSize().getXMin() ){
-				
-					//Ha igen, akkor visszavonja a muveletet
-					setWorldTranslateX( originalXTranslate );
-				}
-			}
-		
-			double originalYTranslate = getWorldTranslateY();
-			double possibleYTranslate = originalYTranslate;
-		
-			if( pixelY > 0){
-				possibleYTranslate += getWorldYLengthByPixel(pixelY + 1);
-			}else{
-				possibleYTranslate -= getWorldYLengthByPixel(-pixelY + 1);
-			}
-			
-			setWorldTranslateY( possibleYTranslate );
-			
-			//Ha van hatar definialva
-			if( null != boundSize ){
-				
-				//Akkor megnezi, hogy tul ment-e a hataron
-				if( getWorldSize().getYMax() > getBoundSize().getYMax() || getWorldSize().getYMin() < getBoundSize().getYMin() ){
-					
-					//Ha igen, akkor visszavonja a muveletet
-					setWorldTranslateY( originalYTranslate );
-				}
-			}
-
-			coreCanvas.invalidate();
-			coreCanvas.repaint();
+		if( pixelX > 0){
+			possibleXTranslate -= getWorldXLengthByPixel(pixelX + 1);
+		}else{
+			possibleXTranslate += getWorldXLengthByPixel(-pixelX + 1);
 		}
+
+		setWorldTranslateX( possibleXTranslate );
+			
+		//Ha van hatar definialva
+		if( null != boundSize ){
+			//Akkor megnezi, hogy tul ment-e a hataron
+			if( getWorldSize().getXMax() > getBoundSize().getXMax() || getWorldSize().getXMin() < getBoundSize().getXMin() ){
+				
+				//Ha igen, akkor visszavonja a muveletet
+				setWorldTranslateX( originalXTranslate );
+			}
+		}
+		
+		double originalYTranslate = getWorldTranslateY();
+		double possibleYTranslate = originalYTranslate;
+		
+		if( pixelY > 0){
+			possibleYTranslate += getWorldYLengthByPixel(pixelY + 1);
+		}else{
+			possibleYTranslate -= getWorldYLengthByPixel(-pixelY + 1);
+		}
+			
+		setWorldTranslateY( possibleYTranslate );
+			
+		//Ha van hatar definialva
+		if( null != boundSize ){
+				
+			//Akkor megnezi, hogy tul ment-e a hataron
+			if( getWorldSize().getYMax() > getBoundSize().getYMax() || getWorldSize().getYMin() < getBoundSize().getYMin() ){
+					
+				//Ha igen, akkor visszavonja a muveletet
+				setWorldTranslateY( originalYTranslate );
+			}
+		}
+
+		coreCanvas.invalidate();
+		coreCanvas.repaint();
 	}
 	
 	
@@ -618,25 +533,16 @@ public class MCanvas extends JPanel {
 	 */
 	public SizeValue getWorldSize(){
 		
-		if( null == getSidePortion() ){
-			return null;
+		double width = getViewerWidth();
+		double height = getViewerHeight();
+		double xMin = getWorldXByPixel(0);
+		double xMax = getWorldXByPixel((int)width-1);
+		double yMax = getWorldYByPixel(0);
+		double yMin = getWorldYByPixel((int)height-1);
 			
-		}else if( getSidePortion().equals(SIDES_PORTION.FIX_PORTION)){
-			return worldSize;
-			
-		}else if( getSidePortion().equals(SIDES_PORTION.FREE_PORTION)){
-			double width = getViewerWidth();
-			double height = getViewerHeight();
-			double xMin = getWorldXByPixel(0);
-			double xMax = getWorldXByPixel((int)width-1);
-			double yMax = getWorldYByPixel(0);
-			double yMin = getWorldYByPixel((int)height-1);
-			
-			SizeValue size = new SizeValue(xMin, yMin, xMax, yMax);
-			return size;
-		}else{
-			return null;
-		}
+		SizeValue size = new SizeValue(xMin, yMin, xMax, yMax);
+		return size;
+
 	}
 
 	public SizeValue getBoundSize(){
@@ -647,9 +553,9 @@ public class MCanvas extends JPanel {
 		this.boundSize = boundSize;
 	}
 	
-	public void setWorldSize( SizeValue worldSize ){
-		this.worldSize = worldSize;
-	}
+//	public void setWorldSize( SizeValue worldSize ){
+//		this.worldSize = worldSize;
+//	}
 
 	/**
 	 * Visszaadja a teljes vilagbol lathato resz meretet
@@ -680,33 +586,10 @@ public class MCanvas extends JPanel {
 		
 		//Ez a szelesseg lehetne a befoglalo panel szelessege (ha nem korlatoznank)
 		double possibleWidth = super.getWidth();
-			
-		//Ha nincs megadva a vilag merete vagy adott oldalaranyt kell tartani
-//		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
 
-			//Akkor a befoglalo panel szelessege a mervado
+		//Akkor a befoglalo panel szelessege a mervado
 		return possibleWidth - ( getInsets().right + getInsets().left);
 
-//		}
-/*		
-		//Ez a szelesseg a teljes vilag szelessege
-//		double maxWidth = (worldSize.getWidth() + worldTranslate.getX()) * ( getPixelPerUnit() );// + ( getInsets().right + getInsets().left);
-		double maxWidth = getPixelLengthByWorld(worldSize.getWidth() + worldTranslate.getX());
-		
-		//Ha a befoglalo panel szelessege kisebb mint a vilag szelessege
-		//Vagyis a befoglalo panel teljes szelessegeben elnyulik a valo vilag		
-		if (possibleWidth < maxWidth) {
-			
-			//Akkor a befoglalo panel szelessege a mervado
-			return possibleWidth;
-		
-		//Ha a vilag szelessege kisebb mint a befoglalo panele
-		} else {
-			
-			//Akkor a vilag szelessege lesz a mervado
-			return maxWidth;
-		}
-*/		
 	}
 	
 	/**
@@ -721,33 +604,9 @@ public class MCanvas extends JPanel {
 		
 		//Ez a magassag lehetne a befoglalo panel magassaga (ha nem korlatoznank)
 		double possibleHeight = super.getHeight();
-	
-		//Ha nincs megadva a vilag merete
-//		if (null == worldSize || sidePortion.equals(SIDES_PORTION.FIX_PORTION ) ){
 
-			//Akkor a befoglalo panel magassaga a mervado
-			return possibleHeight - ( getInsets().top + getInsets().bottom );
-
-//		}
-/*	
-		//Ez a magassag a teljes vilag magassag
-		//double maxHeight = (worldSize.getHeight() + worldTranslate.getY()) * getPixelPerUnit();// + getInsets().top + getInsets().bottom;				
-		double maxHeight = getPixelLengthByWorld(worldSize.getHeight() + worldTranslate.getY());
-			
-		//Ha a befoglalo panel magassaga kisebb mint a vilag magassaga
-		//Vagyis a befoglalo panel teljes magassagaban elnyulik a valo vilag
-		if ( possibleHeight < maxHeight ) {
-			
-			//Akkor a befoglalo panel magassaga a mervado
-			return possibleHeight;
-			
-		//Ha a vilag magassaga kisebb mint a befoglalo panele
-		} else {
-			
-			//Akkor a vilag magassaga lesz a mervado
-			return maxHeight;
-		}
-*/		
+		//Akkor a befoglalo panel magassaga a mervado
+		return possibleHeight - ( getInsets().top + getInsets().bottom );		
 	}
 	
 	/**
@@ -771,8 +630,7 @@ public class MCanvas extends JPanel {
 			
 			for( PositionChangeListener listener : positionChangeListenerList){
 				listener.getWorldPosition( canvas.getWorldXByPixel(e.getX()), canvas.getWorldYByPixel(e.getY()));
-			}
-			
+			}			
 		}
 	}
 	
@@ -997,18 +855,15 @@ public class MCanvas extends JPanel {
 			
 			this.setBackground(background);
 			
-			//if( ha szabadon valtoztathato az oldalarany ){
-			if( parent.getSidePortion().equals( SIDES_PORTION.FREE_PORTION) ){
-			
-				// Eger kormanyaval letrehozott zoom figyelese
-				addMouseWheelListener(new WheelZoomListener());
+			// Eger kormanyaval letrehozott zoom figyelese
+			addMouseWheelListener(new WheelZoomListener());
 		    
-				//Eger kormanyaval letrehozott move figyeles
-				WheelMoveListener myWheelMoveListener = new WheelMoveListener();
-				addMouseListener(myWheelMoveListener);
-				addMouseMotionListener(myWheelMoveListener);
-			}
+			//Eger kormanyaval letrehozott move figyeles a koordinatarendszer mozgatasahoz
+			WheelMoveListener myWheelMoveListener = new WheelMoveListener();
+			addMouseListener(myWheelMoveListener);
+			addMouseMotionListener(myWheelMoveListener);
 			
+			//Az egerpozicio figyelese
 			addMouseMotionListener( new MousePositionListener(parent) );
 		}
 
@@ -1105,67 +960,13 @@ public class MCanvas extends JPanel {
 		 * A lathato vilag merete
 		 */
 		public Dimension getPreferredSize() {
-			double mH, wH;
 			double pixelWidth, pixelHeight;
 
 			// Felveszi a szulo ablak meretet csokkentve a keret meretevel
-			pixelWidth = parent.getViewerWidth(); // - ( parent.getInsets().right + parent.getInsets().left );
-			pixelHeight = parent.getViewerHeight(); // - ( parent.getInsets().top + parent.getInsets().bottom );
+			pixelWidth = parent.getViewerWidth();
+			pixelHeight = parent.getViewerHeight();
 	
-			/**
-			 * Ha a lathato teruelt oldalainak aranyanak meg kell egyeznie az eredeti
-			 * terulet oldalainak aranyaval.
-			 * A teljes vilag latszik a rajzolofeluleten
-			 * Beallitja a rajzolhato feluletet az oldalaranyoknak megfeleloen
-			 * a szulo-ablak aktualis merete alapjan.
-			 */
-			if( getSidePortion().equals(  SIDES_PORTION.FIX_PORTION ) ){
-			
-				 /**
-		         * A szulo ablak oldalainak aranya(model meret)
-		         */
-		        mH = pixelWidth / pixelHeight;
-
-		        /**
-		         * Az abrazolando vilag oldalainak aranya (world meret)
-		         */
-		        //wH = parentWorldSize.getWidth() / parentWorldSize.getHeight();
-		        SizeValue parentWorldSize = parent.getWorldSize();
-		        wH = parentWorldSize.getWidth() / parentWorldSize.getHeight();
-		        
-
-		        /**
-		         * Ha a vilag tomzsibb mint a modell
-		         */
-		        if(wH > mH ){
-
-		          /**
-		           * Akkor a model magassagat kell csokkenteni
-		           */
-		          pixelHeight = pixelWidth / wH;
-		          
-		          /**
-		           * Ha a vilag elnyujtottabb (magassagban) mint a modell
-		           */
-		        }else{
-
-		          /**
-		           * Akkor a modell szelesseget kell csokkenteni
-		           */
-		          pixelWidth = wH * pixelHeight;
-		        }
-		        
-		        pixelWidth = Math.round(pixelWidth)-1;
-		        pixelHeight = Math.round(pixelHeight)-1;
-		       
-//TODO ertesites a meretaranyvaltozasrol
-//		        parent.setPixelPerUnit( (pixelWidth) / (parentWorldSize.getWidth()), (pixelHeight) / (parentWorldSize.getHeight()) );
-		        
-		        pixelWidth++;
-		        pixelHeight++;
-		        
-			}		
-				return new Dimension( (int)(pixelWidth), (int)(pixelHeight) );
+			return new Dimension( (int)(pixelWidth), (int)(pixelHeight) );
 
 		}	
 
