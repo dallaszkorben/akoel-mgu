@@ -36,12 +36,6 @@ public class SpriteCanvas extends MCanvas{
 		super(borderType, background, possiblePixelPerUnits, positionToMiddle, boundSize );
 		commonConstructor();
 	}
-	
-
-	public SpriteCanvas(Border borderType, Color background, SizeValue worldSize) {
-		super(borderType, background, worldSize);
-		commonConstructor();
-	}
 
 	private void commonConstructor(){
 		
@@ -332,7 +326,8 @@ public class SpriteCanvas extends MCanvas{
 				sprite.drawFocus(g2);
 			}
 			temporarySpriteList.clear();
-		}		
+		}
+		
 
 		@Override
 		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
