@@ -9,6 +9,8 @@ import hu.akoel.mgu.example.CanvasControl;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
+import hu.akoel.mgu.sprite.Magnet;
+import hu.akoel.mgu.sprite.MagnetType;
 import hu.akoel.mgu.sprite.RectangleElement;
 import hu.akoel.mgu.sprite.Sprite;
 import hu.akoel.mgu.sprite.SpriteCanvas;
@@ -16,9 +18,10 @@ import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
+import hu.akoel.mgu.values.RangeValueInPixel;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -55,7 +58,7 @@ public class ExampleSprite extends JFrame {
 	private PositionValue crossLinePosition = new PositionValue( 0, 0 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 1;
-	private Value2D crossLineLength = new LengthValue( 1, 1 );
+	private Value crossLineLength = new LengthValue( 1, 1 );
 	private CrossLine.PainterPosition crossLinePainterPosition = CrossLine.PainterPosition.DEEPEST;
 	
 	private Axis myAxis;
@@ -107,7 +110,7 @@ public class ExampleSprite extends JFrame {
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
-			public void getScale(Value2D scale) {
+			public void getScale(Value scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				if( myScale.getScale().getX() < 1.0 ){
 					canvasControl.setStatusPanelXScale( "xM=" + df.format(1/myScale.getScale().getX() ) + ":1" );
@@ -144,18 +147,43 @@ public class ExampleSprite extends JFrame {
 		JButton commandButtonDrawFunction = new JButton("add new Sprite");
 		commandButtonDrawFunction.addActionListener(new ActionListener(){
 
+			//Magnet tipus
+			MagnetType normalMagnet = new MagnetType("Normal");
+			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 	
-				final Sprite sprite1 = new Sprite(new SizeValue(-1, -1, 1, 1));
+				Sprite sprite = new Sprite(new SizeValue(-1, -1, 1, 1));
+				
+				Magnet magnetNorth = new Magnet(sprite, normalMagnet, 0.0, new RangeValueInPixel(10, 10), new PositionValue(0, 1) );
+				magnetNorth.addPossibleMagnetTypToConnect( normalMagnet );
+				
+				Magnet magnetEast = new Magnet(sprite, normalMagnet, 90.0, new RangeValueInPixel(10, 10 ), new PositionValue(1, 0) );
+				magnetEast.addPossibleMagnetTypToConnect( normalMagnet  );
+				
+				Magnet magnetSouth = new Magnet(sprite, normalMagnet, 180.0, new RangeValueInPixel(10, 10 ), new PositionValue(0, -1) );
+				magnetSouth.addPossibleMagnetTypToConnect( normalMagnet );
+				
+				Magnet magnetWest = new Magnet(sprite, normalMagnet, 270.0, new RangeValueInPixel(10, 10 ), new PositionValue(-1, 0) );
+				magnetWest.addPossibleMagnetTypToConnect( normalMagnet );
+				
+				//A Sprite magneseinek hozzarendelese
+				sprite.addMagnet( magnetNorth );
+				sprite.addMagnet( magnetEast );
+				sprite.addMagnet( magnetSouth );
+				sprite.addMagnet( magnetWest );
+				
+				//A Sprite leirasa
 				RectangleElement rect11 = new RectangleElement(-1,-1,2,2,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3));
 				RectangleElement rect12 = new RectangleElement(-0.5,-0.5,1,1,Color.yellow, new BasicStroke(7f), Color.red, new BasicStroke(7));
-				sprite1.addElement(rect11);
-				sprite1.addElement(rect12);
-				sprite1.setPosition( 0, 0 );
+				sprite.addElement(rect11);
+				sprite.addElement(rect12);
+				sprite.setPosition( 0, 0 );
 				
-				myCanvas.addSprite(sprite1);				
+				//A Sprite elhelyezese a Canvas-on
+				myCanvas.addSprite(sprite);				
 				
+				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
 				myCanvas.revalidateAndRepaintCoreCanvas();
 				
 			}

@@ -4,13 +4,14 @@ package hu.akoel.mgu;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -138,7 +139,7 @@ public class MCanvas extends JPanel {
 		coreCanvas.repaint();
 	}
 	
-	public Value2D getWorldTranslate(){
+	public Value getWorldTranslate(){
 		return worldTranslate;
 	}
 	
@@ -689,9 +690,18 @@ public class MCanvas extends JPanel {
 	
 	public void fireMouseMoved(){
 		
-		Point position = coreCanvas.getMousePosition(false);
+		int x = MouseInfo.getPointerInfo().getLocation().x-coreCanvas.getLocationOnScreen().x;
+		int y = MouseInfo.getPointerInfo().getLocation().y-coreCanvas.getLocationOnScreen().y;
+		
+		MouseEvent me = new MouseEvent(coreCanvas, 0, 0, 0, x, y, 1, false);
+		for(MouseMotionListener ml: coreCanvas.getMouseMotionListeners()){
+		    ml.mouseMoved(me);
+		}
+	}
 	
-		MouseEvent me = new MouseEvent(coreCanvas, 0, 0, 0, position.x, position.y, 1, false);
+	public void fireMouseMoved( int x, int y ){
+	
+		MouseEvent me = new MouseEvent(coreCanvas, 0, 0, 0, x, y, 1, false);
 		for(MouseMotionListener ml: coreCanvas.getMouseMotionListeners()){
 		    ml.mouseMoved(me);
 		}
@@ -727,7 +737,7 @@ public class MCanvas extends JPanel {
 			 //Ertesiti a pixelPerUnit valtozasfigyelot
 			 firePixelPerUnitChangeListener();
 			 
-			 Value2D rate = possiblePixelPerUnits.getActualRate();		 
+			 Value rate = possiblePixelPerUnits.getActualRate();		 
 		 
 			 double possibleXTranslate = getWorldTranslateX() - getWorldXLengthByPixel(xPoint) * (rate.getX()-1);
 			 double possibleYTranslate = getWorldTranslateY() - getWorldYLengthByPixel(getViewableSize().height-yPoint) * (rate.getY()-1);
@@ -747,7 +757,7 @@ public class MCanvas extends JPanel {
 		 
 		 if( possiblePixelPerUnits.doNextZoomOut() ){
 		 
-			 Value2D rate = possiblePixelPerUnits.getActualRate();		 
+			 Value rate = possiblePixelPerUnits.getActualRate();		 
 		 
 			 double originalXTranslate = getWorldTranslateX();
 			 double possibleXTranslate = originalXTranslate + getWorldXLengthByPixel(xPoint) * (rate.getX()-1)/rate.getX();

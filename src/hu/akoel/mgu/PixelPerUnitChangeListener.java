@@ -1,9 +1,9 @@
 package hu.akoel.mgu;
 
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 public interface PixelPerUnitChangeListener {
 
-	public void getPixelPerUnit( Value2D pixelPerUnit );
+	public void getPixelPerUnit( Value pixelPerUnit );
 	
 }

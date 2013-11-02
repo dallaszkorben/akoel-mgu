@@ -4,7 +4,7 @@ import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.MCanvas.Level;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,14 +20,14 @@ public class CrossLine {
 	}
 	
 	private MCanvas canvas;
-	private Value2D position;
+	private Value position;
 	private Color color;
 	private int widthInPixel;
-	private Value2D length;
+	private Value length;
 	private PainterPosition painterPosition;
 	private PainterListener painterListener;
 
-	public CrossLine( MCanvas canvas, Value2D position, Color color, int widthInPixel, Value2D length, PainterPosition painterPosition ){
+	public CrossLine( MCanvas canvas, Value position, Color color, int widthInPixel, Value length, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.position = position;
 		this.color = color;

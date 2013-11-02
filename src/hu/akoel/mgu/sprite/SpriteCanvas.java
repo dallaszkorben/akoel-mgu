@@ -133,7 +133,7 @@ public class SpriteCanvas extends MCanvas{
 							xValue <= boundBox.getXMax() &&
 							yValue >= boundBox.getYMin() &&
 							yValue <= boundBox.getYMax()
-							){
+					){
 									
 						//Rogton letiltom a fokusz mukodeset
 						setNeedFocus(false);
@@ -197,7 +197,9 @@ public class SpriteCanvas extends MCanvas{
 		
 		@Override
 		public void mouseExited(MouseEvent e) {	
-		
+
+			boolean needToPrint = false;
+			
 			//Ha elindult mar a mozgatas
 			if( draggStarted ){
 				
@@ -216,9 +218,31 @@ public class SpriteCanvas extends MCanvas{
 				//Es meg kell jeleniteni
 				revalidateAndRepaintCoreCanvas();
 				
-			}
-			
-			
+			//Csak siman kisetalt a kurzor a kepernyorol
+			}else{
+				
+				//Vegig az osszes Sprite-on
+				for( Sprite sprite: spriteList){
+					
+					//Ha az adot Sprite fokuszban volt
+					if( sprite.isInFocus() ){
+						
+						//Kiszedjuk a fokuszbol
+						sprite.setInFocus(false);
+						
+						//Es jelzem, hogy legalabb egy elem volt fokuszban
+						needToPrint = true;						
+							
+					}										
+				}
+				
+				if( needToPrint ){			
+				
+					//Azert kell, hogy az esetlegesen fokuszban levo Sprite-rol eltunjon a fokusz
+					repaintCoreCanvas();
+
+				}			
+			}			
 		}
 		
 		@Override
@@ -226,11 +250,103 @@ public class SpriteCanvas extends MCanvas{
 		
 			if( draggStarted ){
 				
-				double xValue = getWorldXByPixel(e.getX() );
-				double yValue = getWorldYByPixel(e.getY());
+				//Uj pozicioi kiszamitasa
+				double xCursorPosition = getWorldXByPixel(e.getX() );
+				double yCursorPosition = getWorldYByPixel(e.getY());
 				
-				addTemporarySprite(sprite);	
-				sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
+				//A mozgatando Sprite Elozetes uj pozicioba helyezese
+				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
+				
+				//Vegig megyek a sprite magnesein
+				for( Magnet magnet: sprite.getMagnetList() 	){
+					
+					//Az aktualis magnes tulajdonsagai
+					double magnetXRange = getWorldXLengthByPixel( magnet.getRangeInPixel().getX() );
+					double magnetYRange = getWorldYLengthByPixel( magnet.getRangeInPixel().getY() );
+					
+					//Megnezem, hogy az aktualis magnes hatotavolsagaban, van-e egyaltalan masik sprite
+					double xMagnetPosition = sprite.getPosition().getX() + magnet.getPosition().getX();
+					double yMagnetPosition = sprite.getPosition().getY() + magnet.getPosition().getY();
+
+					boolean needToBreak = false;
+					
+					//Vegig az osszes Sprite-on
+					for( Sprite possibleToConnectSprite: spriteList){
+						
+						SizeValue boundBox = possibleToConnectSprite.getBoundBox();
+							
+						//Ha Van a vonzaskorzetben egyaltalan Sprite
+						if( 
+								( (xMagnetPosition - magnetXRange >= boundBox.getXMin() &&
+								xMagnetPosition - magnetXRange <= boundBox.getXMax() ) ||
+								( xMagnetPosition + magnetXRange >= boundBox.getXMin() &&
+								xMagnetPosition + magnetXRange <= boundBox.getXMax() ) )&&
+										
+								( (yMagnetPosition - magnetYRange >= boundBox.getYMin() &&
+								yMagnetPosition - magnetYRange <= boundBox.getYMax() ) ||
+								( yMagnetPosition + magnetYRange >= boundBox.getYMin() &&
+								yMagnetPosition + magnetYRange <= boundBox.getYMax() ) )
+						){
+							
+							//Akkor vegig megyek a megtalalt Sprite Magnet-jeint
+							for( Magnet possibleToConnectMagnet : possibleToConnectSprite.getMagnetList() ){
+								
+								MagnetType possibleToConnectType = possibleToConnectMagnet.getType();
+								double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getPosition().getX();
+								double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getPosition().getY();
+								
+								//Es megnezem, hogy a ket magnet kompatibilis-e es megfelelo pozicioban van-e
+								if( 
+										magnet.getPossibleMagnetTypeToConnect().contains( possibleToConnectType ) &&
+										possibleToConnectMagnet.getPossibleMagnetTypeToConnect().contains( magnet.getType() ) &&
+										( Math.abs( magnet.getDirection() - possibleToConnectMagnet.getDirection() ) == 180.0 ) &&
+										possibleToConnectXPosition >= xMagnetPosition - magnetXRange &&
+										possibleToConnectXPosition <= xMagnetPosition + magnetXRange &&
+										possibleToConnectYPosition >= yMagnetPosition - magnetYRange &&
+										possibleToConnectYPosition <= yMagnetPosition + magnetYRange 
+										
+										
+								){
+									
+									double differenceX = xMagnetPosition - possibleToConnectXPosition;
+									double differenceY = yMagnetPosition - possibleToConnectYPosition;
+									
+									
+									
+									//A mozgatando Sprite Elozetes uj pozicioba helyezese
+									sprite.setPosition(new PositionValue(possibleToConnectXPosition - magnet.getPosition().getX(), possibleToConnectYPosition - magnet.getPosition().getY() ));
+									
+									needToBreak = true;
+//									System.err.println( magnet + " - " + possibleToConnectMagnet);
+									
+									
+								}								
+								
+							}
+							
+							if( needToBreak ){
+								break;
+							}
+
+						}					
+					}
+					
+					
+					
+					
+					
+					
+					
+					
+				}
+				
+				
+
+				
+				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
+				addTemporarySprite(sprite);
+				
+				//Csak az atmeneti tarolo ujrarajzolasa az uj pozicioban levo Sprite miatt
 				repaintCoreCanvas();
 			}
 			

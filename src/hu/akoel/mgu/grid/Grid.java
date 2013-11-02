@@ -5,7 +5,7 @@ import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.MCanvas.Level;
 import hu.akoel.mgu.values.SizeValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -32,11 +32,11 @@ public class Grid {
 	private Color color;
 	private int widthInPixel;
 	private PainterPosition painterPosition;
-	private Value2D deltaGrid;
+	private Value deltaGrid;
 	int crossLengthInPixel = 3;
 	PainterListener painterListener;
 
-	public Grid( MCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value2D deltaGrid ){
+	public Grid( MCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value deltaGrid ){
 		this.canvas = canvas;
 		this.type = type;
 		this.color = color;

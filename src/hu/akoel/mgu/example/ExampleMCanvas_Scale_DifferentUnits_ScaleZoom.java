@@ -21,7 +21,7 @@ import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.RateValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -115,7 +115,7 @@ public class ExampleMCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
-			public void getScale(Value2D scale) {
+			public void getScale(Value scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				
 				if( scale.getX() < 1.0 ){
