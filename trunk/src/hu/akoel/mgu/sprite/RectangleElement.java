@@ -16,50 +16,41 @@ public class RectangleElement extends SpriteElement{
 	private Stroke normalStroke;
 	private Color focusColor;
 	private Stroke focusStroke;
-	private Color ghostColor;
-	private Stroke ghostStroke;
+	private Color connectedColor;
+	private Stroke connectedStroke;
 	
 	public RectangleElement( double x, double y, double width, double height, Color color, Stroke stroke ){
 
-		commonConstructor(x, y, width, height, color, stroke);
+		commonConstructor(x, y, width, height, color, stroke, color, stroke, color, stroke );
 
-		this.focusColor = color;
-		this.focusStroke = stroke;	
-		
-		this.ghostColor = color;
-		this.ghostStroke = stroke;	
 	}
 
 	public RectangleElement( double x, double y, double width, double height, Color normalColor, Stroke normalStroke, Color focusColor, Stroke focusStroke ){
 
-		commonConstructor(x, y, width, height, normalColor, normalStroke);
+		commonConstructor(x, y, width, height, normalColor, normalStroke, focusColor, focusStroke, normalColor, normalStroke );
 
-		this.focusColor = focusColor;
-		this.focusStroke = focusStroke;		
-		
-		this.ghostColor = normalColor;
-		this.ghostStroke = normalStroke;	
 	}
 
-	public RectangleElement( double x, double y, double width, double height, Color normalColor, Stroke normalStroke, Color focusColor, Stroke focusStroke, Color ghostColor, Stroke ghostStroke ){
+	public RectangleElement( double x, double y, double width, double height, Color normalColor, Stroke normalStroke, Color focusColor, Stroke focusStroke, Color connectedColor, Stroke connectedStroke ){
 
-		commonConstructor(x, y, width, height, normalColor, normalStroke);
+		commonConstructor(x, y, width, height, normalColor, normalStroke, focusColor, focusStroke, connectedColor, connectedStroke);
 
-		this.focusColor = focusColor;
-		this.focusStroke = focusStroke;	
-		
-		this.ghostColor = ghostColor;
-		this.ghostStroke = ghostStroke;	
 	}
 	
-	private void commonConstructor(double x, double y, double width, double height, Color color, Stroke stroke){
+	private void commonConstructor(double x, double y, double width, double height, Color normalColor, Stroke normalStroke, Color focusColor, Stroke focusStroke, Color connectedColor, Stroke connectedStroke){
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		
-		this.normalColor = color;
-		this.normalStroke = stroke;	
+		this.normalColor = normalColor;
+		this.normalStroke = normalStroke;		
+		
+		this.focusColor = focusColor;
+		this.focusStroke = focusStroke;		
+		
+		this.connectedColor = connectedColor;
+		this.connectedStroke = connectedStroke;	
 	}
 	
 	@Override
@@ -77,9 +68,9 @@ public class RectangleElement extends SpriteElement{
 	}
 
 	@Override
-	public void drawGhost(MGraphics g2) {
-		g2.setColor(ghostColor);
-		g2.setStroke(ghostStroke);
+	public void drawConnected(MGraphics g2) {
+		g2.setColor(connectedColor);
+		g2.setStroke(connectedStroke);
 		g2.drawRectangle(x + getPositionX(), y + getPositionY(), width, height);				
 	}
 	

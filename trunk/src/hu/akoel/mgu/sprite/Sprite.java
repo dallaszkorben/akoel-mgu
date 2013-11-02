@@ -29,6 +29,14 @@ public class Sprite {
 		this.enableToPlaceWithoutConnection = enableToPlaceWithoutConnection;
 	}
 	
+	public boolean isEnableToPlaceWithoutConnection() {
+		return enableToPlaceWithoutConnection;
+	}
+
+	public void setEnableToPlaceWithoutConnection( boolean enableToPlaceWithoutConnection ) {
+		this.enableToPlaceWithoutConnection = enableToPlaceWithoutConnection;
+	}
+	
 	public SizeValue getBoundBox(){
 		return new SizeValue(this.boundBox.getXMin() + position.getX(), this.boundBox.getYMin() + position.getY(), this.boundBox.getXMax() + position.getX(), this.boundBox.getYMax() + position.getY());
 	}
@@ -45,9 +53,9 @@ public class Sprite {
 		elements.add(element);
 	}
 	
-	public void setPosition( PositionValue translate ){
-		this.position.setX(translate.getX());
-		this.position.setY(translate.getY());
+	public void setPosition( PositionValue position ){
+		this.position.setX(position.getX());
+		this.position.setY(position.getY());
 	}
 	
 	public void setPosition( double positionX, double positionY ){
@@ -60,9 +68,31 @@ public class Sprite {
 	}
 	
 	public void draw( MGraphics g2 ){
-		for( SpriteElement element: elements){
-			element.setPosition(position);
-			element.draw(g2);
+		
+		if( isConnected() ){
+			
+			for( SpriteElement element: elements){
+				element.setPosition(position);
+				element.drawConnected(g2);
+			}
+			
+			for( Magnet magnet: magnetList){
+				if( null == magnet.getConnectedTo() ){
+					magnet.draw(g2);
+				}else{
+					magnet.drawConnected(g2);
+				}
+			}
+			
+		}else{
+			for( SpriteElement element: elements){
+				element.setPosition(position);
+				element.draw(g2);
+			}
+			
+			for( Magnet magnet: magnetList){		
+					magnet.draw(g2);				
+			}
 		}
 	}
 	
@@ -71,21 +101,36 @@ public class Sprite {
 			element.setPosition(position);
 			element.drawFocus(g2);
 		}
-	}
-	
 
-	public void drawGhost( MGraphics g2){
-		for( SpriteElement element: elements){
-			element.setPosition(position);
-			element.drawGhost(g2);
+		for( Magnet magnet: magnetList){	
+				magnet.draw(g2);			
 		}
 	}
 	
+
+/*	public void drawConnected( MGraphics g2){
+		for( SpriteElement element: elements){
+			element.setPosition(position);
+			element.drawConnected(g2);
+		}
+	}
+*/	
 	public boolean isInFocus(){
 		return inFocus;
 	}
 	
 	public void setInFocus( boolean inFocus ){
 		this.inFocus = inFocus;
+	}
+	
+	public boolean isConnected(){
+		boolean isConnected = false;
+		for( Magnet magnet: getMagnetList()){
+			if( null != magnet.getConnectedTo() ){
+				isConnected = true;
+				break;
+			}
+		}
+		return isConnected;
 	}
 }

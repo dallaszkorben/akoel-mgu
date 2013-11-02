@@ -4,6 +4,7 @@ import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.MCanvas.Level;
+import hu.akoel.mgu.values.SizeValue;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -197,21 +198,23 @@ public class Axis {
 			g2.setColor( axisColor );
 			g2.setStroke(new BasicStroke(axisWidthInPixel));
 
+			SizeValue worldSize = canvas.getWorldSize();
+			
 			//Vizszintes axis rajzolasa
-			g2.drawLine(canvas.getWorldSize().getXMin(), positionYHorizontalAxis, canvas.getWorldSize().getXMax(), positionYHorizontalAxis);
+			g2.drawLine(worldSize.getXMin(), positionYHorizontalAxis, worldSize.getXMax(), positionYHorizontalAxis);
 			
 			//Fuggoleges axis rajzolasa
-			g2.drawLine(positionXVerticalAxis, canvas.getWorldSize().getYMin(), positionXVerticalAxis, canvas.getWorldSize().getYMax());
+			g2.drawLine(positionXVerticalAxis, worldSize.getYMin(), positionXVerticalAxis, worldSize.getYMax());
 			
 			//Vizszintes fobeosztasok es feliratok
 			mainXStick = ((new BigDecimal(canvas.getWorldSize().getXMin())).divide(xSteps, 0, BigDecimal.ROUND_CEILING)).multiply(xSteps);
 			mainXStick = mainXStick.subtract(xSteps);
 			
 			g2.setStroke(new BasicStroke(1));
-			while(mainXStick.doubleValue() <= canvas.getWorldSize().getXMax()){
+			while(mainXStick.doubleValue() <= worldSize.getXMax()){
 			
 				//Alathato reszen kivuli elemeket ne rajzolja ki
-				if( mainXStick.doubleValue() >= canvas.getWorldSize().getXMin() ){
+				if( mainXStick.doubleValue() >= worldSize.getXMin() ){
 				
 					//Vizszintes fobeosztas
 					g2.setColor(stickColor);
@@ -238,14 +241,14 @@ public class Axis {
 			}
 
 			//Fuggoleges fobeosztasok es feliratok
-			mainYStick = ((new BigDecimal(canvas.getWorldSize().getYMin())).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
+			mainYStick = ((new BigDecimal(worldSize.getYMin())).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
 			mainYStick = mainYStick.subtract(ySteps);
 
 			g2.setStroke(new BasicStroke(1));
-			while(mainYStick.doubleValue() <= canvas.getWorldSize().getYMax()){
+			while(mainYStick.doubleValue() <= worldSize.getYMax()){
 			
 				//Alathato reszen kivuli elemeket ne rajzolja ki
-				if( mainYStick.doubleValue() >= canvas.getWorldSize().getYMin() ){
+				if( mainYStick.doubleValue() >= worldSize.getYMin() ){
 				
 					//Fuggoleges fobeosztas
 					g2.setColor(stickColor);
