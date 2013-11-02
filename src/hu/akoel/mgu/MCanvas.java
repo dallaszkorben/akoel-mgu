@@ -52,7 +52,7 @@ public class MCanvas extends JPanel {
 	//TEMPORARY lista
 	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
 
-	CoreCanvas coreCanvas;
+	public CoreCanvas coreCanvas;
 	
 	/**
 	 * Ez egy olyan canvas, melyben megadjuk hogy mind ket tengely beosztasa a parameterben megadott meretu.
@@ -201,7 +201,11 @@ public class MCanvas extends JPanel {
 		return this.wasTransferedToMiddle;
 	}
 	
-	private CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
+	public Point getCoreCanvasLocationOnScreen(){
+		return coreCanvas.getLocationOnScreen();
+	}
+	
+	protected CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
 		if( null == coreCanvas ){
 			coreCanvas = new CoreCanvas( this, background );
 		}
@@ -403,9 +407,9 @@ public class MCanvas extends JPanel {
 		double possibleXTranslate = originalXTranslate;
 		
 		if( pixelX > 0){
-			possibleXTranslate -= getWorldXLengthByPixel(pixelX + 1);
+			possibleXTranslate -= getWorldXLengthByPixel(pixelX);
 		}else{
-			possibleXTranslate += getWorldXLengthByPixel(-pixelX + 1);
+			possibleXTranslate += getWorldXLengthByPixel(-pixelX);
 		}
 
 		setWorldTranslateX( possibleXTranslate );
@@ -424,9 +428,9 @@ public class MCanvas extends JPanel {
 		double possibleYTranslate = originalYTranslate;
 		
 		if( pixelY > 0){
-			possibleYTranslate += getWorldYLengthByPixel(pixelY + 1);
+			possibleYTranslate += getWorldYLengthByPixel(pixelY);
 		}else{
-			possibleYTranslate -= getWorldYLengthByPixel(-pixelY + 1);
+			possibleYTranslate -= getWorldYLengthByPixel(-pixelY);
 		}
 			
 		setWorldTranslateY( possibleYTranslate );
@@ -464,7 +468,9 @@ public class MCanvas extends JPanel {
 	}
 
 	//-------------------
+	//
 	// Koordinata kezeles
+	//
 	//-------------------
 	
 	/**
@@ -474,7 +480,7 @@ public class MCanvas extends JPanel {
 	 * @return valos X koordinata
 	 */
 	public double getWorldXByPixel( int pixel ){
-		return getWorldXLengthByPixel( pixel + 1 ) - getWorldTranslateX();
+		return getWorldXLengthByPixel( pixel ) - getWorldTranslateX();
 	}
 	
 	/**
@@ -486,47 +492,64 @@ public class MCanvas extends JPanel {
 	public double getWorldYByPixel( int pixel ){
 			return getWorldYLengthByPixel( getViewableSize().height - pixel ) - getWorldTranslateY();
 	}
-
+//TODO itt meg leht hogy dolgom van
 	
-	
+	/**
+	 * Visszaadja az adott pixelszam unit hosszat
+	 * 
+	 * @param pixel
+	 * @return
+	 */
 	public double getWorldXLengthByPixel( int pixel ){
-		return (pixel-1) / getPixelPerUnit().getX();
-	}
-	
-	public int getPixelXLengthByWorld( double length ){
-		double doubleLength = getPixelPerUnit().getX() * length;
-	
-		doubleLength = doubleLength + 1;
-
-		if(doubleLength < 0)
-			return -Math.round( -(float)doubleLength );
-		else
-		return Math.round( (float)doubleLength );
+		return (pixel) / getPixelPerUnit().getX();
 	}
 	
 	public double getWorldYLengthByPixel( int pixel ){
-		return (pixel-1) / getPixelPerUnit().getY();
+		return (pixel) / getPixelPerUnit().getY();
 	}
 	
-	public int getPixelYLengthByWorld( double length ){
-		double doubleLength = getPixelPerUnit().getY() * length;
-		doubleLength = doubleLength + 1;
-		
+	
+	
+	public double getPixelXLengthByWorld( double length ){
+		double doubleLength = getPixelPerUnit().getX() * length;
+	
+		//doubleLength = doubleLength + 1;
+/*
 		if(doubleLength < 0)
 			return -Math.round( -(float)doubleLength );
 		else
 			return Math.round( (float)doubleLength );
+*/
+		return doubleLength;
+	}
+	
+	public double getPixelYLengthByWorld( double length ){
+		double doubleLength = getPixelPerUnit().getY() * length;
+		
+		//doubleLength = doubleLength + 1;
+/*		
+		if(doubleLength < 0)
+			return -Math.round( -(float)doubleLength );
+		else
+			return Math.round( (float)doubleLength );
+*/
+		return doubleLength;
 	}
 	
 	//Mas ne hasznalja
-	public int getPixelXPositionByWorld( double x ){
-		return getPixelXLengthByWorld( x ) - 1;
+	public double getPixelXPositionByWorld( double x ){
+		return getPixelXLengthByWorld( x );
 	}
 	
 	//Mas ne hasznalja
-	public int getPixelYPositionByWorldBeforeTranslate( double y ){
-		return getPixelYLengthByWorld( y ) - 1;
+	public double getPixelYPositionByWorldBeforeTranslate( double y ){
+		return getPixelYLengthByWorld( y );
 	}
+	
+	//------------------------
+	//
+	//
+	//------------------------
 	
 	/**
 	 * Visszaadja teljes vilag meretet
@@ -542,7 +565,7 @@ public class MCanvas extends JPanel {
 		double yMin = getWorldYByPixel((int)height-1);
 			
 		SizeValue size = new SizeValue(xMin, yMin, xMax, yMax);
-		return size;
+	return size;
 
 	}
 
@@ -678,7 +701,7 @@ public class MCanvas extends JPanel {
 				int dY = startY - e.getY();	
 				moveXY(dX, dY);
 				startX = e.getX();
-				startY = e.getY();
+				startY = e.getY();			
 			}
 			
 		}
@@ -693,7 +716,7 @@ public class MCanvas extends JPanel {
 		int x = MouseInfo.getPointerInfo().getLocation().x-coreCanvas.getLocationOnScreen().x;
 		int y = MouseInfo.getPointerInfo().getLocation().y-coreCanvas.getLocationOnScreen().y;
 		
-		MouseEvent me = new MouseEvent(coreCanvas, 0, 0, 0, x, y, 1, false);
+		MouseEvent me = new MouseEvent(coreCanvas, 0, 0, MouseEvent.BUTTON1, x, y, 1, false);
 		for(MouseMotionListener ml: coreCanvas.getMouseMotionListeners()){
 		    ml.mouseMoved(me);
 		}
@@ -745,9 +768,14 @@ public class MCanvas extends JPanel {
 			 setWorldTranslateX( possibleXTranslate );
 			 setWorldTranslateY( possibleYTranslate );
 		 
+			// this.getParent().repaint();
+			// coreCanvas.invalidate();
+			// coreCanvas.repaint();
+			// revalidate();
+			 
 			 this.getParent().repaint();
-			 coreCanvas.invalidate();
-			 coreCanvas.repaint();
+			 this.revalidateAndRepaintCoreCanvas();
+
 			 revalidate();
 			 
 		 }
@@ -815,6 +843,7 @@ public class MCanvas extends JPanel {
 						 ok = false;
 					 }
 				 }
+				
 			 }
 
 			 //Es ha igy sem fer bele e hatarba, akkor visszavonom a zoom muveletet
@@ -918,13 +947,13 @@ public class MCanvas extends JPanel {
 				//Az uj canvas grafikai objektumanak elkerese
 				offg2 = (Graphics2D) offImage.getGraphics();
 				
-				offg2.setColor(getBackground());
+				offg2.setColor( getBackground() );
 				offg2.fillRect(0, 0, width, height);
 				
 				offg2.scale(1,-1);
 
 				//Most tolom el a koordinatarendszert
-				offg2.translate( getPixelXLengthByWorld(parent.getWorldTranslateX()) - 1, getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
+				offg2.translate( getPixelXLengthByWorld(parent.getWorldTranslateX()), getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
 				
 				if (null != deepestList) {
 					for (PainterListener painter : deepestList) {
@@ -955,7 +984,7 @@ public class MCanvas extends JPanel {
 				
 				g2.scale(1,-1);
 				
-				g2.translate( getPixelXLengthByWorld( parent.getWorldTranslateX()) -1, getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
+				g2.translate( getPixelXLengthByWorld( parent.getWorldTranslateX()), getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {

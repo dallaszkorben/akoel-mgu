@@ -25,5 +25,5 @@ public abstract class SpriteElement {
 	
 	public abstract void drawFocus( MGraphics g2);
 	
-	public abstract void drawGhost( MGraphics g2);
+	public abstract void drawConnected( MGraphics g2);
 }
