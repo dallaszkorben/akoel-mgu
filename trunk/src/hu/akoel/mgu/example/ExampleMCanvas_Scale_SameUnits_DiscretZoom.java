@@ -18,7 +18,7 @@ import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -58,7 +58,7 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 	private PositionValue crossLinePosition = new PositionValue( 5, 5 );
 	private Color crossLineColor = Color.red;
 	private int crossLineWidthInPixel = 5;
-	private Value2D crossLineLength = new LengthValue( 1, 1 );
+	private Value crossLineLength = new LengthValue( 1, 1 );
 	private CrossLine.PainterPosition crossLinePainterPosition = CrossLine.PainterPosition.DEEPEST;
 	
 	private Axis myAxis;
@@ -122,7 +122,7 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		myScale.addScaleChangeListener(new ScaleChangeListener() {
 			
 			@Override
-			public void getScale(Value2D scale) {
+			public void getScale(Value scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				canvasControl.setStatusPanelXScale( "xM=" + df.format(scale.getX() ) );
 				canvasControl.setStatusPanelYScale( "yM=" + df.format(scale.getY() ) );

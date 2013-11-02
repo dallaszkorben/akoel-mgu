@@ -2,7 +2,7 @@ package hu.akoel.mgu;
 
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.RateValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.util.ArrayList;
 
@@ -78,7 +78,7 @@ public class PossiblePixelPerUnits {
 		return actualPixelPerUnit;
 	}
 	
-	public Value2D getActualRate(){
+	public Value getActualRate(){
 		return actualRate;
 	}
 	

@@ -1,11 +1,11 @@
 package hu.akoel.mgu.values;
 
-public abstract class Value2D {
+public abstract class Value {
 
 	private double x;
 	private double y;
 	
-	public Value2D( double x, double y ){
+	public Value( double x, double y ){
 		this.x = x;
 		this.y = y;
 	}

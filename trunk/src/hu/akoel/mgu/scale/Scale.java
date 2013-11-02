@@ -10,7 +10,7 @@ import hu.akoel.mgu.scale.values.ScaleValue;
 import hu.akoel.mgu.scale.values.UnitValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.RateValue;
-import hu.akoel.mgu.values.Value2D;
+import hu.akoel.mgu.values.Value;
 
 import java.util.ArrayList;
 
@@ -133,7 +133,7 @@ public class Scale {
 		
 		ArrayList<PixelPerUnitValue> possiblePPUList = new ArrayList<PixelPerUnitValue>();
 		
-		for( Value2D scale: possibleScaleList ){
+		for( Value scale: possibleScaleList ){
 			possiblePPUList.add(
 					new PixelPerUnitValue(
 							getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), scale.getX()), getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), scale.getY() )
@@ -179,7 +179,7 @@ public class Scale {
 		}
 		
 		@Override
-		public void getPixelPerUnit( Value2D pixelPerUnit ) {
+		public void getPixelPerUnit( Value pixelPerUnit ) {
 			
 			double scaleX = getScaleByPixelPerUnit(pixelPerCm.getX(), unit.getUnitX(), pixelPerUnit.getX());
 			double scaleY = getScaleByPixelPerUnit(pixelPerCm.getY(), unit.getUnitY(), pixelPerUnit.getY());
