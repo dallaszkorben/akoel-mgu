@@ -102,9 +102,15 @@ public class Sprite {
 			element.drawFocus(g2);
 		}
 
-		for( Magnet magnet: magnetList){	
-				magnet.draw(g2);			
+		for( Magnet magnet: magnetList){
+			if( null == magnet.getConnectedTo() ){
+				magnet.drawFocus(g2);
+			}else{
+				magnet.drawConnected(g2);
+			}
 		}
+		
+		
 	}
 	
 

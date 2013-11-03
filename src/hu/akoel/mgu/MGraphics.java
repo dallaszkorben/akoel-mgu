@@ -20,15 +20,15 @@ public class MGraphics {
 	
 	public void drawLine( double x1, double y1, double x2, double y2){	
 		g2.drawLine(
-				Math.round((float)canvas.getPixelXPositionByWorld(x1)), 
+				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x1)), 
 				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y1)), 
-				Math.round((float)canvas.getPixelXPositionByWorld(x2)), 
+				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x2)), 
 				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y2)) );	
 	}
 	
 	public void fillOval( double x, double y, double width, double height){
 		g2.fillOval(
-				Math.round((float)canvas.getPixelXPositionByWorld(x)), 
+				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
 				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
 				Math.round((float)canvas.getPixelXLengthByWorld(width)-1), 
 				Math.round((float)canvas.getPixelYLengthByWorld(height)-1));
@@ -36,7 +36,7 @@ public class MGraphics {
 
 	public void drawOval( double x, double y, double width, double height){
 		g2.drawOval(
-				Math.round((float)canvas.getPixelXPositionByWorld(x)), 
+				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
 				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
 				Math.round((float)canvas.getPixelXLengthByWorld(width)-1), 
 				Math.round((float)canvas.getPixelYLengthByWorld(height)-1));
@@ -45,7 +45,7 @@ public class MGraphics {
 	public void drawRectangle( double x, double y, double width, double height ){
 		
 		g2.drawRect( 
-				Math.round((float)canvas.getPixelXPositionByWorld(x)), 
+				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
 				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
 				Math.round((float)canvas.getPixelXLengthByWorld(width)), 
 				Math.round((float)canvas.getPixelYLengthByWorld(height)));
@@ -53,7 +53,7 @@ public class MGraphics {
 
 	public void fillRectangle( double x, double y, double width, double height ){
 		g2.fillRect( 
-				Math.round((float)canvas.getPixelXPositionByWorld(x)), 
+				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
 				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
 				Math.round((float)canvas.getPixelXLengthByWorld(width)), 
 				Math.round((float)canvas.getPixelYLengthByWorld(height)));
@@ -77,7 +77,7 @@ public class MGraphics {
 	
 	public void drawFont( TextLayout textLayout, double x, double y ){
 		g2.scale(1,-1);
-		textLayout.draw( g2, Math.round((float)canvas.getPixelXPositionByWorld(x)), Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(-y)) );
+		textLayout.draw( g2, Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(-y)) );
 		g2.scale(1,-1);
 	}
 }

@@ -163,10 +163,10 @@ public class TestMCanvas{
 				double startX = x - width/2;
 				double startY = y - height/2;
 		
-				double pixelXBy2Methods = myCanvas.getPixelXPositionByWorld(startX) + myCanvas.getPixelXLengthByWorld(width);
+				double pixelXBy2Methods = myCanvas.getPixelXPositionByWorldBeforeTranslate(startX) + myCanvas.getPixelXLengthByWorld(width);
 				double pixelYBy2Methods = myCanvas.getPixelYPositionByWorldBeforeTranslate(startY) + myCanvas.getPixelYLengthByWorld(height);
 		
-				double pixelXBy1Method = myCanvas.getPixelXPositionByWorld( startX + width );
+				double pixelXBy1Method = myCanvas.getPixelXPositionByWorldBeforeTranslate( startX + width );
 				double pixelYBy1Method = myCanvas.getPixelYPositionByWorldBeforeTranslate( startY + height );
 		
 

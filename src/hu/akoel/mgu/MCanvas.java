@@ -537,13 +537,21 @@ public class MCanvas extends JPanel {
 	}
 	
 	//Mas ne hasznalja
-	public double getPixelXPositionByWorld( double x ){
+	public double getPixelXPositionByWorldBeforeTranslate( double x ){
 		return getPixelXLengthByWorld( x );
 	}
 	
 	//Mas ne hasznalja
 	public double getPixelYPositionByWorldBeforeTranslate( double y ){
 		return getPixelYLengthByWorld( y );
+	}
+	
+	public double getMouseXPositionByWorld( double x ){
+		return getPixelXLengthByWorld( x + getWorldTranslateX() );
+	}
+	
+	public double getMouseYPositionByWorld( double y ){
+		return getViewableSize().height - getPixelYLengthByWorld( y + getWorldTranslateY() );
 	}
 	
 	//------------------------

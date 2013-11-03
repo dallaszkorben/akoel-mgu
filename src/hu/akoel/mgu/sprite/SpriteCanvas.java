@@ -57,17 +57,14 @@ public class SpriteCanvas extends MCanvas{
 	
 	
 	
-	
-	public void fireMouseDragged(){
-		
+/*	
+	public void fireMouseDragged(){		
 		int x = MouseInfo.getPointerInfo().getLocation().x-getCoreCanvasLocationOnScreen().x;
-		int y = MouseInfo.getPointerInfo().getLocation().y-getCoreCanvasLocationOnScreen().y;
-		
-		MouseEvent me = new MouseEvent(coreCanvas, 11, 0, 0, x+1, y, 1, false);
-		
+		int y = MouseInfo.getPointerInfo().getLocation().y-getCoreCanvasLocationOnScreen().y;		
+		MouseEvent me = new MouseEvent(coreCanvas, 11, 0, 0, x, y, 1, false);		
 		spriteDragListener.mouseDragged(me);	
 	}
-	
+*/	
 	
 	
 	
@@ -105,17 +102,24 @@ public class SpriteCanvas extends MCanvas{
 	public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint){
 		super.zoomIn(xCenter, yCenter, xPoint, yPoint);
 		
-		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
-		fireMouseDragged();
-		//repaintCoreCanvas();
+		//Azert kell, mert elkepzelheto, hogy hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
+		
+//		fireMouseDragged();
+		fireMouseMoved();
+		spriteDragListener.loadSpriteToTemporary();
+		repaintCoreCanvas();
 	}
 	
 	public void zoomOut(double xCenter, double yCenter, int xPoint, int yPoint){
 		super.zoomOut(xCenter, yCenter, xPoint, yPoint);
 		
 		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
-		fireMouseDragged();
-		//repaintCoreCanvas();
+
+//		fireMouseDragged();
+//fireMouseMoved();
+		fireMouseMoved();
+		spriteDragListener.loadSpriteToTemporary();
+		repaintCoreCanvas();
 	}
 	
 	
@@ -132,10 +136,17 @@ public class SpriteCanvas extends MCanvas{
 		private boolean draggStarted = false;
 		private Sprite sprite;
 		
+		public void loadSpriteToTemporary(){
+			if( draggStarted ){
+				addTemporarySprite(sprite);	
+			}
+		}
+		
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			
 		}
+		
 		@Override
 		public void mousePressed(MouseEvent e) {
 			
@@ -144,9 +155,9 @@ public class SpriteCanvas extends MCanvas{
 				return;
 			}
 			
-			draggStarted = false;
+			//draggStarted = false;
 			
-			//Ha a baleger gombot nyomtam be
+			//Ha a bal-eger gombot nyomtam be
 			if( e.getButton() == MouseEvent.BUTTON1){
 				
 				double xValue = getWorldXByPixel(e.getX() );
@@ -180,16 +191,17 @@ public class SpriteCanvas extends MCanvas{
 						//Eltavolitom a permanens listabol
 						removeSprite(sprite);
 						
-						//El kell helyezni az atmeneti taroloba az uj pozicioval
-						
-						addTemporarySprite(sprite);	
-						sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
-						revalidateAndRepaintCoreCanvas();
-						//repaintCoreCanvas();
+						//El kell helyezni az atmeneti taroloba az uj pozicioval						
+						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
+						sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
+//System.err.println(originalPosition + " == " + sprite.getPosition() );
 
 						
+						addTemporarySprite(sprite);	
+						
+						revalidateAndRepaintCoreCanvas();
+						
 						draggStarted = true;
-					
 						
 						break;
 
@@ -198,31 +210,35 @@ public class SpriteCanvas extends MCanvas{
 			}
 			
 		}
+		
 		@Override
 		public void mouseReleased(MouseEvent e) {	
 
-
 			if( draggStarted ){
-			
-				//Engedelyezem a fokusz mukodeset
-				setNeedFocus(true);
-			
+						
 				//Ha nem csatlakozik mas elemhez de nincs engedelyezve kapcsolat nelkuli lehelyezesre
 				if( !sprite.isConnected() && !sprite.isEnableToPlaceWithoutConnection() ){
 
 					//Akkor vissza kell helyezni az elozo pozicioba
 					//Visszairom az eredeti poziciot
-					sprite.setPosition( originalPosition );
+//					sprite.setPosition( originalPosition );
 					
+					//General egy Drag muveletet vissza az eredeti pozicioba
+					MouseEvent me = new MouseEvent(coreCanvas, 11, 0, 0, Math.round((float)getMouseXPositionByWorld(originalPosition.getX() + initialDelta.getX())), Math.round((float)getMouseYPositionByWorld(originalPosition.getY() + initialDelta.getY())), 1, false);									
+					spriteDragListener.mouseDragged(me);					
+				
 				}
 					
 				//El kell helyezni a vegleges taroloba az uj pozicioval			
 				addSprite(sprite);
 			
-				//Es meg kell jeleniteni
+				//Engedelyezem a fokusz mukodeset
+				setNeedFocus(true);
+				
+				//Es ujra kell rajzoltatni a Permanens lista elemeit
 				revalidateAndRepaintCoreCanvas();
 			
-				//Es mivel fokuszban lesz ezert egy egermozgast is szimulalni kell
+				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
 				fireMouseMoved();
 			}
 			
@@ -236,29 +252,16 @@ public class SpriteCanvas extends MCanvas{
 		
 		@Override
 		public void mouseExited(MouseEvent e) {	
-
-			boolean needToPrint = false;
-			
-			//Ha elindult mar a mozgatas
+						
+			//Ha elindult mar a drag es igy hagyom el a Canvas-t
 			if( draggStarted ){
 				
-				//Ujra engedelyezem a fokusz mukodeset
-				setNeedFocus(true);
+				mouseReleased( e );
 				
-				//Jelzem, hogy vege a dragg-nek
-				draggStarted = false;
-			
-				//Visszairom az eredeti poziciot
-				sprite.setPosition( originalPosition );
-				
-				//Visszahelyezem a vegleges taroloba az eredeti pozicioval			
-				addSprite(sprite);
-				
-				//Es meg kell jeleniteni
-				revalidateAndRepaintCoreCanvas();
-				
-			//Csak siman kisetalt a kurzor a kepernyorol
+			//Csak siman kisetalt a kurzor a kepernyorol, akkor minden Sprite-rol toroljuk a fokuszt
 			}else{
+				
+				boolean needToReprint = false;
 				
 				//Vegig az osszes Sprite-on
 				for( Sprite sprite: spriteList){
@@ -270,18 +273,18 @@ public class SpriteCanvas extends MCanvas{
 						sprite.setInFocus(false);
 						
 						//Es jelzem, hogy legalabb egy elem volt fokuszban
-						needToPrint = true;						
+						needToReprint = true;						
 							
 					}										
 				}
 				
-				if( needToPrint ){			
+				if( needToReprint ){			
 				
 					//Azert kell, hogy az esetlegesen fokuszban levo Sprite-rol eltunjon a fokusz
 					repaintCoreCanvas();
 
 				}			
-			}			
+			}						
 		}
 		
 		@Override
@@ -296,9 +299,24 @@ public class SpriteCanvas extends MCanvas{
 				//A mozgatando Sprite Elozetes uj pozicioba helyezese
 				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
 				
-				boolean hasConnection = false;
+				boolean needToRepaintPermanent = false;
+
+				//Eloszor is torlom a mozgatot Sprite minden kapcsolatat					
+				if( sprite.isConnected() ){
+
+					//Az osszes magnesen vegig megyek
+					for( Magnet magnet: sprite.getMagnetList()){
+						
+						//Es megszuntetem a kapcsolatait
+						magnet.setConnectedTo(null);
+					}
+						
+					//Es mivel volt kapcsolata amit torloltem, jelzem, hogy ujra kell rajzolni a permanens listat
+					needToRepaintPermanent = true;
 				
-				//Vegig megyek a mozgatott sprite magnesein
+				}
+				
+				//Vegig megyek a mozgatott Sprite magnesein
 				for( Magnet draggedMagnet: sprite.getMagnetList() 	){
 					
 					//Az aktualis magnes tulajdonsagai
@@ -309,22 +327,37 @@ public class SpriteCanvas extends MCanvas{
 					double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getPosition().getX();
 					double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getPosition().getY();
 					
-					//Vegig az osszes Sprite-on
+					boolean hasMagnetConnection = false;
+					
+					//Vegig az osszes permanens Sprite-on
 					for( Sprite possibleToConnectSprite: spriteList){
 						
 						SizeValue boundBox = possibleToConnectSprite.getBoundBox();
 							
 						//Ha Van a vonzaskorzetben egyaltalan Sprite
 						if( 
-								( (xMagnetPosition - magnetXRange >= boundBox.getXMin() &&
+								( 
+								(xMagnetPosition - magnetXRange >= boundBox.getXMin() &&
 								xMagnetPosition - magnetXRange <= boundBox.getXMax() ) ||
 								( xMagnetPosition + magnetXRange >= boundBox.getXMin() &&
-								xMagnetPosition + magnetXRange <= boundBox.getXMax() ) )&&
+								xMagnetPosition + magnetXRange <= boundBox.getXMax() ) ||
+								( boundBox.getXMin()  >= xMagnetPosition - magnetXRange &&
+								boundBox.getXMin() <= xMagnetPosition + magnetXRange &&
+								boundBox.getXMax() >= xMagnetPosition - magnetXRange &&
+								boundBox.getXMax() <= xMagnetPosition + magnetXRange)
+								
+								)&&
 										
-								( (yMagnetPosition - magnetYRange >= boundBox.getYMin() &&
+								( 
+								(yMagnetPosition - magnetYRange >= boundBox.getYMin() &&
 								yMagnetPosition - magnetYRange <= boundBox.getYMax() ) ||
 								( yMagnetPosition + magnetYRange >= boundBox.getYMin() &&
-								yMagnetPosition + magnetYRange <= boundBox.getYMax() ) )
+								yMagnetPosition + magnetYRange <= boundBox.getYMax() ) ||
+								( boundBox.getYMin()  >= yMagnetPosition - magnetYRange &&
+								boundBox.getYMin() <= yMagnetPosition + magnetYRange &&
+								boundBox.getYMax() >= yMagnetPosition - magnetYRange &&
+								boundBox.getYMax() <= yMagnetPosition + magnetYRange)
+								)
 						){
 							
 							//Akkor vegig megyek a megtalalt Sprite Magnet-jeint
@@ -354,43 +387,66 @@ public class SpriteCanvas extends MCanvas{
 									//A mozgatando Sprite Elozetes uj pozicioba helyezese
 									//sprite.setPosition(new PositionValue(possibleToConnectXPosition - magnet.getPosition().getX(), possibleToConnectYPosition - magnet.getPosition().getY() ));
 									
+									//A mozgatott Sprite vizsgalt magneset osszekoti az osszekapcsolhato magnessel
 									draggedMagnet.setConnectedTo( possibleToConnectMagnet );
-									
-									hasConnection = true;
+								
+									needToRepaintPermanent = true;
+									hasMagnetConnection = true;
 									break;
 									
 								}								
 							}
 						}
 						
-						if( hasConnection ){
+						if( hasMagnetConnection ){
 							break;
 						}
 					}
 					
-					if( hasConnection){
-						break;
-					}					
+					//if( hasConnection){
+					//	break;
+					//}					
 									
 				}
 				
+				
+/*				
+				//Ha viszont egyaltalan nem talalt kapcsolatot egyik magneshez sem, akkor torolni kell a kapcsolatrendszeret
 				if( !hasConnection ){
 					
-					for( Magnet magnet: sprite.getMagnetList()){
-						magnet.setConnectedTo(null);
-					}
-					
+					//De megis van kapcsolata
+					if( sprite.isConnected() ){
+
+						//Akkor az osszes magnesen vegig megy
+						for( Magnet magnet: sprite.getMagnetList()){
+						
+							//Es megszunteti a kapcsolatait
+							magnet.setConnectedTo(null);
+						}
+						
+						//Es mivel az allando Sprite-ok valamelyikebol biztosan toroltem ki kapcsolatot
+						//Ezert ujra meg kell jelenittetnem az egesz kepernyot
+						needToRepaintPermanent = true;
+						//revalidateAndRepaintCoreCanvas();
+						
+					}					
 					
 				}
-				
+	*/			
 				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
 				addTemporarySprite(sprite);
 				
-				//Csak az atmeneti tarolo ujrarajzolasa az uj pozicioban levo Sprite miatt
-				repaintCoreCanvas();
+				//A Permanens es atmeneti taroloban levo Sprite-ok ujrarajzolasa szukseges
+				if( needToRepaintPermanent ){
+					revalidateAndRepaintCoreCanvas();
+				}else{
+					//Csak az atmeneti tarolo ujrarajzolasa az uj pozicioban levo Sprite miatt
+					repaintCoreCanvas();
+				}
 			}
 			
 		}
+		
 		@Override
 		public void mouseMoved(MouseEvent e) {
 		}
@@ -403,49 +459,46 @@ public class SpriteCanvas extends MCanvas{
 	 *
 	 */
 	class SpriteInFocusListener implements MouseMotionListener{
-			
-			@Override
-			public void mouseMoved(MouseEvent e) {
+		
+		@Override
+		public void mouseMoved(MouseEvent e) {
 	
-				if( needFocus() ){
+			if( needFocus() ){
 			
-					double xValue = getWorldXByPixel(e.getX() );
-					double yValue = getWorldYByPixel(e.getY());
-					boolean needToPrint = false;
+				double xValue = getWorldXByPixel(e.getX() );
+				double yValue = getWorldYByPixel(e.getY());
+				boolean needToPrint = false;
 
-					for( Sprite sprite: spriteList){
+				for( Sprite sprite: spriteList){
 				
-						SizeValue boundBox = sprite.getBoundBox();
-						
+					SizeValue boundBox = sprite.getBoundBox();						
 			
-						if( 
-							xValue >= boundBox.getXMin() &&
-							xValue <= boundBox.getXMax() &&
-							yValue >= boundBox.getYMin() &&
-							yValue <= boundBox.getYMax()
-						){
+					if( 
+						xValue >= boundBox.getXMin() &&
+						xValue <= boundBox.getXMax() &&
+						yValue >= boundBox.getYMin() &&
+						yValue <= boundBox.getYMax()
+					){
 											
-							addTemporarySprite(sprite);						
-							needToPrint = true;
-							sprite.setInFocus(true);
+						addTemporarySprite(sprite);						
+						needToPrint = true;
+						sprite.setInFocus(true);
 
-						}else{
-							if( sprite.isInFocus() ){
-								needToPrint = true;						
-								sprite.setInFocus(false);
-							}
-						}					
-					}
-					if( needToPrint ){
-						repaintCoreCanvas();
-					}
+					}else{
+						if( sprite.isInFocus() ){
+							needToPrint = true;						
+							sprite.setInFocus(false);
+						}
+					}					
 				}
-				
-			}
+				if( needToPrint ){
+					repaintCoreCanvas();
+				}
+			}				
+		}
 			
-			@Override
-			public void mouseDragged(MouseEvent e) {				
-			}		
+		@Override
+		public void mouseDragged(MouseEvent e) {}		
 	}
 	
 	/**
