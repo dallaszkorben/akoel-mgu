@@ -70,7 +70,7 @@ public class ExampleSprite extends JFrame {
 	private Scale myScale;
 	private double pixelPerCm = 42.1;
 	private Scale.UNIT unit = Scale.UNIT.m;
-	private double startScale = 38.426;//100;
+	private double startScale = 100;//38.426;//100;
 	private double rate = 1.2;
 	private double minScale = 0.5;
 	private double maxScale =  600;
