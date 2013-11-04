@@ -88,7 +88,7 @@ public class ExampleSprite extends JFrame {
 	public ExampleSprite() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("Example :: JCanvas with JGrid, JCrossLine, JAxis, Scale :: Bounds :: Discrate zoom values");
+		this.setTitle("Example :: Sprite");
 		this.setUndecorated(false);
 		this.setSize(700, 700);
 		this.createBufferStrategy(1);
