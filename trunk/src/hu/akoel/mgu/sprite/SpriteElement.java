@@ -8,6 +8,15 @@ import hu.akoel.mgu.values.TranslateValue;
 public abstract class SpriteElement {
 	private PositionValue position = new PositionValue(0,0);
 	
+	public void setPositionX( double x ){
+		this.position.setX(x);
+	}
+	
+	public void setPositionY( double y ){
+		this.position.setY(y);
+		
+	}
+	
 	public void setPosition( PositionValue translate ){
 		this.position.setX(translate.getX());
 		this.position.setY(translate.getY());

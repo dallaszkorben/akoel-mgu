@@ -11,51 +11,78 @@ import hu.akoel.mgu.values.SizeValue;
 public class Magnet {
 
 	private Sprite parent;
-	private PositionValue position;
+	private PositionValue ralativePositionToSpriteZero;
 	private RangeValueInPixel rangeInPixel;
 	private double direction;
 	private MagnetType type;	
 	private HashSet<MagnetType> possibleMagnetTypeToConnect = new HashSet<>();
 	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
-	private Magnet connectedTo;
+	private Magnet magnetToConnected;
 		
-	public Magnet( Sprite parent, MagnetType type, double direction, RangeValueInPixel rangeInPixel, PositionValue position ){
+	public Magnet( Sprite parent, MagnetType type, double direction, RangeValueInPixel rangeInPixel, PositionValue relativePositionToSpriteZero ){
 		this.parent = parent;
 		this.type = type;
 		this.direction = direction;
 		this.rangeInPixel = rangeInPixel;
-		this.position = position;
+		this.ralativePositionToSpriteZero = relativePositionToSpriteZero;
 	}
 	
 	public HashSet<MagnetType> getPossibleMagnetTypeToConnect(){
 		return possibleMagnetTypeToConnect;
 	}
 	
-	public PositionValue getPosition() {
-		return new PositionValue(position.getX(), position.getY());
+	public PositionValue getRelativePositionToSpriteZero() {
+		return new PositionValue(ralativePositionToSpriteZero.getX(), ralativePositionToSpriteZero.getY());
 	}
 
-	public void setPosition(PositionValue position) {
-		this.position.setX(position.getX());
-		this.position.setY(position.getY());
+	public void setRelativePositionToSpriteZero(PositionValue realtivePositionToSpriteZero) {
+		this.ralativePositionToSpriteZero.setX(realtivePositionToSpriteZero.getX());
+		this.ralativePositionToSpriteZero.setY(realtivePositionToSpriteZero.getY());
 	}
 	
-	public void addPossibleMagnetTypToConnect( MagnetType possibleConnectionTo ){
+	public void addPossibleMagnetTypeToConnect( MagnetType possibleConnectionTo ){
 		this.possibleMagnetTypeToConnect.add(possibleConnectionTo);
+	}
+	
+	public PositionValue getPosition(){
+		return new PositionValue(
+				parent.getPosition().getX() + getRelativePositionToSpriteZero().getX(),
+				parent.getPosition().getY() + getRelativePositionToSpriteZero().getY()
+		);
 	}
 	
 	public void addElement( SpriteElement element ){
 		elements.add(element);
 	}
 	
+	public PositionValue getPossibleSpritePosition( Magnet magnetToConnect ){
+
+		//A bazis Sprite pozicioja - Ellenoldal
+		PositionValue baseSpritePostion = magnetToConnect.parent.getPosition();
+		
+		//Kozos magnes pozicioja
+		PositionValue magnetPosition = new PositionValue(baseSpritePostion.getX() + magnetToConnect.getRelativePositionToSpriteZero().getX(), baseSpritePostion.getY() + magnetToConnect.getRelativePositionToSpriteZero().getY() );
+		
+		//Ennek a magnesnek a szulo-Sprite pozicioja
+		PositionValue parentSpritePosition = new PositionValue( magnetPosition.getX() - this.getRelativePositionToSpriteZero().getX(), magnetPosition.getY() - this.getRelativePositionToSpriteZero().getY() );
+
+		return parentSpritePosition;
+	}
+	
 	public void setConnectedTo( Magnet magnetToConnect ){
 		
+		//Ha meg akarom szuntentni a magnes kapcsolatat
 		if( null == magnetToConnect ){
 			
-			if( null != this.connectedTo ){
-				this.connectedTo.connectedTo = null;
+			//Ha volt kapcsolata ennek a magnesnek
+			if( null != this.magnetToConnected ){
+				
+				//akkor a parjanak a kapcsolatat, ami feltehetoleg ez a magnes, is torli
+				this.magnetToConnected.magnetToConnected = null;
+			
+				//es torli ennek a magnesnek a kapcsolatat
+				this.magnetToConnected = magnetToConnect;
 			}
-			this.connectedTo = magnetToConnect;
 			
 		//Ha ezt a magnetet csatlakoztathatom a masikhoz es a masikat is csatlakoztathatom ehhez
 		}else if( 
@@ -63,24 +90,28 @@ public class Magnet {
 				magnetToConnect.getPossibleMagnetTypeToConnect().contains(this.getType() )
 		){
 			//A mozgatott Sprite Magnet-jenek kotese a bazis Sprite Magnet-jehez
-			this.connectedTo = magnetToConnect;
+			this.magnetToConnected = magnetToConnect;
 			
 			//A bazis Sprite Magnet-jenek kotese a Mozgatott Sprite Magnet-jehz
-			magnetToConnect.connectedTo = this;
-			
-			//A bazis Sprite pozicioja
+			magnetToConnect.magnetToConnected = this;
+/*			
+			//A bazis Sprite pozicioja - Ellenoldal
 			PositionValue baseSpritePostion = magnetToConnect.parent.getPosition();
 			
-			//Kozos magnas pozicioja
-			PositionValue magnetPosition = new PositionValue(baseSpritePostion.getX() + magnetToConnect.getPosition().getX(), baseSpritePostion.getY() + magnetToConnect.getPosition().getY() );
-			PositionValue parentSpritePosition = new PositionValue( magnetPosition.getX() - this.getPosition().getX(), magnetPosition.getY() - this.getPosition().getY() );
-		
+			//Kozos magnes pozicioja
+			PositionValue magnetPosition = new PositionValue(baseSpritePostion.getX() + magnetToConnect.getRelativePositionToSpriteZero().getX(), baseSpritePostion.getY() + magnetToConnect.getRelativePositionToSpriteZero().getY() );
+			
+			//Ennek a magnesnek a szulo-Sprite pozicioja
+			PositionValue parentSpritePosition = new PositionValue( magnetPosition.getX() - this.getRelativePositionToSpriteZero().getX(), magnetPosition.getY() - this.getRelativePositionToSpriteZero().getY() );
+*/		
+			PositionValue parentSpritePosition = getPossibleSpritePosition(magnetToConnect);
+			
 			parent.setPosition(parentSpritePosition);
 		}
 	}
 	
 	public Magnet getConnectedTo(){
-		return connectedTo;
+		return magnetToConnected;
 	}
 	
 	public MagnetType getType(){
@@ -98,21 +129,24 @@ public class Magnet {
 	
 	public void draw( MGraphics g2){
 		for( SpriteElement element: elements){
-			element.setPosition(parent.getPosition());
+			element.setPositionX(parent.getPosition().getX() + getRelativePositionToSpriteZero().getX() );
+			element.setPositionY(parent.getPosition().getY() + getRelativePositionToSpriteZero().getY() );
 			element.draw(g2);
 		}
 	}
 	
 	public void drawConnected( MGraphics g2){
 		for( SpriteElement element: elements){
-			element.setPosition(parent.getPosition());
+			element.setPositionX(parent.getPosition().getX() + getRelativePositionToSpriteZero().getX() );
+			element.setPositionY(parent.getPosition().getY() + getRelativePositionToSpriteZero().getY() );
 			element.drawConnected(g2);
 		}
 	}
 	
 	public void drawFocus( MGraphics g2){
 		for( SpriteElement element: elements){
-			element.setPosition(parent.getPosition());
+			element.setPositionX(parent.getPosition().getX() + getRelativePositionToSpriteZero().getX() );
+			element.setPositionY(parent.getPosition().getY() + getRelativePositionToSpriteZero().getY() );
 			element.drawFocus(g2);
 		}
 	}

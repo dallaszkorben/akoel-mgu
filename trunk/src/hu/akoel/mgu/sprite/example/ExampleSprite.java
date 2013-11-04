@@ -9,6 +9,7 @@ import hu.akoel.mgu.example.CanvasControl;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
+import hu.akoel.mgu.sprite.ChangeSizeListener;
 import hu.akoel.mgu.sprite.Magnet;
 import hu.akoel.mgu.sprite.MagnetType;
 import hu.akoel.mgu.sprite.RectangleElement;
@@ -40,9 +41,7 @@ public class ExampleSprite extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
-	private SpriteCanvas myCanvas;
-	//private SizeValue worldSize = new SizeValue(-10.0, -10.0, 10.0, 30);	
-	//private SizeValue boundSize = new SizeValue(0.0, 0.0, 400.0, 400);	
+	private SpriteCanvas myCanvas;	
 	private Color background = Color.black;
 	private TranslateValue positionToMiddle = new TranslateValue( 0, 0);
 	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(10,10));
@@ -150,22 +149,15 @@ public class ExampleSprite extends JFrame {
 			
 				//A Sprite leirasa
 				RectangleElement rectBase11 = new RectangleElement(-1,-1.5,2,3,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.cyan, new BasicStroke(3));
-				RectangleElement rectBase12 = new RectangleElement(0.95,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement rectBaseMagnetEast = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 
 				Magnet baseSpriteMagnetEast = new Magnet(baseSprite, outMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
-				baseSpriteMagnetEast.addPossibleMagnetTypToConnect( pipeMagnet  );
-				baseSpriteMagnetEast.addElement( rectBase12 );
-				
+				baseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				baseSpriteMagnetEast.addElement( rectBaseMagnetEast );
 				
 				baseSprite.addElement(rectBase11);
-				//baseSprite.addElement(rectBase12);
-				baseSprite.setPosition( 0, 0 );
-				
-				//A Sprite magneseinek hozzarendelese
 				baseSprite.addMagnet( baseSpriteMagnetEast );
-				
-				//A Sprite elhelyezese a Canvas-on
-				myCanvas.addSprite(baseSprite);	
+				baseSprite.setPosition( 0, 0 );
 				
 				
 				//Kozvetlen cso
@@ -174,31 +166,33 @@ public class ExampleSprite extends JFrame {
 				
 				//A Sprite leirasa
 				RectangleElement rectPipeToBase11 = new RectangleElement(-2,-0.125,4,0.25,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.magenta, new BasicStroke(3));
-				RectangleElement rectPipeToBase12 = new RectangleElement(-2,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement rectPipeToBase13 = new RectangleElement(1.95,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement rectPipeToBaseMagnetWest = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement rectPipeToBaseMagnetEast = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 
 				Magnet pipeToBaseSpriteMagnetEast = new Magnet(pipeToBaseSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(2, 0) );
-				pipeToBaseSpriteMagnetEast.addPossibleMagnetTypToConnect( pipeMagnet  );
-				pipeToBaseSpriteMagnetEast.addElement( rectPipeToBase13 );
+				pipeToBaseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				pipeToBaseSpriteMagnetEast.addElement( rectPipeToBaseMagnetEast );
 	
 				Magnet pipeToBaseSpriteMagnetWest = new Magnet(pipeToBaseSprite, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-2, 0) );
-				pipeToBaseSpriteMagnetWest.addPossibleMagnetTypToConnect( pipeMagnet );
-				pipeToBaseSpriteMagnetWest.addPossibleMagnetTypToConnect( outMagnet );
-				pipeToBaseSpriteMagnetWest.addElement( rectPipeToBase12 );
+				pipeToBaseSpriteMagnetWest.addPossibleMagnetTypeToConnect( pipeMagnet );
+				pipeToBaseSpriteMagnetWest.addPossibleMagnetTypeToConnect( outMagnet );
+				pipeToBaseSpriteMagnetWest.addElement( rectPipeToBaseMagnetWest );
 				
 				//A Sprite magneseinek hozzarendelese
 				pipeToBaseSprite.addMagnet( pipeToBaseSpriteMagnetEast );
-				pipeToBaseSprite.addMagnet( pipeToBaseSpriteMagnetWest );
-				
+				pipeToBaseSprite.addMagnet( pipeToBaseSpriteMagnetWest );				
 				pipeToBaseSprite.addElement(rectPipeToBase11);
-//				pipeToBaseSprite.addElement(rectPipeToBase12);
-//				pipeToBaseSprite.addElement(rectPipeToBase13);
 				pipeToBaseSprite.setPosition( 0, 0 );
+				pipeToBaseSprite.addChangeWidthListener(new ChangeSizeListener() {
+					
+					@Override
+					public void changed(double value) {
+				
+					}
+				});
 				
 				pipeToBaseSpriteMagnetWest.setConnectedTo(baseSpriteMagnetEast);
 				
-				//A Sprite elhelyezese a Canvas-on
-				myCanvas.addSprite(pipeToBaseSprite);	
 				
 				
 				//Normal cso
@@ -207,79 +201,32 @@ public class ExampleSprite extends JFrame {
 				
 				//A Sprite leirasa
 				RectangleElement rectPipe11 = new RectangleElement(-2,-0.125,4,0.25,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.orange, new BasicStroke(3));
-				RectangleElement rectPipe12 = new RectangleElement(-2,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement rectPipe13 = new RectangleElement(1.95,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement rectPipeMagnetWest = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement rectPipeMagnetEast = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 
 				Magnet pipeSpriteMagnetEast = new Magnet(pipeSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(2, 0) );
-				pipeSpriteMagnetEast.addPossibleMagnetTypToConnect( pipeMagnet  );
-				pipeSpriteMagnetEast.addElement(rectPipe13);
+				pipeSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				pipeSpriteMagnetEast.addElement(rectPipeMagnetEast);
 				
 				Magnet pipeSpriteMagnetWest = new Magnet(pipeSprite, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-2, 0) );
-				pipeSpriteMagnetWest.addPossibleMagnetTypToConnect( pipeMagnet );
-				pipeSpriteMagnetWest.addElement(rectPipe12);
+				pipeSpriteMagnetWest.addPossibleMagnetTypeToConnect( pipeMagnet );
+				pipeSpriteMagnetWest.addElement(rectPipeMagnetWest);
 
 				//A Sprite magneseinek hozzarendelese
 				pipeSprite.addMagnet( pipeSpriteMagnetEast );
 				pipeSprite.addMagnet( pipeSpriteMagnetWest );
 				
 				pipeSprite.addElement(rectPipe11);
-//				pipeSprite.addElement(rectPipe12);
-//				pipeSprite.addElement(rectPipe13);
 				pipeSprite.setPosition( 0, 0 );
 				
 				pipeSpriteMagnetWest.setConnectedTo(pipeToBaseSpriteMagnetEast);
+
 				
-				//A Sprite elhelyezese a Canvas-on
+				//A Sprite-ok elhelyezese a Canvas-on
 				myCanvas.addSprite(pipeSprite);	
-				
-				
-				
-				
-				
-/*				
-				
-				
-				//Nem helyezheto le onmagaban
-				sprite2 = new Sprite(new SizeValue(-1, -1, 1, 1), false);
-				
-				Magnet magnetNorth2 = new Magnet(sprite2, pipeMagnet, 0.0, new RangeValueInPixel(10, 20), new PositionValue(0, 1) );
-				magnetNorth2.addPossibleMagnetTypToConnect( pipeMagnet );
-				
-				Magnet magnetEast2 = new Magnet(sprite2, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
-				magnetEast2.addPossibleMagnetTypToConnect( pipeMagnet  );
-				
-				Magnet magnetSouth2 = new Magnet(sprite2, pipeMagnet, 180.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, -1) );
-				magnetSouth2.addPossibleMagnetTypToConnect( pipeMagnet );
-				
-				Magnet magnetWest2 = new Magnet(sprite2, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-1, 0) );
-				magnetWest2.addPossibleMagnetTypToConnect( pipeMagnet );
-				
-				//A Sprite magneseinek hozzarendelese
-				sprite2.addMagnet( magnetNorth2 );
-				sprite2.addMagnet( magnetEast2 );
-				sprite2.addMagnet( magnetSouth2 );
-				sprite2.addMagnet( magnetWest2 );
-				
-				//A Sprite leirasa
-				RectangleElement rect211 = new RectangleElement(-1,-1,2,2,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(1));
-				RectangleElement rect212 = new RectangleElement(-0.5,-0.5,1,1,Color.green, new BasicStroke(9f), Color.red, new BasicStroke(1));
-				sprite2.addElement(rect211);
-				sprite2.addElement(rect212);
-				sprite2.setPosition( 0, 0 );
-				
-				magnetWest2.setConnectedTo(baseSpriteMagnetEast);
-				
-				//A Sprite elhelyezese a Canvas-on
-				myCanvas.addSprite(sprite2);	
-	*/			
-				
-				
-				
-				
-				
-				
-				
-				
+				myCanvas.addSprite(pipeToBaseSprite);	
+				myCanvas.addSprite(baseSprite);	
+						
 				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
 				myCanvas.revalidateAndRepaintCoreCanvas();
 				

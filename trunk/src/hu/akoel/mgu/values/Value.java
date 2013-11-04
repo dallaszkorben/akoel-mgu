@@ -29,4 +29,13 @@ public abstract class Value {
 	public String toString(){
 		return "[" + x + ", " + y + "]";
 	}
+	
+	public boolean equals( Object o ){
+		Value other = (Value)o;
+		if( other.getX() == this.getX() && other.getY() == this.getY() ){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }

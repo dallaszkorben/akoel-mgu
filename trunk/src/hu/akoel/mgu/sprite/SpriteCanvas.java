@@ -103,8 +103,7 @@ public class SpriteCanvas extends MCanvas{
 		super.zoomIn(xCenter, yCenter, xPoint, yPoint);
 		
 		//Azert kell, mert elkepzelheto, hogy hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
-		
-//		fireMouseDragged();
+
 		fireMouseMoved();
 		spriteDragListener.loadSpriteToTemporary();
 		repaintCoreCanvas();
@@ -115,8 +114,6 @@ public class SpriteCanvas extends MCanvas{
 		
 		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
 
-//		fireMouseDragged();
-//fireMouseMoved();
 		fireMouseMoved();
 		spriteDragListener.loadSpriteToTemporary();
 		repaintCoreCanvas();
@@ -166,7 +163,7 @@ public class SpriteCanvas extends MCanvas{
 				//Akkor meg kell nezni, hogy van-e alatta sprite
 				for( Sprite sprite: spriteList){
 					
-					SizeValue boundBox = sprite.getBoundBox();
+					SizeValue boundBox = sprite.getBoundBoxAbsolute();
 						
 					//Igen, van alatta sprite
 					if( 
@@ -194,7 +191,6 @@ public class SpriteCanvas extends MCanvas{
 						//El kell helyezni az atmeneti taroloba az uj pozicioval						
 						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
 						sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
-//System.err.println(originalPosition + " == " + sprite.getPosition() );
 
 						
 						addTemporarySprite(sprite);	
@@ -300,6 +296,7 @@ public class SpriteCanvas extends MCanvas{
 				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
 				
 				boolean needToRepaintPermanent = false;
+				boolean hasBeenFoundPairForTheSprite = false;
 
 				//Eloszor is torlom a mozgatot Sprite minden kapcsolatat					
 				if( sprite.isConnected() ){
@@ -311,7 +308,7 @@ public class SpriteCanvas extends MCanvas{
 						magnet.setConnectedTo(null);
 					}
 						
-					//Es mivel volt kapcsolata amit torloltem, jelzem, hogy ujra kell rajzolni a permanens listat
+					//Es mivel egesz biztos, hogy volt kapcsolata amit torloltem (sprite.isConnected()), jelzem, hogy ujra kell rajzolni a permanens listat
 					needToRepaintPermanent = true;
 				
 				}
@@ -324,15 +321,15 @@ public class SpriteCanvas extends MCanvas{
 					double magnetYRange = getWorldYLengthByPixel( draggedMagnet.getRangeInPixel().getY() );
 					
 					//Megnezem, hogy az aktualis magnes hatotavolsagaban, van-e egyaltalan masik sprite
-					double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getPosition().getX();
-					double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getPosition().getY();
+					double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZero().getX();
+					double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZero().getY();
 					
 					boolean hasMagnetConnection = false;
 					
 					//Vegig az osszes permanens Sprite-on
 					for( Sprite possibleToConnectSprite: spriteList){
 						
-						SizeValue boundBox = possibleToConnectSprite.getBoundBox();
+						SizeValue boundBox = possibleToConnectSprite.getBoundBoxAbsolute();
 							
 						//Ha Van a vonzaskorzetben egyaltalan Sprite
 						if( 
@@ -364,8 +361,8 @@ public class SpriteCanvas extends MCanvas{
 							for( Magnet possibleToConnectMagnet : possibleToConnectSprite.getMagnetList() ){
 								
 								MagnetType possibleToConnectType = possibleToConnectMagnet.getType();
-								double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getPosition().getX();
-								double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getPosition().getY();
+								double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZero().getX();
+								double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZero().getY();
 								
 								//Es megnezem, hogy a ket magnet kompatibilis-e es megfelelo pozicioban van-e valamint nincs-e racsatlakoztatva mas
 								if( 
@@ -381,15 +378,24 @@ public class SpriteCanvas extends MCanvas{
 										
 								){
 									
-									//double differenceX = xMagnetPosition - possibleToConnectXPosition;
-									//double differenceY = yMagnetPosition - possibleToConnectYPosition;
-																		
-									//A mozgatando Sprite Elozetes uj pozicioba helyezese
-									//sprite.setPosition(new PositionValue(possibleToConnectXPosition - magnet.getPosition().getX(), possibleToConnectYPosition - magnet.getPosition().getY() ));
+									//Ha mar talaltam part a Sprite-nak, vagyis nem ez az elso 
+									if( hasBeenFoundPairForTheSprite ){
+										
+										//Akkor meg kell nezni, hogy mozgatas nelkul osszekapcsolhato-e a ketto
+										PositionValue possibleNewPosition = draggedMagnet.getPossibleSpritePosition(possibleToConnectMagnet);
+										
+										//Ha nem kapcsolhato ossze, akkor zarja a ciklust
+										if( !possibleNewPosition.equals(sprite.getPosition())){
+System.err.println(possibleNewPosition + " --- " + sprite.getPosition());											
+											continue;										
+										}
+										
+									}
 									
 									//A mozgatott Sprite vizsgalt magneset osszekoti az osszekapcsolhato magnessel
 									draggedMagnet.setConnectedTo( possibleToConnectMagnet );
 								
+									hasBeenFoundPairForTheSprite = true;
 									needToRepaintPermanent = true;
 									hasMagnetConnection = true;
 									break;
@@ -408,31 +414,7 @@ public class SpriteCanvas extends MCanvas{
 					//}					
 									
 				}
-				
-				
-/*				
-				//Ha viszont egyaltalan nem talalt kapcsolatot egyik magneshez sem, akkor torolni kell a kapcsolatrendszeret
-				if( !hasConnection ){
-					
-					//De megis van kapcsolata
-					if( sprite.isConnected() ){
-
-						//Akkor az osszes magnesen vegig megy
-						for( Magnet magnet: sprite.getMagnetList()){
 						
-							//Es megszunteti a kapcsolatait
-							magnet.setConnectedTo(null);
-						}
-						
-						//Es mivel az allando Sprite-ok valamelyikebol biztosan toroltem ki kapcsolatot
-						//Ezert ujra meg kell jelenittetnem az egesz kepernyot
-						needToRepaintPermanent = true;
-						//revalidateAndRepaintCoreCanvas();
-						
-					}					
-					
-				}
-	*/			
 				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
 				addTemporarySprite(sprite);
 				
@@ -471,7 +453,7 @@ public class SpriteCanvas extends MCanvas{
 
 				for( Sprite sprite: spriteList){
 				
-					SizeValue boundBox = sprite.getBoundBox();						
+					SizeValue boundBox = sprite.getBoundBoxAbsolute();						
 			
 					if( 
 						xValue >= boundBox.getXMin() &&
