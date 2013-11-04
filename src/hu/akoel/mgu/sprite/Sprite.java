@@ -3,6 +3,8 @@ package hu.akoel.mgu.sprite;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import javax.swing.text.ChangedCharSetException;
+
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
@@ -15,6 +17,8 @@ public class Sprite {
 	private PositionValue position = new PositionValue(0,0);
 	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
 	private HashSet<Magnet> magnetList = new HashSet<Magnet>();
+	private HashSet<ChangeSizeListener> changeWidthListenerList = new HashSet<ChangeSizeListener>();
+	private HashSet<ChangeSizeListener> changeHeightListenerList = new HashSet<ChangeSizeListener>();
 
 	public Sprite( SizeValue boundBox ){
 		commonConstructor(boundBox, true);
@@ -29,6 +33,14 @@ public class Sprite {
 		this.enableToPlaceWithoutConnection = enableToPlaceWithoutConnection;
 	}
 	
+	public void addChangeWidthListener( ChangeSizeListener changeWidthListener ){
+		this.changeWidthListenerList.add( changeWidthListener );
+	}
+
+	public void addChangeHeightListener( ChangeSizeListener changeHeightListener ){
+		this.changeHeightListenerList.add( changeHeightListener );
+	}
+
 	public boolean isEnableToPlaceWithoutConnection() {
 		return enableToPlaceWithoutConnection;
 	}
@@ -37,7 +49,7 @@ public class Sprite {
 		this.enableToPlaceWithoutConnection = enableToPlaceWithoutConnection;
 	}
 	
-	public SizeValue getBoundBox(){
+	public SizeValue getBoundBoxAbsolute(){
 		return new SizeValue(this.boundBox.getXMin() + position.getX(), this.boundBox.getYMin() + position.getY(), this.boundBox.getXMax() + position.getX(), this.boundBox.getYMax() + position.getY());
 	}
 	
@@ -65,6 +77,18 @@ public class Sprite {
 	
 	public PositionValue getPosition(){
 		return new PositionValue(position.getX(), position.getY());
+	}
+	
+	public void changeWidthTo( double width ){
+		for( ChangeSizeListener changeWidthListener: changeWidthListenerList ){
+			changeWidthListener.changed( width );
+		}
+	}
+	
+	public void changeHeightTo( double height ){
+		for( ChangeSizeListener changeHeightListener: changeHeightListenerList ){
+			changeHeightListener.changed( height );
+		}		
 	}
 	
 	public void draw( MGraphics g2 ){
