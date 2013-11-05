@@ -32,7 +32,8 @@ public abstract class Value {
 	
 	public boolean equals( Object o ){
 		Value other = (Value)o;
-		if( other.getX() == this.getX() && other.getY() == this.getY() ){
+
+		if( Math.abs(other.getX()-this.getX()) < 0.000000001 && Math.abs(other.getY()-this.getY()) < 0.000000001 ){
 			return true;
 		}else{
 			return false;

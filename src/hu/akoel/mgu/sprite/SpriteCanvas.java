@@ -6,6 +6,7 @@ import java.awt.MouseInfo;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
@@ -102,8 +103,6 @@ public class SpriteCanvas extends MCanvas{
 	public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint){
 		super.zoomIn(xCenter, yCenter, xPoint, yPoint);
 		
-		//Azert kell, mert elkepzelheto, hogy hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
-
 		fireMouseMoved();
 		spriteDragListener.loadSpriteToTemporary();
 		repaintCoreCanvas();
@@ -288,6 +287,39 @@ public class SpriteCanvas extends MCanvas{
 		
 			if( draggStarted ){
 				
+				//
+				//Azt vizsgalja, hogy az adott Sprite elmozdithato-e egyaltalan a helyerol
+				//
+				boolean moveable = true;
+				int number;
+				HashSet<Sprite> checkedSpriteList;
+				
+				//vegig a Sprite minden magnesen
+				for( Magnet magnet: sprite.getMagnetList() ){
+					
+					//Hogyha van kapcsolata az aktualis magnet-nek
+					if( null != magnet.getConnectedTo() ){
+						number = 0;
+						checkedSpriteList = new HashSet<Sprite>();
+						checkedSpriteList.add(sprite);
+						
+						//Akkor megnezi, hogy hagy db onalloan elhelyezheto Sprite letezik Sprite adott magnes feloli oldalan
+						number = getNumbersOfEnableToPlaceWithoutConnection(magnet, number, checkedSpriteList );
+						
+						//Ha a kerdeses Sprite-on kivul nem letezik onalloan lehelyezheto Sprite a magnes feloli oldalon
+						if( number == 0 ){
+							
+							//Akkor megtiltja az mozgatni kivant Sprite elmozditasat
+							moveable = false;
+							break;
+						}
+					}
+				}
+				if( !moveable ){
+					return;
+				}
+				
+				
 				//Uj pozicioi kiszamitasa
 				double xCursorPosition = getWorldXByPixel(e.getX() );
 				double yCursorPosition = getWorldYByPixel(e.getY());
@@ -298,7 +330,7 @@ public class SpriteCanvas extends MCanvas{
 				boolean needToRepaintPermanent = false;
 				boolean hasBeenFoundPairForTheSprite = false;
 
-				//Eloszor is torlom a mozgatot Sprite minden kapcsolatat					
+			//Eloszor is torlom a mozgatot Sprite minden kapcsolatat					
 				if( sprite.isConnected() ){
 
 					//Az osszes magnesen vegig megyek
@@ -386,10 +418,11 @@ public class SpriteCanvas extends MCanvas{
 										
 										//Ha nem kapcsolhato ossze, akkor zarja a ciklust
 										if( !possibleNewPosition.equals(sprite.getPosition())){
-System.err.println(possibleNewPosition + " --- " + sprite.getPosition());											
+
+											//zarja a ciklust
 											continue;										
 										}
-										
+
 									}
 									
 									//A mozgatott Sprite vizsgalt magneset osszekoti az osszekapcsolhato magnessel
@@ -432,6 +465,42 @@ System.err.println(possibleNewPosition + " --- " + sprite.getPosition());
 		@Override
 		public void mouseMoved(MouseEvent e) {
 		}
+		
+	}
+	
+	int getNumbersOfEnableToPlaceWithoutConnection( Magnet magnet, int number, HashSet<Sprite> spriteList ){
+		
+		Magnet pair = magnet.getConnectedTo();
+		
+		//Nincs a magnet-nek parja
+		if( null == pair ){
+			return number;
+		}
+		
+		//A magnes masik oldalan levo Sprite
+		Sprite pairParent = pair.getParent();
+		
+		//Ha mar vizsgaltam ezt a Sprite-to
+		if( spriteList.contains(pairParent)){
+			return number;
+		}
+		
+		spriteList.add( pairParent);
+		
+		//Ha lehelyezheto onalloan, akkor noveli a szmalalot
+		if( pairParent.isEnableToPlaceWithoutConnection() ){
+			number++;
+		}
+		
+		//vegig az o magnesein
+		for( Magnet m: pairParent.getMagnetList()){
+			
+			//Megszamolja, hogy arrafele hany onalloan lehelyezheto Sprite van 
+			number = getNumbersOfEnableToPlaceWithoutConnection(m, number, spriteList);
+			
+		}
+		
+		return number;
 		
 	}
 	

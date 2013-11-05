@@ -14,6 +14,22 @@ public class SizeValue {
 		this.yMax = yMax;
 	}
 	
+	public void setXMin( double xMin ){
+		this.xMin = xMin;
+	}
+	
+	public void setXMax( double xMax ){
+		this.xMax = xMax;
+	}
+	
+	public void setYMin( double yMin ){
+		this.yMin = yMin;
+	}
+	
+	public void setYMax( double yMax ){
+		this.yMax = yMax;
+	}
+	
 	public double getWidth() {
 		return xMax - xMin;
 	}
