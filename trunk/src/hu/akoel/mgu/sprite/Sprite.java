@@ -33,6 +33,22 @@ public class Sprite {
 		this.enableToPlaceWithoutConnection = enableToPlaceWithoutConnection;
 	}
 	
+	public void setBoundBoxXMin( double xMin ){
+		this.boundBox.setXMin(xMin);
+	}
+	
+	public void setBoundBoxXMax( double xMax ){
+		this.boundBox.setXMax(xMax);
+	}
+	
+	public void setBoundYMin( double yMin ){
+		this.boundBox.setYMin(yMin);
+	}
+	
+	public void setBoundYMax( double yMax ){
+		this.boundBox.setYMax(yMax);
+	}
+		
 	public void addChangeWidthListener( ChangeSizeListener changeWidthListener ){
 		this.changeWidthListenerList.add( changeWidthListener );
 	}
@@ -79,15 +95,18 @@ public class Sprite {
 		return new PositionValue(position.getX(), position.getY());
 	}
 	
-	public void changeWidthTo( double width ){
+	public void changeWidthTo( double xMin, double xMax ){
+		
+		this.setBoundBoxXMin(xMin);
+		this.setBoundBoxXMax(xMax);
 		for( ChangeSizeListener changeWidthListener: changeWidthListenerList ){
-			changeWidthListener.changed( width );
+			changeWidthListener.changed( xMin, xMax );
 		}
 	}
 	
-	public void changeHeightTo( double height ){
+	public void changeHeightTo( double yMin, double yMax ){
 		for( ChangeSizeListener changeHeightListener: changeHeightListenerList ){
-			changeHeightListener.changed( height );
+			changeHeightListener.changed( yMin, yMax );
 		}		
 	}
 	

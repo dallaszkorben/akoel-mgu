@@ -27,6 +27,10 @@ public class Magnet {
 		this.ralativePositionToSpriteZero = relativePositionToSpriteZero;
 	}
 	
+	Sprite getParent(){
+		return parent;
+	}
+	
 	public HashSet<MagnetType> getPossibleMagnetTypeToConnect(){
 		return possibleMagnetTypeToConnect;
 	}

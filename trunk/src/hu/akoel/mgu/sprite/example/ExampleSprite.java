@@ -77,8 +77,14 @@ public class ExampleSprite extends JFrame {
 	private CanvasControl canvasControl;
 	
 	private Sprite baseSprite;
-	private Sprite pipeToBaseSprite;
-	private Sprite pipeSprite;
+	private Sprite pipeDirectHorizontalSprite;
+	private Sprite pipeHorizontalSprite;
+	private Sprite pipeVerticalSprite;
+	private Sprite pipeDirectVerticalSprite;
+	
+	//Magnet tipus
+	private MagnetType pipeMagnet = new MagnetType("Pipe");
+	private MagnetType outMagnet = new MagnetType("Out");
 	
 	public static void main(String[] args) {		
 		new ExampleSprite();
@@ -134,98 +140,213 @@ public class ExampleSprite extends JFrame {
 		//
 		//Elhelyezi az eloterbe a Sprite-okat
 		//
-		JButton commandButtonAddSprite = new JButton("add new Sprite");
-		commandButtonAddSprite.addActionListener(new ActionListener(){
-
-			//Magnet tipus
-			MagnetType pipeMagnet = new MagnetType("Pipe");
-			MagnetType outMagnet = new MagnetType("Out");
+		JButton commandButtonAddBase = new JButton("add Base");
+		commandButtonAddBase.addActionListener(new ActionListener(){
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 	
 				baseSprite = new Sprite(new SizeValue(-1, -1.5, 1, 1.5));
-				
 			
-				//A Sprite leirasa
-				RectangleElement rectBase11 = new RectangleElement(-1,-1.5,2,3,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.cyan, new BasicStroke(3));
-				RectangleElement rectBaseMagnetEast = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-
+				//A kozponti Sprite leirasa
+				RectangleElement gElementBaseSprite = new RectangleElement(-1,-1.5,2,3,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.cyan, new BasicStroke(3));
+				RectangleElement gMagnetEastOfBaseSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetNorthOfBaseSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetSouthOfBaseSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetWestOfBaseSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				
 				Magnet baseSpriteMagnetEast = new Magnet(baseSprite, outMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
 				baseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
-				baseSpriteMagnetEast.addElement( rectBaseMagnetEast );
+				baseSpriteMagnetEast.addElement( gMagnetEastOfBaseSprite );
+
+				Magnet baseSpriteMagnetNorth = new Magnet(baseSprite, outMagnet, 0.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, 1.5) );
+				baseSpriteMagnetNorth.addPossibleMagnetTypeToConnect(pipeMagnet);
+				baseSpriteMagnetNorth.addElement(gMagnetNorthOfBaseSprite);
 				
-				baseSprite.addElement(rectBase11);
+				Magnet baseSpriteMagnetSouth = new Magnet(baseSprite, outMagnet, 180.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, -1.5) );
+				baseSpriteMagnetSouth.addPossibleMagnetTypeToConnect(pipeMagnet);
+				baseSpriteMagnetSouth.addElement(gMagnetSouthOfBaseSprite);
+				
+				Magnet baseSpriteMagnetWest = new Magnet(baseSprite, outMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-1, 0) );
+				baseSpriteMagnetWest.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				baseSpriteMagnetWest.addElement( gMagnetWestOfBaseSprite );
+
+				
+				baseSprite.addElement(gElementBaseSprite);
 				baseSprite.addMagnet( baseSpriteMagnetEast );
+				baseSprite.addMagnet( baseSpriteMagnetNorth );
+				baseSprite.addMagnet( baseSpriteMagnetSouth );
+				baseSprite.addMagnet( baseSpriteMagnetWest );
 				baseSprite.setPosition( 0, 0 );
 				
+				//A Sprite-ok elhelyezese a Canvas-on	
+				myCanvas.addSprite(baseSprite);	
+						
+				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
+				myCanvas.revalidateAndRepaintCoreCanvas();
 				
-				//Kozvetlen cso
+			}
+		});
+		
+		JButton commandButtonAddVertical = new JButton("add Vertical");
+		commandButtonAddVertical.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				//Normal Vertikalis cso
 				//Nem helyezheto le onmagaban
-				pipeToBaseSprite = new Sprite(new SizeValue(-2, -0.25, 2, 0.25), false);
+				pipeVerticalSprite = new Sprite(new SizeValue(-0.25, -2, 0.25, 2 ), false);
 				
 				//A Sprite leirasa
-				RectangleElement rectPipeToBase11 = new RectangleElement(-2,-0.125,4,0.25,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.magenta, new BasicStroke(3));
-				RectangleElement rectPipeToBaseMagnetWest = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement rectPipeToBaseMagnetEast = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gElementPipeVerticalSprite = new RectangleElement(-0.125,-2,0.25,4,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.orange, new BasicStroke(3));
+				RectangleElement gMagnetNorthOfPipeVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetSouthOfPipeVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 
-				Magnet pipeToBaseSpriteMagnetEast = new Magnet(pipeToBaseSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(2, 0) );
-				pipeToBaseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
-				pipeToBaseSpriteMagnetEast.addElement( rectPipeToBaseMagnetEast );
+				Magnet pipeSpriteMagnetNorth = new Magnet(pipeVerticalSprite, pipeMagnet, 0.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, 2) );
+				pipeSpriteMagnetNorth.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				pipeSpriteMagnetNorth.addElement(gMagnetNorthOfPipeVerticalSprite);
+				
+				Magnet pipeSpriteMagnetSouth = new Magnet(pipeVerticalSprite, pipeMagnet, 180.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, -2) );
+				pipeSpriteMagnetSouth.addPossibleMagnetTypeToConnect( pipeMagnet );
+				pipeSpriteMagnetSouth.addElement(gMagnetSouthOfPipeVerticalSprite);
+
+				//A Sprite magneseinek hozzarendelese
+				pipeVerticalSprite.addMagnet( pipeSpriteMagnetNorth );
+				pipeVerticalSprite.addMagnet( pipeSpriteMagnetSouth );
+				
+				pipeVerticalSprite.addElement(gElementPipeVerticalSprite);
+				pipeVerticalSprite.setPosition( 0, 0 );
+				
+				//A Sprite-ok elhelyezese a Canvas-on
+				myCanvas.addSprite(pipeVerticalSprite);
+						
+				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
+				myCanvas.revalidateAndRepaintCoreCanvas();
+
+			}
+		});
+		
+		JButton commandButtonAddDirectVertical = new JButton("add D Vertical");
+		commandButtonAddDirectVertical.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
 	
-				Magnet pipeToBaseSpriteMagnetWest = new Magnet(pipeToBaseSprite, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-2, 0) );
+				//Direct kapcsolatu Vertikalis cso
+				//Nem helyezheto le onmagaban
+				pipeDirectVerticalSprite = new Sprite(new SizeValue(-0.25, -1, 0.25, 1 ), false);
+				
+				//A Sprite leirasa
+				RectangleElement gElementPipeDirectVerticalSprite = new RectangleElement(-0.125,-1,0.25,2,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.magenta, new BasicStroke(3));
+				RectangleElement gMagnetNorthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetSouthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+
+				Magnet pipeDirectVerticalSpriteMagnetNorth = new Magnet(pipeDirectVerticalSprite, pipeMagnet, 0.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, 1) );
+				pipeDirectVerticalSpriteMagnetNorth.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				pipeDirectVerticalSpriteMagnetNorth.addPossibleMagnetTypeToConnect( outMagnet  );
+				pipeDirectVerticalSpriteMagnetNorth.addElement(gMagnetNorthOfPipeDirectVerticalSprite);
+				
+				Magnet pipeDirectVerticalSpriteMagnetSouth = new Magnet(pipeDirectVerticalSprite, pipeMagnet, 180.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, -1) );
+				pipeDirectVerticalSpriteMagnetSouth.addPossibleMagnetTypeToConnect( pipeMagnet );
+				pipeDirectVerticalSpriteMagnetSouth.addPossibleMagnetTypeToConnect( outMagnet );
+				pipeDirectVerticalSpriteMagnetSouth.addElement(gMagnetSouthOfPipeDirectVerticalSprite);
+
+				//A Sprite magneseinek hozzarendelese
+				pipeDirectVerticalSprite.addMagnet( pipeDirectVerticalSpriteMagnetNorth );
+				pipeDirectVerticalSprite.addMagnet( pipeDirectVerticalSpriteMagnetSouth );
+				
+				pipeDirectVerticalSprite.addElement(gElementPipeDirectVerticalSprite);
+				pipeDirectVerticalSprite.setPosition( 0, 0 );
+				
+				//A Sprite-ok elhelyezese a Canvas-on
+				myCanvas.addSprite(pipeDirectVerticalSprite);	
+						
+				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
+				myCanvas.revalidateAndRepaintCoreCanvas();
+			}
+		});
+				
+		JButton commandButtonAddHorizontal = new JButton("add Horizontal");
+		commandButtonAddHorizontal.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				//Normal horizontalis cso
+				//Nem helyezheto le onmagaban
+				pipeHorizontalSprite = new Sprite(new SizeValue(-2, -0.25, 2, 0.25), false);
+				
+				//A Sprite leirasa
+				RectangleElement gElementPipeHorizontalSprite = new RectangleElement(-2,-0.125,4,0.25,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.orange, new BasicStroke(3));
+				RectangleElement gMagnetWestOfPipeHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetEastOfPipeHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+
+				Magnet pipeSpriteMagnetEast = new Magnet(pipeHorizontalSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(2, 0) );
+				pipeSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				pipeSpriteMagnetEast.addElement(gMagnetEastOfPipeHorizontalSprite);
+				
+				Magnet pipeSpriteMagnetWest = new Magnet(pipeHorizontalSprite, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-2, 0) );
+				pipeSpriteMagnetWest.addPossibleMagnetTypeToConnect( pipeMagnet );
+				pipeSpriteMagnetWest.addElement(gMagnetWestOfPipeHorizontalSprite);
+
+				//A Sprite magneseinek hozzarendelese
+				pipeHorizontalSprite.addMagnet( pipeSpriteMagnetEast );
+				pipeHorizontalSprite.addMagnet( pipeSpriteMagnetWest );
+				
+				pipeHorizontalSprite.addElement(gElementPipeHorizontalSprite);
+				pipeHorizontalSprite.setPosition( 0, 0 );
+				
+				//A Sprite-ok elhelyezese a Canvas-on
+				myCanvas.addSprite(pipeHorizontalSprite);	
+						
+				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
+				myCanvas.revalidateAndRepaintCoreCanvas();
+				
+				
+			}
+		});
+		
+		JButton commandButtonAddDirectHorizontal = new JButton("add D Horizontal");
+		commandButtonAddDirectHorizontal.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				
+
+				//Kozvetlen kapcsolatu horizontalis cso
+				//Nem helyezheto le onmagaban
+				pipeDirectHorizontalSprite = new Sprite(new SizeValue(-1, -0.25, 1, 0.25), false);
+				
+				//A Sprite leirasa
+				RectangleElement gElementPipedirectHorizontalSprite = new RectangleElement(-1,-0.125,2,0.25,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.magenta, new BasicStroke(3));
+				RectangleElement gMagnetWestOfPipeDirectHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gMagnetEastOfPipeDirectHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+
+				Magnet pipeToBaseSpriteMagnetEast = new Magnet(pipeDirectHorizontalSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
+				pipeToBaseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
+				pipeToBaseSpriteMagnetEast.addPossibleMagnetTypeToConnect( outMagnet  );
+				pipeToBaseSpriteMagnetEast.addElement( gMagnetEastOfPipeDirectHorizontalSprite );
+	
+				Magnet pipeToBaseSpriteMagnetWest = new Magnet(pipeDirectHorizontalSprite, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-1, 0) );
 				pipeToBaseSpriteMagnetWest.addPossibleMagnetTypeToConnect( pipeMagnet );
 				pipeToBaseSpriteMagnetWest.addPossibleMagnetTypeToConnect( outMagnet );
-				pipeToBaseSpriteMagnetWest.addElement( rectPipeToBaseMagnetWest );
+				pipeToBaseSpriteMagnetWest.addElement( gMagnetWestOfPipeDirectHorizontalSprite );
 				
 				//A Sprite magneseinek hozzarendelese
-				pipeToBaseSprite.addMagnet( pipeToBaseSpriteMagnetEast );
-				pipeToBaseSprite.addMagnet( pipeToBaseSpriteMagnetWest );				
-				pipeToBaseSprite.addElement(rectPipeToBase11);
-				pipeToBaseSprite.setPosition( 0, 0 );
-				pipeToBaseSprite.addChangeWidthListener(new ChangeSizeListener() {
+				pipeDirectHorizontalSprite.addMagnet( pipeToBaseSpriteMagnetEast );
+				pipeDirectHorizontalSprite.addMagnet( pipeToBaseSpriteMagnetWest );				
+				pipeDirectHorizontalSprite.addElement(gElementPipedirectHorizontalSprite);
+				pipeDirectHorizontalSprite.setPosition( 0, 0 );
+				pipeDirectHorizontalSprite.addChangeWidthListener(new ChangeSizeListener() {
 					
 					@Override
-					public void changed(double value) {
+					public void changed(double xMin, double xMax) {
 				
 					}
 				});
 				
-				pipeToBaseSpriteMagnetWest.setConnectedTo(baseSpriteMagnetEast);
-				
-				
-				
-				//Normal cso
-				//Nem helyezheto le onmagaban
-				pipeSprite = new Sprite(new SizeValue(-2, -0.25, 2, 0.25), false);
-				
-				//A Sprite leirasa
-				RectangleElement rectPipe11 = new RectangleElement(-2,-0.125,4,0.25,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.orange, new BasicStroke(3));
-				RectangleElement rectPipeMagnetWest = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement rectPipeMagnetEast = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-
-				Magnet pipeSpriteMagnetEast = new Magnet(pipeSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(2, 0) );
-				pipeSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
-				pipeSpriteMagnetEast.addElement(rectPipeMagnetEast);
-				
-				Magnet pipeSpriteMagnetWest = new Magnet(pipeSprite, pipeMagnet, 270.0, new RangeValueInPixel(20, 10 ), new PositionValue(-2, 0) );
-				pipeSpriteMagnetWest.addPossibleMagnetTypeToConnect( pipeMagnet );
-				pipeSpriteMagnetWest.addElement(rectPipeMagnetWest);
-
-				//A Sprite magneseinek hozzarendelese
-				pipeSprite.addMagnet( pipeSpriteMagnetEast );
-				pipeSprite.addMagnet( pipeSpriteMagnetWest );
-				
-				pipeSprite.addElement(rectPipe11);
-				pipeSprite.setPosition( 0, 0 );
-				
-				pipeSpriteMagnetWest.setConnectedTo(pipeToBaseSpriteMagnetEast);
-
-				
 				//A Sprite-ok elhelyezese a Canvas-on
-				myCanvas.addSprite(pipeSprite);	
-				myCanvas.addSprite(pipeToBaseSprite);	
-				myCanvas.addSprite(baseSprite);	
+				myCanvas.addSprite(pipeDirectHorizontalSprite);	
 						
 				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
 				myCanvas.revalidateAndRepaintCoreCanvas();
@@ -249,7 +370,7 @@ public class ExampleSprite extends JFrame {
 				System.err.println();
 				
 
-				for( Magnet magnet: pipeToBaseSprite.getMagnetList() ){
+				for( Magnet magnet: pipeDirectHorizontalSprite.getMagnetList() ){
 					System.err.println("Pipe to Base sprite: " + magnet.getDirection() + ", " + magnet.getConnectedTo() );
 				}
 				
@@ -257,7 +378,7 @@ public class ExampleSprite extends JFrame {
 				System.err.println();
 				
 
-				for( Magnet magnet: pipeSprite.getMagnetList() ){
+				for( Magnet magnet: pipeHorizontalSprite.getMagnetList() ){
 					System.err.println("Pipe: " + magnet.getDirection() + ", " + magnet.getConnectedTo() );
 				}
 			}
@@ -269,20 +390,24 @@ public class ExampleSprite extends JFrame {
 		//Parancsgomb panel
 		JPanel commandButtonPanel = new JPanel();
 		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
-		commandButtonPanel.add(commandButtonAddSprite);
+		commandButtonPanel.add(commandButtonAddBase );
+		commandButtonPanel.add(commandButtonAddHorizontal);
+		commandButtonPanel.add(commandButtonAddDirectHorizontal);
+		commandButtonPanel.add(commandButtonAddVertical);
+		commandButtonPanel.add(commandButtonAddDirectVertical);
 		commandButtonPanel.add(commandButtonReport);
 		
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS	));
 		
 		southPanel.add(commandButtonPanel);
-//		southPanel.add( canvasControl.getStatusPanel() );
+		southPanel.add( canvasControl.getStatusPanel() );
 	
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
 		this.getContentPane().add(southPanel, BorderLayout.SOUTH);
-//		this.getContentPane().add(canvasControl.getControlPanel(), BorderLayout.EAST);
-/*
+		this.getContentPane().add(canvasControl.getControlPanel(), BorderLayout.EAST);
+
 		//Kezdo ertekek kiirasa
 		DecimalFormat df = new DecimalFormat("#.00");
 		if( myScale.getScale().getX() < 1.0 ){
@@ -296,7 +421,7 @@ public class ExampleSprite extends JFrame {
 		}else{				
 			canvasControl.setStatusPanelYScale( "yM=1:" + df.format(myScale.getScale().getY() ) );
 		}
-*/		
+		
 		this.setVisible(true);		
 
 	}
