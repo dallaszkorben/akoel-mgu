@@ -510,39 +510,23 @@ public class MCanvas extends JPanel {
 	
 	
 	
-	public double getPixelXLengthByWorld( double length ){
+	public int getPixelXLengthByWorld( double length ){
 		double doubleLength = getPixelPerUnit().getX() * length;
-	
-		//doubleLength = doubleLength + 1;
-/*
-		if(doubleLength < 0)
-			return -Math.round( -(float)doubleLength );
-		else
-			return Math.round( (float)doubleLength );
-*/
-		return doubleLength;
+		return (int)Math.round( doubleLength );
 	}
 	
-	public double getPixelYLengthByWorld( double length ){
+	public int getPixelYLengthByWorld( double length ){
 		double doubleLength = getPixelPerUnit().getY() * length;
-		
-		//doubleLength = doubleLength + 1;
-/*		
-		if(doubleLength < 0)
-			return -Math.round( -(float)doubleLength );
-		else
-			return Math.round( (float)doubleLength );
-*/
-		return doubleLength;
+		return (int)Math.round( doubleLength );
 	}
 	
 	//Mas ne hasznalja
-	public double getPixelXPositionByWorldBeforeTranslate( double x ){
+	public int getPixelXPositionByWorldBeforeTranslate( double x ){
 		return getPixelXLengthByWorld( x );
 	}
 	
 	//Mas ne hasznalja
-	public double getPixelYPositionByWorldBeforeTranslate( double y ){
+	public int getPixelYPositionByWorldBeforeTranslate( double y ){
 		return getPixelYLengthByWorld( y );
 	}
 	
@@ -961,7 +945,7 @@ public class MCanvas extends JPanel {
 				offg2.scale(1,-1);
 
 				//Most tolom el a koordinatarendszert
-				offg2.translate( getPixelXLengthByWorld(parent.getWorldTranslateX()), getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
+				offg2.translate( ( getPixelXLengthByWorld(parent.getWorldTranslateX()) ), ( getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() ) );
 				
 				if (null != deepestList) {
 					for (PainterListener painter : deepestList) {

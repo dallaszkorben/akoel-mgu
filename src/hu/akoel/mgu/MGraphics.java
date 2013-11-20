@@ -42,21 +42,32 @@ public class MGraphics {
 				Math.round((float)canvas.getPixelYLengthByWorld(height)-1));
 	}
 
-	public void drawRectangle( double x, double y, double width, double height ){
+	public void drawRectangle( double x1, double y1, double x2, double y2 ){
 		
-		g2.drawRect( 
-				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
-				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
-				Math.round((float)canvas.getPixelXLengthByWorld(width)), 
-				Math.round((float)canvas.getPixelYLengthByWorld(height)));
+		int x = canvas.getPixelXPositionByWorldBeforeTranslate(x1);
+		int y = canvas.getPixelYPositionByWorldBeforeTranslate(y1);
+		
+		int xEnd = canvas.getPixelXPositionByWorldBeforeTranslate(x2);
+		int yEnd = canvas.getPixelYPositionByWorldBeforeTranslate(y2);
+		
+		int width = xEnd - x;
+		int height = yEnd - y;
+		
+		g2.drawRect( x, y, width, height ); 
 	}
 
-	public void fillRectangle( double x, double y, double width, double height ){
-		g2.fillRect( 
-				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
-				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
-				Math.round((float)canvas.getPixelXLengthByWorld(width)), 
-				Math.round((float)canvas.getPixelYLengthByWorld(height)));
+	public void fillRectangle( double x1, double y1, double x2, double y2 ){
+		
+		int x = canvas.getPixelXPositionByWorldBeforeTranslate(x1);
+		int y = canvas.getPixelYPositionByWorldBeforeTranslate(y1);
+		
+		int xEnd = canvas.getPixelXPositionByWorldBeforeTranslate(x2);
+		int yEnd = canvas.getPixelYPositionByWorldBeforeTranslate(y2);
+		
+		int width = xEnd - x;
+		int height = yEnd - y;
+		
+		g2.fillRect( x, y, width, height ); 
 	}
 
 	public void setColor( Color color ){
@@ -77,7 +88,7 @@ public class MGraphics {
 	
 	public void drawFont( TextLayout textLayout, double x, double y ){
 		g2.scale(1,-1);
-		textLayout.draw( g2, Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(-y)) );
+//		textLayout.draw( g2, Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(-y)) );
 		g2.scale(1,-1);
 	}
 }

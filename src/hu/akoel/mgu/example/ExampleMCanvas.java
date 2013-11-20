@@ -32,7 +32,7 @@ public class ExampleMCanvas extends JFrame {
 	
 	private Color background = Color.GREEN;
 	private TranslateValue positionToMiddle = new TranslateValue( 0, 0 );
-	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(1,1), new RateValue( 1.2, 1.2));
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(3.3,3.3), new RateValue( 1.2, 1.2));
 
 	
 	public static void main(String[] args) {
@@ -100,11 +100,7 @@ public class ExampleMCanvas extends JFrame {
 					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
-//						if( null == worldSize ){
-							g2.drawLine((0.0), (0.0), 80, 80 );
-//						}else{
-//							g2.drawLine(worldSize.getXMin(), worldSize.getYMin(), worldSize.getXMax(), worldSize.getYMax() );
-//						}
+						g2.drawLine((0.0), (0.0), 80, 80 );
 
 						//
 						//celkereszt negyed
@@ -120,14 +116,23 @@ public class ExampleMCanvas extends JFrame {
 						g2.drawLine(canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0), canvas.getWorldXByPixel(canvas.getViewableSize().width - 1), canvas.getWorldYByPixel(0) - 5);
 
 						
+						double startX = -20;
+						double startY = 10;
+						double delta = 4;
+						for( int i=0; i<20; i++){
+							
+							g2.drawRectangle(startX, startY, startX + delta, startY + delta);
+							startX += delta;
+						}
+						
 						//
 						// Kor
 						//
-						g2.setColor(Color.black);
-						g2.drawOval(-10, -10, 20, 20);
-						g2.setColor(Color.CYAN);
+//						g2.setColor(Color.black);
+//						g2.drawOval(-10, -10, 20, 20);
+//						g2.setColor(Color.CYAN);
 						
-						g2.fillOval(-4, -1, 2, 2);
+//						g2.fillOval(-4, -1, 2, 2);
 										
 					}
 
