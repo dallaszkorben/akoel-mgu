@@ -57,21 +57,21 @@ public class RectangleElement extends SpriteElement{
 	public void draw(MGraphics g2) {
 		g2.setColor(normalColor);
 		g2.setStroke(normalStroke);
-		g2.drawRectangle(x + getPositionX(), y + getPositionY(), width, height);		
+		g2.drawRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);		
 	}
 
 	@Override
 	public void drawFocus(MGraphics g2) {
 		g2.setColor(focusColor);
 		g2.setStroke(focusStroke);
-		g2.drawRectangle(x + getPositionX(), y + getPositionY(), width, height);		
+		g2.drawRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);		
 	}
 
 	@Override
 	public void drawConnected(MGraphics g2) {
 		g2.setColor(connectedColor);
 		g2.setStroke(connectedStroke);
-		g2.drawRectangle(x + getPositionX(), y + getPositionY(), width, height);				
+		g2.drawRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);				
 	}
 	
 

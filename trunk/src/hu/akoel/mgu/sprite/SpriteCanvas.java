@@ -564,8 +564,8 @@ public class SpriteCanvas extends MCanvas{
 						for( Magnet possibleToConnectMagnet : possibleToConnectSprite.getMagnetList() ){
 						
 							MagnetType possibleToConnectType = possibleToConnectMagnet.getType();
-							double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZero().getX();
-							double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZero().getY();
+							double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getX();
+							double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getY();
 						
 							//Es megnezem, hogy a ket magnet kompatibilis-e es megfelelo pozicioban van-e valamint nincs-e racsatlakoztatva mas
 							if( 
@@ -603,7 +603,7 @@ public class SpriteCanvas extends MCanvas{
 //Itt kellene az osszes Sprite poziciojat utannahuzni
 
 								//Vegig megyek az osszes mozgatott Sprite-on es megtalalt magneshez igazitom mindegyiket (persze kiveve a mar igazitottat)										
-								HashSet<Sprite> adjustedList = doAdjustPositions( adjustedList, moveableSpriteList );
+//								HashSet<Sprite> adjustedList = doAdjustPositions( adjustedList, moveableSpriteList );
 								
 								//Vegigmegyek a mozgatott sprite minden magnesen								
 								for( Magnet dM: sprite.getMagnetList() 	){
@@ -624,8 +624,8 @@ public class SpriteCanvas extends MCanvas{
 									
 								}
 																
-								sprite.getPosition()								
-								possibleNewPosition									
+//								sprite.getPosition()								
+//								possibleNewPosition									
 								
 ////////								
 								
@@ -674,8 +674,8 @@ public class SpriteCanvas extends MCanvas{
 			double magnetYRange = getWorldYLengthByPixel( draggedMagnet.getRangeInPixel().getY() );
 			
 			//Megnezem, hogy az aktualis magnes hatotavolsagaban, van-e egyaltalan masik sprite
-			double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZero().getX();
-			double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZero().getY();
+			double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
+			double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
 			
 			boolean hasMagnetConnection = false;
 			
@@ -714,8 +714,8 @@ public class SpriteCanvas extends MCanvas{
 					for( Magnet possibleToConnectMagnet : possibleToConnectSprite.getMagnetList() ){
 						
 						MagnetType possibleToConnectType = possibleToConnectMagnet.getType();
-						double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZero().getX();
-						double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZero().getY();
+						double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getX();
+						double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getY();
 						
 						//Es megnezem, hogy a ket magnet kompatibilis-e es megfelelo pozicioban van-e valamint nincs-e racsatlakoztatva mas
 						if( 
