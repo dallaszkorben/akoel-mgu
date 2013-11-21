@@ -524,8 +524,8 @@ public class SpriteCanvas extends MCanvas{
 				double magnetYRange = getWorldYLengthByPixel( draggedMagnet.getRangeInPixel().getY() );
 			
 				//Megnezem, hogy az aktualis magnes hatotavolsagaban, van-e egyaltalan masik sprite
-				double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZero().getX();
-				double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZero().getY();
+				double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
+				double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
 			
 				boolean hasMagnetConnection = false;
 			
@@ -594,10 +594,42 @@ public class SpriteCanvas extends MCanvas{
 									}
 
 								}
-//Itt kellene az osszes Sprite poziciojat utannahuzni							
+								
 								//A mozgatott Sprite vizsgalt magneset osszekoti az osszekapcsolhato magnessel
 								draggedMagnet.setConnectedTo( possibleToConnectMagnet );
-						
+
+								//Itt mar uj pozicioja van a mozgatott magnesnek
+								
+//Itt kellene az osszes Sprite poziciojat utannahuzni
+
+								//Vegig megyek az osszes mozgatott Sprite-on es megtalalt magneshez igazitom mindegyiket (persze kiveve a mar igazitottat)										
+								HashSet<Sprite> adjustedList = doAdjustPositions( adjustedList, moveableSpriteList );
+								
+								//Vegigmegyek a mozgatott sprite minden magnesen								
+								for( Magnet dM: sprite.getMagnetList() 	){
+									
+									//Ha a magnes nem NULL es nem a vizsgalt magnes 
+									if( null != dM && null != dM.getConnectedTo() && !dM.equals( draggedMagnet ) ){
+									
+										//Akkor egyenkent az osszs kapcsolatanak modositani kell a poziciojat
+										
+										
+										
+										
+										//A 
+										Magnet pM = dM.getConnectedTo();
+										
+										
+									}
+									
+								}
+																
+								sprite.getPosition()								
+								possibleNewPosition									
+								
+////////								
+								
+								
 								hasBeenFoundPairForTheBlock = true;
 								needToRepaintPermanent = true;
 //								hasMagnetConnection = true;
