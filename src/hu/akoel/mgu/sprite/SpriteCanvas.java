@@ -386,7 +386,6 @@ public class SpriteCanvas extends MCanvas{
 
 				//A mozgatando Sprite Elozetes uj pozicioba helyezese
 //				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
-
 /*				Magnet draggedMagnet = null;
 				for( Magnet magnet: sprite.getMagnetList() ){
 					if( null != magnet.getConnectedTo() ){
@@ -397,8 +396,6 @@ public class SpriteCanvas extends MCanvas{
 */								
 //				draggedMagnet.blabla( draggedMagnet, new HashSet<Sprite>(), moveableSpriteList );				
 	
-				
-				
 				
 				//Az osszes Sprite-ot a mozgatando listabol a megfelelo helyre pozicionalok
 				for( Sprite sprite: moveableSpriteList ){
@@ -427,14 +424,7 @@ public class SpriteCanvas extends MCanvas{
 				}
 				
 				//Poziciok szukseg szerinti korrigalasa a magnes alapjan
- //!!!				
 				doArangeBlockPositionByMagnet(moveableSpriteList);
-//				
-				
-				
-				
-				
-				
 				
 				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
 				addTemporarySprites(moveableSpriteList);
@@ -510,13 +500,10 @@ public class SpriteCanvas extends MCanvas{
 					needToRepaintPermanent = true;
 				
 				}
-				
-//				
+							
 				//Pozicio szukseg szerinti korrigalasa a magnes alapjan
 				needToRepaintPermanent = doArangeSpritePositionByMagnet( sprite ) || needToRepaintPermanent;
-				
-//
-				
+	
 				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
 				addTemporarySprite(sprite);
 				
@@ -558,10 +545,10 @@ public class SpriteCanvas extends MCanvas{
 			//Vegig megyek a Sprite minden magnesen
 			for( Magnet draggedMagnet: sprite.getMagnetList() 	){
 			
-//Ha a Sprite Magnet-je foglalt, akkor azt mar nem vizsgalom tovabb
-if( null != draggedMagnet.getConnectedTo() ){
-	continue;
-}
+				//Ha a Sprite Magnet-je foglalt, akkor azt mar nem vizsgalom tovabb
+				if( null != draggedMagnet.getConnectedTo() ){
+					continue;
+				}
 				
 				//Az aktualis magnes pozicioja
 				double magnetXRange = getWorldXLengthByPixel( draggedMagnet.getRangeInPixel().getX() );
@@ -643,7 +630,7 @@ if( null != draggedMagnet.getConnectedTo() ){
 								draggedMagnet.setConnectedTo( possibleToConnectMagnet );
 								
 								//Ehhez az atmozgatott Sprite-hoz igazitja az osszes tobbi kapcsolt Sprite-ot
-								draggedMagnet.blabla( draggedMagnet, moveableSpriteList, new HashSet<Sprite>() );							
+								draggedMagnet.rRepositionBlockByConnectedMagnet( draggedMagnet, moveableSpriteList, new HashSet<Sprite>() );							
 								
 								hasBeenFoundPairForTheBlock = true;
 								needToRepaintPermanent = true;
