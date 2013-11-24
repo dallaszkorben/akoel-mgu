@@ -6,7 +6,6 @@ import java.util.HashSet;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.RangeValueInPixel;
-import hu.akoel.mgu.values.SizeValue;
 
 public class Magnet {
 
@@ -59,20 +58,123 @@ public class Magnet {
 		elements.add(element);
 	}
 	
+	/**
+	 * Visszaadja a Magnet Sprite-janak lehetseges poziciojat ha a parameterkent megadott
+	 * Magnes-hez kapcsolodna
+	 * 
+	 * @param magnetToConnect
+	 * @return
+	 */
 	public PositionValue getPossibleSpritePosition( Magnet magnetToConnect ){
 
 		//A bazis Sprite pozicioja - Ellenoldal
 		PositionValue baseSpritePostion = magnetToConnect.parent.getPosition();
 		
 		//Kozos magnes pozicioja
-		PositionValue magnetPosition = new PositionValue(baseSpritePostion.getX() + magnetToConnect.getRelativePositionToSpriteZeroPoint().getX(), baseSpritePostion.getY() + magnetToConnect.getRelativePositionToSpriteZeroPoint().getY() );
+		PositionValue magnetPosition = new PositionValue(
+				baseSpritePostion.getX() + magnetToConnect.getRelativePositionToSpriteZeroPoint().getX(), 
+				baseSpritePostion.getY() + magnetToConnect.getRelativePositionToSpriteZeroPoint().getY() 
+		);
 		
 		//Ennek a magnesnek a szulo-Sprite pozicioja
-		PositionValue parentSpritePosition = new PositionValue( magnetPosition.getX() - this.getRelativePositionToSpriteZeroPoint().getX(), magnetPosition.getY() - this.getRelativePositionToSpriteZeroPoint().getY() );
+		PositionValue parentSpritePosition = new PositionValue( 
+				magnetPosition.getX() - this.getRelativePositionToSpriteZeroPoint().getX(), 
+				magnetPosition.getY() - this.getRelativePositionToSpriteZeroPoint().getY() 
+		);
 
 		return parentSpritePosition;
 	}
 	
+	public PositionValue getPossibleSpritePosition( Magnet magnetBase, Magnet magnetToConnect ){
+
+		//A bazis Sprite pozicioja - Ellenoldal
+		PositionValue baseSpritePostion = magnetToConnect.parent.getPosition();
+		
+		//Kozos magnes pozicioja
+		PositionValue magnetPosition = new PositionValue(
+				baseSpritePostion.getX() + magnetToConnect.getRelativePositionToSpriteZeroPoint().getX(), 
+				baseSpritePostion.getY() + magnetToConnect.getRelativePositionToSpriteZeroPoint().getY() 
+		);
+		
+		//Ennek a magnesnek a szulo-Sprite pozicioja
+		PositionValue parentSpritePosition = new PositionValue( 
+				magnetPosition.getX() - magnetBase.getRelativePositionToSpriteZeroPoint().getX(), 
+				magnetPosition.getY() - magnetBase.getRelativePositionToSpriteZeroPoint().getY() 
+		);
+
+		return parentSpritePosition;
+	}
+	
+	/**
+	 * 
+	 * A magnetToBeReposition Magnet Sprite-janak atpozicionalasa ahhoz a Sprite-hoz, melynek Magnet-jehez van kotve
+	 * Mivel Rekurzivan hajtja vegre a feladatot, ezert ez minden olyan Sprite-tal elvegzi, mely a parameterkent
+	 * megadott magnetToBeReposition Magnet Sprit-jahoz kapcsolodik es szerepel a listToReposition listaban
+	 * 
+	 * @param magnetToBeReposition
+	 * @param repositionedList
+	 * @param listToReposition
+	 * @return
+	 */
+	HashSet<Sprite> blabla( Magnet magnetToBeReposition, HashSet<Sprite> listToReposition, HashSet<Sprite> repositionedList ){
+		PositionValue parentSpritePosition;
+		
+		Sprite spriteToBeReposition = magnetToBeReposition.getParent();		
+		Magnet magnetBase = magnetToBeReposition.getConnectedTo(); 
+		
+		//Ha az ujrapozicionalando Magnet-nek a Sprite-ja mar ujrapozicionalt vagy nem talalhato a Sprite listaban, melyek atpozicionalasat el kell vegezni
+		if( repositionedList.contains( spriteToBeReposition ) ){
+			
+			//Akkor zarom a ciklust
+			return repositionedList;
+		}
+		
+		//Ha az alap Magnet csatlakozik egy Sprite Magnet-jehez
+//		if( null != connectedTo ){
+			
+			//Megszerzem hogy az ujrapozicionalando Magnet Sprite-janak mi lehetne a pozicioja
+			parentSpritePosition = getPossibleSpritePosition(magnetToBeReposition, magnetBase);
+			
+			//Az ujrappzicionalando Sprite poziciojanak igazitasa ahhoz a Sprite-hoz amihez csatlakozik
+			spriteToBeReposition.setPosition(parentSpritePosition);
+			
+			repositionedList.add( spriteToBeReposition );
+			
+//		}
+		
+		//Es most hogy atpozicionaltuk a magnetBase Magnet-jenek Sprite-jat,
+		//Megkeressuk a magnetBase Sprite-janak tobbi Magnet-jet
+		for( Magnet otherMagnet: spriteToBeReposition.getMagnetList() ){
+			
+			//Ha a sorra vett Magnet nem az alapul szolgalo magnetBase
+			if( !otherMagnet.equals(magnetToBeReposition) ){
+				
+				Magnet otherMagnetToConnect = otherMagnet.getConnectedTo();
+				
+				//Ha a sorra vett Magnet csatlakoztatva van egy masik magnet-hez
+				if( null != otherMagnetToConnect){
+					
+					blabla( otherMagnetToConnect, listToReposition, repositionedList );
+					
+				}
+				
+				
+			}
+		}
+		
+		return repositionedList;
+	
+	}
+	
+	
+	/**
+	 * Ehhez a Magnet-hez probalja kapcsolni a parameterkent megadott Magnet-et, ha ez lehetseges.
+	 * Ezek utan a Magnet szulo Sprite-jat a helyere mozgatja, majd ezek utan
+	 * minden a parameterkent megadott listaban szereplo Sprite-ot is a megfelelo helyere is pozicional  
+	 * 
+	 * @param magnetToConnect
+	 * @param listToArrange
+	 */
 	public void setConnectedTo( Magnet magnetToConnect ){
 		
 		//Ha meg akarom szuntentni a magnes kapcsolatat
@@ -88,7 +190,7 @@ public class Magnet {
 				this.magnetToConnected = magnetToConnect;
 			}
 			
-		//Ha ezt a magnetet csatlakoztathatom a masikhoz es a masikat is csatlakoztathatom ehhez
+		//Ha ezt a Magnet-et csatlakoztathatom a masikhoz es a masikat is csatlakoztathatom ehhez
 		}else if( 
 				this.getPossibleMagnetTypeToConnect().contains(magnetToConnect.getType()) &&
 				magnetToConnect.getPossibleMagnetTypeToConnect().contains(this.getType() )
@@ -98,16 +200,7 @@ public class Magnet {
 			
 			//A bazis Sprite Magnet-jenek kotese a Mozgatott Sprite Magnet-jehz
 			magnetToConnect.magnetToConnected = this;
-/*			
-			//A bazis Sprite pozicioja - Ellenoldal
-			PositionValue baseSpritePostion = magnetToConnect.parent.getPosition();
-			
-			//Kozos magnes pozicioja
-			PositionValue magnetPosition = new PositionValue(baseSpritePostion.getX() + magnetToConnect.getRelativePositionToSpriteZero().getX(), baseSpritePostion.getY() + magnetToConnect.getRelativePositionToSpriteZero().getY() );
-			
-			//Ennek a magnesnek a szulo-Sprite pozicioja
-			PositionValue parentSpritePosition = new PositionValue( magnetPosition.getX() - this.getRelativePositionToSpriteZero().getX(), magnetPosition.getY() - this.getRelativePositionToSpriteZero().getY() );
-*/		
+	
 			PositionValue parentSpritePosition = getPossibleSpritePosition(magnetToConnect);
 			
 			//Mozgatott Sprite poziciojanak igazitasa az allo Sprite-hoz

@@ -3,12 +3,9 @@ package hu.akoel.mgu.sprite;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.swing.text.ChangedCharSetException;
-
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
-import hu.akoel.mgu.values.TranslateValue;
 
 public class Sprite {
 	private boolean enableToPlaceWithoutConnection = true;
