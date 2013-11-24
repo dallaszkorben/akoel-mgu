@@ -2,8 +2,6 @@ package hu.akoel.mgu.sprite;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.MouseInfo;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
@@ -139,7 +137,7 @@ public class SpriteCanvas extends MCanvas{
 	
 	/**
 	 * 
-	 * Egy Sprite mozgatasaert felelos osztaly
+	 * Sprite mozgatasaert felelos osztaly
 	 * 
 	 * @author akoel
 	 *
@@ -370,8 +368,10 @@ public class SpriteCanvas extends MCanvas{
 		
 		@Override
 		public void mouseDragged(MouseEvent e) {
-					
+			
+			//
 			//Sprite csoport mozgatasa
+			//
 			if( dragAllSpriteStarted ){
 
 				//Uj pozicioi kiszamitasa
@@ -383,7 +383,24 @@ public class SpriteCanvas extends MCanvas{
 				
 				double xDelta = xNewSpritePosition - sprite.getPosition().getX();
 				double yDelta = yNewSpritePosition - sprite.getPosition().getY();
+
+				//A mozgatando Sprite Elozetes uj pozicioba helyezese
+//				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
+
+/*				Magnet draggedMagnet = null;
+				for( Magnet magnet: sprite.getMagnetList() ){
+					if( null != magnet.getConnectedTo() ){
+						draggedMagnet = magnet;
+						break;
+					}
+				}
+*/								
+//				draggedMagnet.blabla( draggedMagnet, new HashSet<Sprite>(), moveableSpriteList );				
+	
 				
+				
+				
+				//Az osszes Sprite-ot a mozgatando listabol a megfelelo helyre pozicionalok
 				for( Sprite sprite: moveableSpriteList ){
 				
 					//A mozgatando Sprite Elozetes uj pozicioba helyezese
@@ -392,9 +409,23 @@ public class SpriteCanvas extends MCanvas{
 							sprite.getPosition().getY() + yDelta
 							)
 					);
-
 				}
 			
+				//Torlom a Sprite csoport minden kapcsolatat ami nem a csoporton belul kottetett
+				//Tulajdonkeppen a lehetseges kapcsolatokrol van szo
+				for( Sprite sprite: moveableSpriteList ){
+					for( Magnet magnet: sprite.getMagnetList() ){
+						Magnet pairMagnet = magnet.getConnectedTo();
+						
+						//Kivulre mutato kapcsolat
+						if( null != pairMagnet && !moveableSpriteList.contains( pairMagnet.getParent() ) ){
+							
+							//Torolni kell a kapcsolatot
+							magnet.setConnectedTo(null);
+						}
+					}
+				}
+				
 				//Poziciok szukseg szerinti korrigalasa a magnes alapjan
  //!!!				
 				doArangeBlockPositionByMagnet(moveableSpriteList);
@@ -410,8 +441,16 @@ public class SpriteCanvas extends MCanvas{
 				
 				//A Permanens es atmeneti taroloban levo Sprite-ok ujrarajzolasa szukseges
 				revalidateAndRepaintCoreCanvas();
-					
-			//Egy sprite mozgatasa	
+				
+			/**
+			 *  Egy Sprite mozgatas 
+			 * 
+			 *  Azert teszunk kulonbseget az egy illetve csoportos Sprite mozgatasa kozott, mert az egy Sprite mozgatasakor meg kell vizsgalni
+			 *  hogy lehetseges-e az illeto Sprite kapcsolatainak megszuntetese anelkul, hogy serulne-e az onalloan lehelyezheto/nem lehelyezheto Sprite szabaly
+			 *  Vagyis, ha pld a kapcsolati rendszerben letezik egy db onalloan lehelyezheto Sprite es a tobbi hozzakapcsolodo Sprite az csak kapcsolatban
+			 *  helyezheto le, akkor ha egy kozbenso Sprite-ot kivanunk elmozgatni akkor a ket reszre szakitott rendszer egyik fele ugy letezne tovabb, hogy \
+			 *  nincs onalloan lehelyezheto eleme, vagyis ellentmondas alakulna ki 
+			 */
 			}else if( dragOneSpriteStarted ){
 				
 				//
@@ -513,17 +552,22 @@ public class SpriteCanvas extends MCanvas{
 		boolean needToRepaintPermanent = false;
 		boolean hasBeenFoundPairForTheBlock = false;
 		
-		//Vegig megyek az osszes sprite-on
+		//Vegig megyek az osszes mozgatott Sprite-on
 		for( Sprite sprite: moveableSpriteList ){		
 		
-			//Vegig megyek a kovetkezo Sprite minden magnesen
+			//Vegig megyek a Sprite minden magnesen
 			for( Magnet draggedMagnet: sprite.getMagnetList() 	){
 			
-				//Az aktualis magnes tulajdonsagai
+//Ha a Sprite Magnet-je foglalt, akkor azt mar nem vizsgalom tovabb
+if( null != draggedMagnet.getConnectedTo() ){
+	continue;
+}
+				
+				//Az aktualis magnes pozicioja
 				double magnetXRange = getWorldXLengthByPixel( draggedMagnet.getRangeInPixel().getX() );
 				double magnetYRange = getWorldYLengthByPixel( draggedMagnet.getRangeInPixel().getY() );
 			
-				//Megnezem, hogy az aktualis magnes hatotavolsagaban, van-e egyaltalan masik sprite
+				//Az aktualis Magnet hatotavolsaga
 				double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
 				double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
 			
@@ -595,40 +639,11 @@ public class SpriteCanvas extends MCanvas{
 
 								}
 								
-								//A mozgatott Sprite vizsgalt magneset osszekoti az osszekapcsolhato magnessel
+								//A mozgatott Sprite vizsgalt magneset osszekoti az osszekapcsolhato magnessel								
 								draggedMagnet.setConnectedTo( possibleToConnectMagnet );
-
-								//Itt mar uj pozicioja van a mozgatott magnesnek
 								
-//Itt kellene az osszes Sprite poziciojat utannahuzni
-
-								//Vegig megyek az osszes mozgatott Sprite-on es megtalalt magneshez igazitom mindegyiket (persze kiveve a mar igazitottat)										
-//								HashSet<Sprite> adjustedList = doAdjustPositions( adjustedList, moveableSpriteList );
-								
-								//Vegigmegyek a mozgatott sprite minden magnesen								
-								for( Magnet dM: sprite.getMagnetList() 	){
-									
-									//Ha a magnes nem NULL es nem a vizsgalt magnes 
-									if( null != dM && null != dM.getConnectedTo() && !dM.equals( draggedMagnet ) ){
-									
-										//Akkor egyenkent az osszs kapcsolatanak modositani kell a poziciojat
-										
-										
-										
-										
-										//A 
-										Magnet pM = dM.getConnectedTo();
-										
-										
-									}
-									
-								}
-																
-//								sprite.getPosition()								
-//								possibleNewPosition									
-								
-////////								
-								
+								//Ehhez az atmozgatott Sprite-hoz igazitja az osszes tobbi kapcsolt Sprite-ot
+								draggedMagnet.blabla( draggedMagnet, moveableSpriteList, new HashSet<Sprite>() );							
 								
 								hasBeenFoundPairForTheBlock = true;
 								needToRepaintPermanent = true;
@@ -810,7 +825,7 @@ public class SpriteCanvas extends MCanvas{
 	}
 	
 	/**
-	 * A parameterkent megadott Magnet fele megszamolja a az onalloan lehelyezheto Sprite-ok szamat
+	 * A parameterkent megadott Magnet fele megszamolja a az onalloan lehelyezheto Sprite-ok szamat rekurziv modon
 	 * 
 	 * @param magnet
 	 * @param number
@@ -864,7 +879,7 @@ public class SpriteCanvas extends MCanvas{
 	
 			if( needFocus() ){
 			
-				double xValue = getWorldXByPixel(e.getX() );
+				double xValue = getWorldXByPixel(e.getX() );			
 				double yValue = getWorldYByPixel(e.getY());
 				boolean needToPrint = false;
 
@@ -897,12 +912,12 @@ public class SpriteCanvas extends MCanvas{
 		}
 			
 		@Override
-		public void mouseDragged(MouseEvent e) {}		
+		public void mouseDragged(MouseEvent e) {}					
 	}
 	
 	/**
 	 * Sprite-ok kirajzolasaert felelos osztaly
-	 * 
+	 * 			
 	 * @author akoel
 	 *
 	 */

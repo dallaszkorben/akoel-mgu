@@ -2,7 +2,6 @@ package hu.akoel.mgu.sprite;
 
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.values.PositionValue;
-import hu.akoel.mgu.values.TranslateValue;
 
 
 public abstract class SpriteElement {
