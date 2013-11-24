@@ -106,7 +106,7 @@ public class Magnet {
 	}
 	
 	/**
-	 * 
+	 * Rekurziv Blokk Repozicion egy mar kapcsolt Magnet alapjan
 	 * A magnetToBeReposition Magnet Sprite-janak atpozicionalasa ahhoz a Sprite-hoz, melynek Magnet-jehez van kotve
 	 * Mivel Rekurzivan hajtja vegre a feladatot, ezert ez minden olyan Sprite-tal elvegzi, mely a parameterkent
 	 * megadott magnetToBeReposition Magnet Sprit-jahoz kapcsolodik es szerepel a listToReposition listaban
@@ -116,7 +116,7 @@ public class Magnet {
 	 * @param listToReposition
 	 * @return
 	 */
-	HashSet<Sprite> blabla( Magnet magnetToBeReposition, HashSet<Sprite> listToReposition, HashSet<Sprite> repositionedList ){
+	HashSet<Sprite> rRepositionBlockByConnectedMagnet( Magnet magnetToBeReposition, HashSet<Sprite> listToReposition, HashSet<Sprite> repositionedList ){
 		PositionValue parentSpritePosition;
 		
 		Sprite spriteToBeReposition = magnetToBeReposition.getParent();		
@@ -154,7 +154,7 @@ public class Magnet {
 				//Ha a sorra vett Magnet csatlakoztatva van egy masik magnet-hez
 				if( null != otherMagnetToConnect){
 					
-					blabla( otherMagnetToConnect, listToReposition, repositionedList );
+					rRepositionBlockByConnectedMagnet( otherMagnetToConnect, listToReposition, repositionedList );
 					
 				}
 				
