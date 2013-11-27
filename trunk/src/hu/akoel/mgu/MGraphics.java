@@ -88,7 +88,7 @@ public class MGraphics {
 	
 	public void drawFont( TextLayout textLayout, double x, double y ){
 		g2.scale(1,-1);
-//		textLayout.draw( g2, Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(-y)) );
+		textLayout.draw( g2, Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(-y)) );
 		g2.scale(1,-1);
 	}
 }
