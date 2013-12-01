@@ -77,7 +77,6 @@ public class Scale {
 	}
 	
 	private void commonConstructorForFreeScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){ 
-//JCanvas canvas, double pixelPerCmX, UNIT unitX, double startScaleX, double pixelPerCmY, UNIT unitY, double startScaleY, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
 		this.canvas = canvas;
 		this.pixelPerCm = pixelPerCm;
 		this.unit = unit;
@@ -167,15 +166,39 @@ public class Scale {
 		return unit.getUnitY();
 	}
 	
+	//TODO meg kell csinalni
+	public void setPixelPerCm( PixelPerCmValue pixelPerCm ){
+		this.pixelPerCm = pixelPerCm;
+		double startPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), startScale.getX());
+		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getY());
+		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( new PixelPerUnitValue(startPPUX, startPPUY), rate ));
+		this.canvas.firePixelPerUnitChangeListener();
+		this.canvas.repaintCoreCanvas();
+	}
+	
+	public PixelPerCmValue getPixelPerCm(){
+		return this.pixelPerCm;
+	}
+	
+	public void setRate( RateValue rate ){
+		this.rate = rate;
+		double startPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), startScale.getX());
+		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getY());
+		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( new PixelPerUnitValue(startPPUX, startPPUY), rate ));
+		this.canvas.firePixelPerUnitChangeListener();
+	}
+	
+	public RateValue getRate(){
+		return rate;
+	}
+	
 	class ScalePixelPerUnitChangeListener implements PixelPerUnitChangeListener{
 		public PixelPerUnitValue pixelPerCm;
 		public UnitValue unit;
 		
 		public ScalePixelPerUnitChangeListener( PixelPerCmValue pixelPerCm, UnitValue unit){
 			this.pixelPerCm = new PixelPerUnitValue( pixelPerCm.getX(), pixelPerCm.getY() );
-			
 			this.unit = new UnitValue( unit.getUnitX(), unit.getUnitY() );
-			
 		}
 		
 		@Override

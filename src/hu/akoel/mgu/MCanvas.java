@@ -172,10 +172,7 @@ public class MCanvas extends JPanel {
 		return possiblePixelPerUnits.getActualPixelPerUnit();
 	}
 
-	/**
-	 * Mereterany valtozas figyelo ertesitese
-	 */
-	private void firePixelPerUnitChangeListener(){
+	public void firePixelPerUnitChangeListener(){
 		for( PixelPerUnitChangeListener listener: pixelPerUnitChangeListenerList){
 			listener.getPixelPerUnit( getPixelPerUnit());
 		}
