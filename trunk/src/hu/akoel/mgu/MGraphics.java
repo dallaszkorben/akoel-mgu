@@ -19,27 +19,48 @@ public class MGraphics {
 	}
 	
 	public void drawLine( double x1, double y1, double x2, double y2){	
-		g2.drawLine(
-				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x1)), 
-				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y1)), 
-				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x2)), 
-				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y2)) );	
+		
+		int x1p = canvas.getPixelXPositionByWorldBeforeTranslate(x1);
+		int y1p = canvas.getPixelYPositionByWorldBeforeTranslate(y1);
+		int x2p = canvas.getPixelXPositionByWorldBeforeTranslate(x2);
+		int y2p = canvas.getPixelYPositionByWorldBeforeTranslate(y2);
+		
+		g2.drawLine( x1p, y1p, x2p, y2p );
+					
 	}
 	
-	public void fillOval( double x, double y, double width, double height){
-		g2.fillOval(
-				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
-				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
-				Math.round((float)canvas.getPixelXLengthByWorld(width)-1), 
-				Math.round((float)canvas.getPixelYLengthByWorld(height)-1));
+	public void fillOval( double x, double y, double r ){
+		
+		int rp = canvas.getPixelXLengthByWorld( r );
+		if( rp == 0 ){
+			r = 0;
+		}
+		
+		int xp = canvas.getPixelXPositionByWorldBeforeTranslate(x - r);
+		int yp = canvas.getPixelYPositionByWorldBeforeTranslate(y - r);
+				
+		if( rp == 0 ){
+			g2.drawLine( xp, yp, xp, yp );
+		}else{
+			g2.fillOval( xp, yp, 2*rp, 2*rp );
+		}
 	}
 
-	public void drawOval( double x, double y, double width, double height){
-		g2.drawOval(
-				Math.round((float)canvas.getPixelXPositionByWorldBeforeTranslate(x)), 
-				Math.round((float)canvas.getPixelYPositionByWorldBeforeTranslate(y)), 
-				Math.round((float)canvas.getPixelXLengthByWorld(width)-1), 
-				Math.round((float)canvas.getPixelYLengthByWorld(height)-1));
+	public void drawOval( double x, double y, double r ){
+		
+		int rp = canvas.getPixelXLengthByWorld( r );
+		if( rp == 0 ){
+			r = 0;
+		}
+		
+		int xp = canvas.getPixelXPositionByWorldBeforeTranslate(x - r);
+		int yp = canvas.getPixelYPositionByWorldBeforeTranslate(y - r);
+				
+		if( rp == 0 ){
+			g2.drawLine( xp, yp, xp, yp );
+		}else{
+			g2.drawOval( xp, yp, 2*rp, 2*rp );
+		}
 	}
 
 	public void drawRectangle( double x1, double y1, double x2, double y2 ){
