@@ -74,6 +74,16 @@ public class MGraphics {
 		int width = xEnd - x;
 		int height = yEnd - y;
 		
+		if( width < 0 ){
+			x = xEnd;
+			width *= -1;
+		}
+		
+		if( height < 0 ){
+			y = yEnd;
+			height *= -1;
+		}
+		
 		g2.drawRect( x, y, width, height ); 
 	}
 
@@ -87,6 +97,16 @@ public class MGraphics {
 		
 		int width = xEnd - x;
 		int height = yEnd - y;
+		
+		if( width < 0 ){
+			x = xEnd;
+			width *= -1;
+		}
+		
+		if( height < 0 ){
+			y = yEnd;
+			height *= -1;
+		}
 		
 		g2.fillRect( x, y, width, height ); 
 	}
