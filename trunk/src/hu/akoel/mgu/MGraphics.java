@@ -7,6 +7,8 @@ import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
+import java.awt.geom.Path2D;
+import java.awt.geom.PathIterator;
 
 public class MGraphics {
 
@@ -111,6 +113,45 @@ public class MGraphics {
 		g2.fillRect( x, y, width, height ); 
 	}
 
+	public void drawPath( Path2D.Double path ){
+	
+		Path2D.Double myPath = new Path2D.Double();
+		
+		PathIterator pi = path.getPathIterator(null);
+		
+		//Vegig a path elemeken
+	    while (pi.isDone() == false) {
+	      
+	    	double[] coordinates = new double[6];
+	        int type = pi.currentSegment(coordinates);
+	        switch (type) {
+	        case PathIterator.SEG_MOVETO:
+	        	myPath.moveTo( canvas.getPixelXPositionByWorldBeforeTranslate( coordinates[0] ), canvas.getPixelYPositionByWorldBeforeTranslate( coordinates[1] ) );
+	        	break;
+	        case PathIterator.SEG_LINETO:
+	        	myPath.lineTo( canvas.getPixelXPositionByWorldBeforeTranslate( coordinates[0] ), canvas.getPixelYPositionByWorldBeforeTranslate( coordinates[1] ) );
+	        	break;
+	        case PathIterator.SEG_QUADTO:
+//	        	System.out.println("quadratic to " + coordinates[0] + ", " + coordinates[1] + ", " + coordinates[2] + ", " + coordinates[3]);
+	          break;
+	        case PathIterator.SEG_CUBICTO:
+//	          System.out.println("cubic to " + coordinates[0] + ", " + coordinates[1] + ", " + coordinates[2] + ", " + coordinates[3] + ", " + coordinates[4] + ", " + coordinates[5]);
+	          break;
+	        case PathIterator.SEG_CLOSE:
+	        	myPath.closePath();
+	        	break;
+	        default:
+	        	break;
+	        }
+	    	
+	      pi.next();
+	    }
+	    
+	    g2.draw(myPath);
+		
+	}
+	
+	
 	public void setColor( Color color ){
 		g2.setColor( color );
 	}
