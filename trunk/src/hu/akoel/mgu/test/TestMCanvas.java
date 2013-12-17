@@ -13,7 +13,7 @@ import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
-import hu.akoel.mgu.values.RateValue;
+import hu.akoel.mgu.values.ZoomRateValue;
 import hu.akoel.mgu.values.TranslateValue;
 import hu.akoel.mgu.values.Value;
 
@@ -35,7 +35,7 @@ public class TestMCanvas{
 //	private SizeValue boundSize = new SizeValue(0.0, 0.0, 400.0, 400);	
 	private static Color background = Color.black;
 	private static TranslateValue positionToMiddle = null;//new Position( 10, 10);
-	private static PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(109.56123458075261, 109.56123458075261), new RateValue(1.2, 1.2));
+	private static PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(109.56123458075261, 109.56123458075261), new ZoomRateValue(1.2, 1.2));
 
 	private static Grid myGrid;	
 	private static Color gridColor = Color.green;
