@@ -9,7 +9,7 @@ import hu.akoel.mgu.scale.values.PixelPerCmValue;
 import hu.akoel.mgu.scale.values.ScaleValue;
 import hu.akoel.mgu.scale.values.UnitValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
-import hu.akoel.mgu.values.RateValue;
+import hu.akoel.mgu.values.ZoomRateValue;
 import hu.akoel.mgu.values.Value;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class Scale {
 	private PixelPerCmValue pixelPerCm;
 	private UnitValue unit;
 	private ScaleValue startScale;
-	private RateValue rate;
+	private ZoomRateValue zoomRate;
 	private ScaleValue minScale;
 	private ScaleValue maxScale;
 	
@@ -53,12 +53,12 @@ public class Scale {
 		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), null, null, null );
 	}
 	
-	public Scale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate ){
-		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new RateValue(rate, rate), null, null );
+	public Scale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double zoomRate ){
+		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new ZoomRateValue(zoomRate, zoomRate), null, null );
 	}
 	
-	public Scale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double rate, double minScale, double maxScale ){
-		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new RateValue(rate, rate), new ScaleValue(minScale, minScale), new ScaleValue(maxScale, maxScale) );
+	public Scale( MCanvas canvas, double pixelPerCm, UNIT unit, double startScale, double zoomRate, double minScale, double maxScale ){
+		commonConstructorForFreeScale(canvas, new PixelPerCmValue(pixelPerCm, pixelPerCm), new UnitValue(unit, unit), new ScaleValue(startScale, startScale), new ZoomRateValue(zoomRate, zoomRate), new ScaleValue(minScale, minScale), new ScaleValue(maxScale, maxScale) );
 	}
 	
 	
@@ -68,21 +68,21 @@ public class Scale {
 		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, null, null, null );
 	}
 	
-	public Scale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate ){
-		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, rate, null, null );		
+	public Scale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, ZoomRateValue zoomRate ){
+		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, zoomRate, null, null );		
 	}
 	
-	public Scale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){
-		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, rate, minScale, maxScale );		
+	public Scale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, ZoomRateValue zoomRate, ScaleValue minScale, ScaleValue maxScale ){
+		commonConstructorForFreeScale(canvas, pixelPerCm, unit, startScale, zoomRate, minScale, maxScale );		
 	}
 	
-	private void commonConstructorForFreeScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, RateValue rate, ScaleValue minScale, ScaleValue maxScale ){ 
+	private void commonConstructorForFreeScale( MCanvas canvas, PixelPerCmValue pixelPerCm, UnitValue unit, ScaleValue startScale, ZoomRateValue zoomRate, ScaleValue minScale, ScaleValue maxScale ){ 
 		this.canvas = canvas;
 		this.pixelPerCm = pixelPerCm;
 		this.unit = unit;
 		this.startScale = startScale;
 	
-		this.rate = rate;
+		this.zoomRate = zoomRate;
 		this.minScale = minScale;
 		this.maxScale = maxScale;
 		
@@ -100,7 +100,7 @@ public class Scale {
 
 			canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( 
 				new PixelPerUnitValue(startPPUX, startPPUY), 
-				rate, 
+				zoomRate, 
 				new PixelPerUnitValue(minPPUX, minPPUY), 
 				new PixelPerUnitValue(maxPPUX, maxPPUY)
 			));
@@ -109,7 +109,7 @@ public class Scale {
 		}else{
 			canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( 
 					new PixelPerUnitValue(startPPUX, startPPUY), 
-					rate					
+					zoomRate					
 				));
 		}
 
@@ -171,7 +171,7 @@ public class Scale {
 		this.pixelPerCm = pixelPerCm;
 		double startPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), startScale.getX());
 		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getY());
-		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( new PixelPerUnitValue(startPPUX, startPPUY), rate ));
+		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( new PixelPerUnitValue(startPPUX, startPPUY), zoomRate ));
 		this.canvas.firePixelPerUnitChangeListener();
 		this.canvas.repaintCoreCanvas();
 	}
@@ -180,16 +180,16 @@ public class Scale {
 		return this.pixelPerCm;
 	}
 	
-	public void setRate( RateValue rate ){
-		this.rate = rate;
+	public void setZoomRate( ZoomRateValue zoomRate ){
+		this.zoomRate = zoomRate;
 		double startPPUX = getPixelPerUnitByScale(pixelPerCm.getX(), unit.getUnitX(), startScale.getX());
 		double startPPUY = getPixelPerUnitByScale(pixelPerCm.getY(), unit.getUnitY(), startScale.getY());
-		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( new PixelPerUnitValue(startPPUX, startPPUY), rate ));
+		canvas.setPossiblePixelPerUnits( new PossiblePixelPerUnits( new PixelPerUnitValue(startPPUX, startPPUY), zoomRate ));
 		this.canvas.firePixelPerUnitChangeListener();
 	}
 	
-	public RateValue getRate(){
-		return rate;
+	public ZoomRateValue getZoomRate(){
+		return zoomRate;
 	}
 	
 	class ScalePixelPerUnitChangeListener implements PixelPerUnitChangeListener{

@@ -8,7 +8,7 @@ import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
-import hu.akoel.mgu.values.RateValue;
+import hu.akoel.mgu.values.ZoomRateValue;
 import hu.akoel.mgu.values.TranslateValue;
 
 import java.awt.BasicStroke;
@@ -32,7 +32,7 @@ public class ExampleMCanvas extends JFrame {
 	
 	private Color background = Color.GREEN;
 	private TranslateValue positionToMiddle = new TranslateValue( 0, 0 );
-	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(3.3,3.3), new RateValue( 1.2, 1.2));
+	private PossiblePixelPerUnits possiblePixelPerUnits = new PossiblePixelPerUnits(new PixelPerUnitValue(3.3,3.3), new ZoomRateValue( 1.2, 1.2));
 
 	
 	public static void main(String[] args) {

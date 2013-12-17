@@ -1,7 +1,7 @@
 package hu.akoel.mgu;
 
 import hu.akoel.mgu.values.PixelPerUnitValue;
-import hu.akoel.mgu.values.RateValue;
+import hu.akoel.mgu.values.ZoomRateValue;
 import hu.akoel.mgu.values.Value;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ public class PossiblePixelPerUnits {
 	private PixelPerUnitValue actualPixelPerUnit;
 	private PixelPerUnitValue maxPixelPerUnit;
 	private PixelPerUnitValue minPixelPerUnit;
-	private RateValue actualRate;
+	private ZoomRateValue actualRate;
 		
 	private ArrayList<PixelPerUnitValue> inPPU = new ArrayList<PixelPerUnitValue>();
 	private ArrayList<PixelPerUnitValue> outPPU = new ArrayList<PixelPerUnitValue>();
@@ -22,7 +22,7 @@ public class PossiblePixelPerUnits {
 		this.possiblePPUList = possiblePPUs;
 		this.pointerForPossiblePPUs = pointerForPossiblePPUs;
 		this.actualPixelPerUnit = possiblePPUs.get(pointerForPossiblePPUs);
-		this.actualRate = new RateValue(1,1);
+		this.actualRate = new ZoomRateValue(1,1);
 	}
 	
 	/**
@@ -37,7 +37,7 @@ public class PossiblePixelPerUnits {
 	 * @param maxPixelPerUnit
 	 * @param rate
 	 */
-	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit, RateValue rate, PixelPerUnitValue minPixelPerUnit, PixelPerUnitValue maxPixelPerUnit ){
+	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit, ZoomRateValue rate, PixelPerUnitValue minPixelPerUnit, PixelPerUnitValue maxPixelPerUnit ){
 		commonConstructor( actualPixelPerUnit, rate, minPixelPerUnit, maxPixelPerUnit);
 	}
 	
@@ -49,7 +49,7 @@ public class PossiblePixelPerUnits {
 	 * @param actualPixelPerUnit
 	 * @param rate
 	 */
-	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit, RateValue rate ){
+	public PossiblePixelPerUnits( PixelPerUnitValue actualPixelPerUnit, ZoomRateValue rate ){
 		commonConstructor( actualPixelPerUnit, rate, null, null );
 
 	}
@@ -67,7 +67,7 @@ public class PossiblePixelPerUnits {
 		commonConstructor( actualPixelPerUnit, null, null, null );		
 	}
 	
-	private void commonConstructor( PixelPerUnitValue actualPixelPerUnit, RateValue rate, PixelPerUnitValue minPixelPerUnit, PixelPerUnitValue maxPixelPerUnit){
+	private void commonConstructor( PixelPerUnitValue actualPixelPerUnit, ZoomRateValue rate, PixelPerUnitValue minPixelPerUnit, PixelPerUnitValue maxPixelPerUnit){
 		this.actualPixelPerUnit = actualPixelPerUnit;
 		this.maxPixelPerUnit = maxPixelPerUnit;
 		this.minPixelPerUnit = minPixelPerUnit;	
@@ -99,7 +99,7 @@ public class PossiblePixelPerUnits {
 			if( pointerForPossiblePPUs > 0 ){
 				pointerForPossiblePPUs--;
 				PixelPerUnitValue newPPU = possiblePPUList.get(pointerForPossiblePPUs);
-				actualRate = new RateValue( newPPU.getX()/actualPixelPerUnit.getX(), newPPU.getY()/actualPixelPerUnit.getY() );
+				actualRate = new ZoomRateValue( newPPU.getX()/actualPixelPerUnit.getX(), newPPU.getY()/actualPixelPerUnit.getY() );
 				actualPixelPerUnit = newPPU;
 			}else{
 				return false;
@@ -163,7 +163,7 @@ public class PossiblePixelPerUnits {
 			if( pointerForPossiblePPUs < possiblePPUList.size() - 1 ){
 				pointerForPossiblePPUs++;
 				PixelPerUnitValue newPPU = possiblePPUList.get(pointerForPossiblePPUs);
-				actualRate = new RateValue( actualPixelPerUnit.getX()/newPPU.getX(), actualPixelPerUnit.getY()/newPPU.getY() );
+				actualRate = new ZoomRateValue( actualPixelPerUnit.getX()/newPPU.getX(), actualPixelPerUnit.getY()/newPPU.getY() );
 				actualPixelPerUnit = newPPU;
 			}else{
 				return false;

@@ -18,7 +18,7 @@ import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
-import hu.akoel.mgu.values.RateValue;
+import hu.akoel.mgu.values.ZoomRateValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
 import hu.akoel.mgu.values.Value;
@@ -74,7 +74,7 @@ public class ExampleMCanvas_Scale_DifferentUnits_ScaleZoom extends JFrame {
 	private PixelPerCmValue pixelPerCm = new PixelPerCmValue(42.1, 42.1);
 	private UnitValue unit = new UnitValue(Scale.UNIT.km, Scale.UNIT.m ); 
 	private ScaleValue startScale = new ScaleValue( 100000, 100 );
-	private RateValue rate = new RateValue(1.2, 1.2);
+	private ZoomRateValue rate = new ZoomRateValue(1.2, 1.2);
 	private ScaleValue minScale = new ScaleValue( 500, 0.5);
 	private ScaleValue maxScale = new ScaleValue( 600000, 600);
 	
