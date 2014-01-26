@@ -151,14 +151,21 @@ public class ExampleSprite extends JFrame {
 				//A kozponti Sprite leirasa
 				RectangleElement gElementBaseSprite = new RectangleElement(-1,-1.5,2,3,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.cyan, new BasicStroke(3));
 				RectangleElement gMagnetEastOfBaseSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+RectangleElement gMagnetEastOfBaseSprite2 = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));				
 				RectangleElement gMagnetNorthOfBaseSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 				RectangleElement gMagnetSouthOfBaseSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 				RectangleElement gMagnetWestOfBaseSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
 				
 				Magnet baseSpriteMagnetEast = new Magnet(baseSprite, outMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
+				
 				baseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
 				baseSpriteMagnetEast.addElement( gMagnetEastOfBaseSprite );
 
+Magnet baseSpriteMagnetEast2 = new Magnet(baseSprite, outMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 1) );
+baseSpriteMagnetEast2.addPossibleMagnetTypeToConnect( pipeMagnet  );
+baseSpriteMagnetEast2.addElement( gMagnetEastOfBaseSprite2 );
+				
+				
 				Magnet baseSpriteMagnetNorth = new Magnet(baseSprite, outMagnet, 0.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, 1.5) );
 				baseSpriteMagnetNorth.addPossibleMagnetTypeToConnect(pipeMagnet);
 				baseSpriteMagnetNorth.addElement(gMagnetNorthOfBaseSprite);
@@ -174,6 +181,7 @@ public class ExampleSprite extends JFrame {
 				
 				baseSprite.addElement(gElementBaseSprite);
 				baseSprite.addMagnet( baseSpriteMagnetEast );
+baseSprite.addMagnet( baseSpriteMagnetEast2 );				
 				baseSprite.addMagnet( baseSpriteMagnetNorth );
 				baseSprite.addMagnet( baseSpriteMagnetSouth );
 				baseSprite.addMagnet( baseSpriteMagnetWest );

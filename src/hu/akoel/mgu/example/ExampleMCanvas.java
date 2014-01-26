@@ -57,7 +57,7 @@ public class ExampleMCanvas extends JFrame {
 			public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {}
 
 			@Override
-			public void paintByViewer(MCanvas canvas, Graphics2D g2) {	
+			public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {	
 				int x0 = 0; //myCanvas.getPixelXPositionByWorld(0);
 				int y0 = 0; //myCanvas.getPixelYPositionByWorld(0);
 				g2.setColor(Color.yellow);
@@ -137,7 +137,7 @@ public class ExampleMCanvas extends JFrame {
 					}
 
 					@Override
-					public void paintByViewer(MCanvas canvas, Graphics2D g2) {
+					public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {
 					}			 
 				});	
 				myCanvas.repaint();
@@ -181,7 +181,7 @@ public class ExampleMCanvas extends JFrame {
 					}
 
 					@Override
-					public void paintByViewer(MCanvas canvas, Graphics2D g2) {}	
+					public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}	
 					
 				}, MCanvas.Level.UNDER);		
 				myCanvas.repaint();

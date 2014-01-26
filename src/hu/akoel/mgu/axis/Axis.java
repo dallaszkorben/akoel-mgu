@@ -279,7 +279,7 @@ public class Axis {
 		}
 
 		@Override
-		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
+		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 		/**
 		 * Visszaadja a parameterkent megadott szamhoz legkozelebbi jobb oldali

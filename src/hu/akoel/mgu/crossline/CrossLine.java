@@ -118,7 +118,7 @@ public class CrossLine {
 		}
 
 		@Override
-		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
+		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 	}
 	
 }

@@ -43,6 +43,11 @@ public class Magnet {
 		this.ralativePositionToSpriteZeroPoint.setY(realtivePositionToSpriteZeroPoint.getY());
 	}
 	
+	/**
+	 * A parameterkent megadott MagnetType-okhoz kapcsolodhat ez a Magnet
+	 * 
+	 * @param possibleConnectionTo
+	 */
 	public void addPossibleMagnetTypeToConnect( MagnetType possibleConnectionTo ){
 		this.possibleMagnetTypeToConnect.add(possibleConnectionTo);
 	}
@@ -54,6 +59,11 @@ public class Magnet {
 		);
 	}
 	
+	/**
+	 * A Magnet grafikai megjelenitesenek egyik eleme
+	 * 
+	 * @param element
+	 */
 	public void addElement( SpriteElement element ){
 		elements.add(element);
 	}

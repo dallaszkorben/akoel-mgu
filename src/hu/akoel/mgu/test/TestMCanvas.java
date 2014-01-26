@@ -115,7 +115,7 @@ public class TestMCanvas{
 			}
 
 			@Override
-			public void paintByViewer(MCanvas canvas, Graphics2D g2) {
+			public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {
 				// TODO Auto-generated method stub
 				
 			}	
