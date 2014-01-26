@@ -558,7 +558,7 @@ public class SpriteCanvas extends MCanvas{
 				double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
 				double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
 			
-				boolean hasMagnetConnection = false;
+				//boolean hasMagnetConnection = false;
 			
 				//Vegig az osszes permanens Sprite-on
 				for( Sprite possibleToConnectSprite: spriteList){
@@ -920,7 +920,7 @@ public class SpriteCanvas extends MCanvas{
 			}			
 		}
 		@Override
-		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
+		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 	}
 	
@@ -942,7 +942,7 @@ public class SpriteCanvas extends MCanvas{
 		
 
 		@Override
-		public void paintByViewer(MCanvas canvas, Graphics2D g2) {}
+		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 	}
 }

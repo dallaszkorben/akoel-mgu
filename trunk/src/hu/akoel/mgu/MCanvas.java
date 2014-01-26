@@ -947,21 +947,21 @@ public class MCanvas extends JPanel {
 				if (null != deepestList) {
 					for (PainterListener painter : deepestList) {
 						painter.paintByWorldPosition(parent, new MGraphics(parent, offg2));
-						painter.paintByViewer(parent, offg2);
+						painter.paintByCanvasAfterTransfer(parent, offg2);
 					}
 				}
 
 				if (null != middleList) {
 					for (PainterListener painter : middleList) {
 						painter.paintByWorldPosition(parent, new MGraphics(parent, offg2));
-						painter.paintByViewer(parent, offg2);
+						painter.paintByCanvasAfterTransfer(parent, offg2);
 					}
 				}
 
 				if (null != highestList) {
 					for (PainterListener painter : highestList) {
 						painter.paintByWorldPosition(parent, new MGraphics(parent, offg2));
-						painter.paintByViewer(parent, offg2);
+						painter.paintByCanvasAfterTransfer(parent, offg2);
 					}
 				}
 				
@@ -971,16 +971,27 @@ public class MCanvas extends JPanel {
 				//Kirajzolja  a bufferelt kepet
 				g2.drawImage(offImage, 0, 0, this);
 				
+
+				
 				g2.scale(1,-1);
 				
 				g2.translate( getPixelXLengthByWorld( parent.getWorldTranslateX()), getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() );
+				
+if (null != temporaryList) {
+					for (PainterListener painter : temporaryList) {
+						painter.paintByCanvasAfterTransfer(parent, g2);
+					}
+}					
 				
 				if (null != temporaryList) {
 					for (PainterListener painter : temporaryList) {
 						painter.paintByWorldPosition(parent, new MGraphics(parent, g2));
 					}
+				}
+				
+				if (null != temporaryList) {
 					temporaryList.clear();
-				}					
+				}
 			}	
 		}
 
