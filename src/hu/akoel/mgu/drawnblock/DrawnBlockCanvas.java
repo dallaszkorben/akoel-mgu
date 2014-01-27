@@ -166,11 +166,24 @@ public class DrawnBlockCanvas extends MCanvas{
 			
 			//Ha meg nem kezdtem el rajzolni
 			if( !drawnStarted ){
+
+				//A kurzor pozicioja
+				secondaryStartCursorPosition.setX( secondaryActualCursorPosition.getX() );
+				secondaryStartCursorPosition.setY( secondaryActualCursorPosition.getY() );
+//				secondaryStartCursorPosition.setX( getWorldXByPixel( e.getX() ) );
+//				secondaryStartCursorPosition.setY( getWorldYByPixel( e.getY() ) );
 				
+				//Megnezi, hogy fed-e egy mar meglevo DrawnBlock-ot
+/*				for( DrawnBlock db: drawnBlockList ){
+					
+					//Beleesik a kurzor egy lehelyezett DrawnBlock-ba
+					if( ( secondaryStartCursorPosition.getX() > db.getX1() && secondaryStartCursorPosition.getX() < db.getX2() ) && 
+						( secondaryStartCursorPosition.getY() > db.getY1() && secondaryStartCursorPosition.getY() < db.getY2() ) ){
+						return;
+					}
+				}
+*/				
 				drawnStarted = true;
-				
-				secondaryStartCursorPosition.setX( getWorldXByPixel( e.getX() ) );
-				secondaryStartCursorPosition.setY( getWorldYByPixel( e.getY() ) );
 				
 				drawnBlockToDraw = new DrawnBlock(Status.INPROCESS, secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY(), secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY());
 				
@@ -207,51 +220,129 @@ public class DrawnBlockCanvas extends MCanvas{
 			}
 			
 //System.err.println("release");
-			// TODO Auto-generated method stub
 			
 		}
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-//System.err.println("entered");			
-			// TODO Auto-generated method stub
+//System.err.println("entered");	
 			
+			//Meghatarozza a masodlagos kurzor aktualis erteket
+			findOutCursorPosition( e );
+
+			//Kirajzolja a masodlagos kurzort
+			drawCursor( e );
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-System.err.println("exited");			
-			// TODO Auto-generated method stub
-			//drawCursor(e);
+//System.err.println("exited");			
+			revalidateAndRepaintCoreCanvas();
+			
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-System.err.println("dragged");			
+			double tmp;
+//System.err.println("dragged");			
+			
+			//Meghatarozza a masodlagos kurzor aktualis erteket
+			findOutCursorPosition( e );
+			
 			//Ha mar elkezdtem rajzolni
 			if( drawnStarted ){
 				
 				//Modositani kell a poziciot
-				secondaryActualCursorPosition.setX( getWorldXByPixel( e.getX() ) );
-				secondaryActualCursorPosition.setY( getWorldYByPixel( e.getY() ) );
+//				secondaryActualCursorPosition.setX( getWorldXByPixel( e.getX() ) );
+//				secondaryActualCursorPosition.setY( getWorldYByPixel( e.getY() ) );
 				
-				drawnBlockToDraw.setX2( secondaryActualCursorPosition.getX());
-				drawnBlockToDraw.setY2( secondaryActualCursorPosition.getY());
+				if( secondaryActualCursorPosition.getX() < secondaryStartCursorPosition.getX() ){
+					drawnBlockToDraw.setX2( secondaryStartCursorPosition.getX());					
+					drawnBlockToDraw.setX1( secondaryActualCursorPosition.getX());
+				}else{
+					drawnBlockToDraw.setX2( secondaryActualCursorPosition.getX());	
+				}
+				
+				if( secondaryActualCursorPosition.getY() < secondaryStartCursorPosition.getY() ){
+					drawnBlockToDraw.setY2( secondaryStartCursorPosition.getY());					
+					drawnBlockToDraw.setY1( secondaryActualCursorPosition.getY());
+				}else{
+					drawnBlockToDraw.setY2( secondaryActualCursorPosition.getY());
+				}
+				
+				//Megnezi, hogy fed-e egy mar meglevo DrawnBlock-ot
+				for( DrawnBlock db: drawnBlockList ){
+					 
+				}
 				
 				//Elhelyezni a temporary listaban
 				addTemporaryDrawnBlock( drawnBlockToDraw );
 			}
 
-			
+			//Kirajzolja a masodlagos kurzort
 			drawCursor( e );
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-System.err.println("moved");
+//System.err.println("moved");
 			
+			//Meghatarozza a masodlagos kurzor aktualis erteket
+			findOutCursorPosition( e );
+			
+			//Kirajzolja a masodlagos kurzort
 			drawCursor( e );
 		}
+		
+		/**
+		 * Meghatarozza a masodlagos kurzor aktualis erteket
+		 * 
+		 * @param e
+		 */
+		private void findOutCursorPosition( MouseEvent e ){
+
+			double x = getWorldXByPixel( e.getX() );
+			double y = getWorldYByPixel( e.getY() );
+			
+			//Ha meg nem kezdodott el a rajzolas
+			if( !drawnStarted ){
+
+				//Megnezi, hogy az aktualis kurzor egy lehelyezett DrawnBlock-ra esik-e
+				for( DrawnBlock db: drawnBlockList ){
+				
+					//Beleesik a kurzor egy lehelyezett DrawnBlock-ba
+					if( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
+						
+						//Akkor a masodlagos kurzor marad a regi pozicioban
+						return;
+					}
+				}
+			
+			//Ha mar elkezdte a rajzolast
+			}else{
+				
+				//Megnezi, hogy a lehelyezendo DrawnBlock fedesbe kerul-e egy mar lehelyezett DrawnBlock-kal
+				for( DrawnBlock db: drawnBlockList ){
+					
+					//Beleesik a kurzor egy lehelyezett DrawnBlock-ba
+					if( 
+							( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ) ||
+							( ( secondaryStartCursorPosition.getX() > db.getX1() && secondaryStartCursorPosition.getX() < db.getX2() ) && ( secondaryStartCursorPosition.getY() > db.getY1() && secondaryStartCursorPosition.getY() < db.getY2() ) ) 
+							
+					){
+						
+						//Akkor a masodlagos kurzor marad a regi pozicioban
+						return;
+					}
+				}
+				
+			}
+			
+			secondaryActualCursorPosition.setX( x );
+			secondaryActualCursorPosition.setY( y );
+			
+		}
+		
 		
 		/**
 		 * Az kurzor poziciojanak valtoztatasa es a
@@ -260,24 +351,20 @@ System.err.println("moved");
 		 * @param e
 		 */
 		private void drawCursor( MouseEvent e ){
-			int y = e.getY();
-			int x = e.getX();
-
-			secondaryStartCursorPosition.setX( getWorldXByPixel( x ) );
-			secondaryStartCursorPosition.setY( getWorldYByPixel( y ) );
 
 			addPainterListenerToTemporary( new TemporaryDrawnBlockPainterListener(){
 			
 				@Override
 				public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {
 					
-					int x = getPixelXPositionByWorldBeforeTranslate( secondaryStartCursorPosition.getX() );
-					int y = getPixelYPositionByWorldBeforeTranslate( secondaryStartCursorPosition.getY() );
+					int x = getPixelXPositionByWorldBeforeTranslate( secondaryActualCursorPosition.getX() );
+					int y = getPixelYPositionByWorldBeforeTranslate( secondaryActualCursorPosition.getY() );
 						
 					g2.setColor( Color.white );
 					g2.setStroke( basicStroke );
 					g2.drawLine( x, y - 7, x, y + 7 );
-					g2.drawLine( x - 7, y, x + 7, y );				
+					g2.drawLine( x - 7, y, x + 7, y );
+					
 				}
 								
 			}, Level.ABOVE );	
