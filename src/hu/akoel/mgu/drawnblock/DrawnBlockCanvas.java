@@ -1,7 +1,9 @@
 package hu.akoel.mgu.drawnblock;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
+import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
@@ -23,13 +26,17 @@ public class DrawnBlockCanvas extends MCanvas{
 
 	private static final long serialVersionUID = -8308688255617119442L;
 	
+	private Stroke basicStroke = new BasicStroke();
+	
 	private ArrayList<DrawnBlock> drawnBlockList = new ArrayList<DrawnBlock>();
 	private ArrayList<DrawnBlock> temporaryDrawnBlockList = new ArrayList<DrawnBlock>();
 	
-//	private DrawnBlockInFocusListener drawnBlockInFocusListener = new DrawnBlockInFocusListener();
-	
 	private boolean needFocus = true;
-	private PositionValue secondaryFocusPosition = new PositionValue(0, 0);
+	
+	private PositionValue secondaryStartCursorPosition = new PositionValue(0, 0);
+	private PositionValue secondaryActualCursorPosition = new PositionValue(0, 0);
+	private boolean drawnStarted = false;
+	private DrawnBlock drawnBlockToDraw = null;
 
 	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
 		super(borderType, background, possiblePixelPerUnits, positionToMiddle );		
@@ -135,6 +142,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * 
 	 * DrawnBlock rajzolasaert felelos osztaly
 	 * 
+	 * move, exited
+	 * exited, dragged
 	 * pressed, released clicked
 	 * 
 	 * @author akoel
@@ -146,6 +155,7 @@ public class DrawnBlockCanvas extends MCanvas{
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			
 //System.err.println("clicked");			
 			// TODO Auto-generated method stub
 			
@@ -153,6 +163,22 @@ public class DrawnBlockCanvas extends MCanvas{
 
 		@Override
 		public void mousePressed(MouseEvent e) {
+			
+			//Ha meg nem kezdtem el rajzolni
+			if( !drawnStarted ){
+				
+				drawnStarted = true;
+				
+				secondaryStartCursorPosition.setX( getWorldXByPixel( e.getX() ) );
+				secondaryStartCursorPosition.setY( getWorldYByPixel( e.getY() ) );
+				
+				drawnBlockToDraw = new DrawnBlock(Status.INPROCESS, secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY(), secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY());
+				
+				//Atmeneti listaba helyezi a most rajzolas alatt levo DrawnBlock-ot
+				addTemporaryDrawnBlock( drawnBlockToDraw );
+
+			}
+
 //System.err.println("pressed");			
 			// TODO Auto-generated method stub
 			
@@ -160,6 +186,26 @@ public class DrawnBlockCanvas extends MCanvas{
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
+			
+			//Ha elindult mar egy rajzolasi folyamat
+			if( drawnStarted ){
+				
+				//A lehelyezendo DrawnBlokk statusza NORMAL lesz
+				drawnBlockToDraw.setStatus( Status.NORMAL );
+				
+				//Hozzaadom a statikusan kirajzolando DrawnBlock-ok listajahoz
+				addDrawnBlock( drawnBlockToDraw );
+				
+				//Ujrarajzoltatom a Canvas-t az uj statikus DrawnBlock-kal egyutt
+				revalidateAndRepaintCoreCanvas();
+				
+				//Jelzi, hogy meg nem indult el a kovetkezo DrawnBlock rajzolasa
+				drawnStarted = false;
+				
+				//Az ujabb DrawnBlock meg nem letezik
+				drawnBlockToDraw = null;
+			}
+			
 //System.err.println("release");
 			// TODO Auto-generated method stub
 			
@@ -174,41 +220,62 @@ public class DrawnBlockCanvas extends MCanvas{
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-//System.err.println("exited");			
+System.err.println("exited");			
 			// TODO Auto-generated method stub
-			
+			//drawCursor(e);
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-//System.err.println("dragged");
+System.err.println("dragged");			
+			//Ha mar elkezdtem rajzolni
+			if( drawnStarted ){
+				
+				//Modositani kell a poziciot
+				secondaryActualCursorPosition.setX( getWorldXByPixel( e.getX() ) );
+				secondaryActualCursorPosition.setY( getWorldYByPixel( e.getY() ) );
+				
+				drawnBlockToDraw.setX2( secondaryActualCursorPosition.getX());
+				drawnBlockToDraw.setY2( secondaryActualCursorPosition.getY());
+				
+				//Elhelyezni a temporary listaban
+				addTemporaryDrawnBlock( drawnBlockToDraw );
+			}
+
 			
 			drawCursor( e );
 		}
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
-//System.err.println("moved");
+System.err.println("moved");
 			
 			drawCursor( e );
 		}
 		
+		/**
+		 * Az kurzor poziciojanak valtoztatasa es a
+		 * Temporary lista ujra rajzolasa
+		 * 
+		 * @param e
+		 */
 		private void drawCursor( MouseEvent e ){
 			int y = e.getY();
 			int x = e.getX();
 
-			secondaryFocusPosition.setX( getWorldXByPixel( x ) );
-			secondaryFocusPosition.setY( getWorldYByPixel( y ) );
-			
+			secondaryStartCursorPosition.setX( getWorldXByPixel( x ) );
+			secondaryStartCursorPosition.setY( getWorldYByPixel( y ) );
+
 			addPainterListenerToTemporary( new TemporaryDrawnBlockPainterListener(){
 			
 				@Override
 				public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {
 					
-					int x = getPixelXPositionByWorldBeforeTranslate( secondaryFocusPosition.getX() );
-					int y = getPixelYPositionByWorldBeforeTranslate( secondaryFocusPosition.getY() );
+					int x = getPixelXPositionByWorldBeforeTranslate( secondaryStartCursorPosition.getX() );
+					int y = getPixelYPositionByWorldBeforeTranslate( secondaryStartCursorPosition.getY() );
 						
 					g2.setColor( Color.white );
+					g2.setStroke( basicStroke );
 					g2.drawLine( x, y - 7, x, y + 7 );
 					g2.drawLine( x - 7, y, x + 7, y );				
 				}

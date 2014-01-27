@@ -43,7 +43,7 @@ public  class DrawnBlock {
 	private Color inprocessBackgroundColor = Color.black;
 	
 	public DrawnBlock( Status status, double x1, double y1, double x2, double y2 ){
-		this.status = status;
+		setStatus(status);
 		this.x1 = x1;
 		this.y1 = y1;
 		this.x2 = x2;
