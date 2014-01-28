@@ -5,9 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
@@ -17,7 +15,6 @@ import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
-import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
@@ -164,27 +161,16 @@ public class DrawnBlockCanvas extends MCanvas{
 		@Override
 		public void mousePressed(MouseEvent e) {
 			
-			//Ha meg nem kezdtem el rajzolni
-			if( !drawnStarted ){
+			//Ha a baloldali egergombot nyomtam es meg nem kezdtem el rajzolni
+			if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted ){
 
 				//A kurzor pozicioja
 				secondaryStartCursorPosition.setX( secondaryActualCursorPosition.getX() );
 				secondaryStartCursorPosition.setY( secondaryActualCursorPosition.getY() );
-//				secondaryStartCursorPosition.setX( getWorldXByPixel( e.getX() ) );
-//				secondaryStartCursorPosition.setY( getWorldYByPixel( e.getY() ) );
-				
-				//Megnezi, hogy fed-e egy mar meglevo DrawnBlock-ot
-/*				for( DrawnBlock db: drawnBlockList ){
-					
-					//Beleesik a kurzor egy lehelyezett DrawnBlock-ba
-					if( ( secondaryStartCursorPosition.getX() > db.getX1() && secondaryStartCursorPosition.getX() < db.getX2() ) && 
-						( secondaryStartCursorPosition.getY() > db.getY1() && secondaryStartCursorPosition.getY() < db.getY2() ) ){
-						return;
-					}
-				}
-*/				
+
 				drawnStarted = true;
 				
+				//A szerkesztendo DrawnBlock legyartasa
 				drawnBlockToDraw = new DrawnBlock(Status.INPROCESS, secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY(), secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY());
 				
 				//Atmeneti listaba helyezi a most rajzolas alatt levo DrawnBlock-ot
@@ -193,7 +179,6 @@ public class DrawnBlockCanvas extends MCanvas{
 			}
 
 //System.err.println("pressed");			
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -301,6 +286,8 @@ public class DrawnBlockCanvas extends MCanvas{
 		 */
 		private void findOutCursorPosition( MouseEvent e ){
 
+			double tmpX1, tmpX2, tmpY1, tmpY2;
+			
 			double x = getWorldXByPixel( e.getX() );
 			double y = getWorldYByPixel( e.getY() );
 			
@@ -321,19 +308,55 @@ public class DrawnBlockCanvas extends MCanvas{
 			//Ha mar elkezdte a rajzolast
 			}else{
 				
+				if( x < secondaryStartCursorPosition.getX() ){
+					tmpX1 = x;
+					tmpX2 = secondaryStartCursorPosition.getX();
+				}else{					
+					tmpX1 = secondaryStartCursorPosition.getX();
+					tmpX2 = x;
+				}
+				
+				if( y < secondaryStartCursorPosition.getY() ){
+					tmpY1 = y;
+					tmpY2 = secondaryStartCursorPosition.getY();
+				}else{					
+					tmpY1 = secondaryStartCursorPosition.getY();
+					tmpY2 = y;
+				}
+				
 				//Megnezi, hogy a lehelyezendo DrawnBlock fedesbe kerul-e egy mar lehelyezett DrawnBlock-kal
 				for( DrawnBlock db: drawnBlockList ){
+//this->db
+//r->tmp
 					
-					//Beleesik a kurzor egy lehelyezett DrawnBlock-ba
+					double tx1 = db.getX1();
+					double ty1 = db.getY1();
+					double rx1 = tmpX1;
+					double ry1 = tmpY1;
+					
+					double tx2 = db.getX2();
+					double ty2 = db.getY2();
+					double rx2 = tmpX2;
+					double ry2 = tmpY2;
+					
+					if (tx1 < rx1) tx1 = rx1;
+					if (ty1 < ry1) ty1 = ry1;
+					if (tx2 > rx2) tx2 = rx2;
+					if (ty2 > ry2) ty2 = ry2;
+					tx2 -= tx1;
+					ty2 -= ty1;
+			
+					//Van kozos metszete a most rajzolando negyzetnek es a mar lehelyezett negyzetnek
 					if( 
-							( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ) ||
-							( ( secondaryStartCursorPosition.getX() > db.getX1() && secondaryStartCursorPosition.getX() < db.getX2() ) && ( secondaryStartCursorPosition.getY() > db.getY1() && secondaryStartCursorPosition.getY() < db.getY2() ) ) 
-							
+							ty2 >= 0 && tx2 >= 0
 					){
 						
 						//Akkor a masodlagos kurzor marad a regi pozicioban
 						return;
+					}else{
+						System.err.println(ty2 + ", " + tx2 + "   -  " + tmpX1 + ", " + tmpX2 );
 					}
+					
 				}
 				
 			}
@@ -373,306 +396,6 @@ public class DrawnBlockCanvas extends MCanvas{
 		}
 		
 	}
-	
-	
-/*	class SpriteDragListener implements MouseInputListener{
-		private PositionValue originalPosition;
-		private DeltaValue initialDelta;
-
-		private boolean dragOneSpriteStarted = false;
-		private boolean dragAllSpriteStarted = false;
-		private DrawnBlock sprite;
-		private HashSet<DrawnBlock> moveableSpriteList;
-		
-		public void loadSpriteToTemporary(){
-			if( dragOneSpriteStarted ){
-				addTemporarySprite(sprite);	
-			}
-		}
-		
-
-		
-		@Override
-		public void mousePressed(MouseEvent e) {
-			
-			//Mar egy elindult Drag-Replace folyamatot nem indithatok ujra el
-			if( dragOneSpriteStarted || dragAllSpriteStarted ){
-				return;
-			}
-			
-			//
-			//Ha a bal-eger gombot nyomtam le a Shift-tel - A teljes kapcsolati rendszert akarom athelyezni
-			//
-			if( e.getButton() == MouseEvent.BUTTON1 && e.isShiftDown() ){
-				
-				double xValue = getWorldXByPixel(e.getX() );
-				double yValue = getWorldYByPixel(e.getY());
-				
-				//Akkor meg kell nezni, hogy van-e alatta sprite
-				for( DrawnBlock sprite: drawnBlockList){
-					
-					SizeValue boundBox = sprite.getBoundBoxAbsolute();
-						
-					//Igen, van alatta sprite
-					if( 
-							xValue >= boundBox.getXMin() &&
-							xValue <= boundBox.getXMax() &&
-							yValue >= boundBox.getYMin() &&
-							yValue <= boundBox.getYMax()
-					){
-									
-						//Rogton letiltom a fokusz mukodeset TODO erre azt hiszem nincs szukseg
-						setNeedFocus(false);						
-						
-						//Elteszem a mozgatando sprite-ot, hogy a drag muvelet tudja mivel dolgozzon
-						this.sprite = sprite;
-												
-						//El kell menteni az eredeti poziciojat
-						originalPosition = sprite.getPosition();
-					
-						//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
-						initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
-						
-						moveableSpriteList = new HashSet<DrawnBlock>();
-						moveableSpriteList = getConnectedSprites(sprite, moveableSpriteList);					
-						dragAllSpriteStarted = true;
-					
-						//Eltavolitom a permanens listabol
-						removeSprites(moveableSpriteList);
-						
-						//El kell helyezni az atmeneti taroloba az uj pozicioval						
-						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
-//						sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
-						
-						addTemporarySprites(moveableSpriteList);	
-						
-						revalidateAndRepaintCoreCanvas();
-						
-						break;
-
-					}					
-				}	
-			//
-			//Ha a bal-eger gombot nyomtam le - At akarom helyezni a Sprite-ot
-			//
-			}else if( e.getButton() == MouseEvent.BUTTON1 ){
-				
-				double xValue = getWorldXByPixel(e.getX() );
-				double yValue = getWorldYByPixel(e.getY());
-				
-				//Akkor meg kell nezni, hogy van-e alatta sprite
-				for( DrawnBlock sprite: drawnBlockList){
-					
-					SizeValue boundBox = sprite.getBoundBoxAbsolute();
-						
-					//Igen, van alatta sprite
-					if( 
-							xValue >= boundBox.getXMin() &&
-							xValue <= boundBox.getXMax() &&
-							yValue >= boundBox.getYMin() &&
-							yValue <= boundBox.getYMax()
-					){
-									
-						//Rogton letiltom a fokusz mukodeset TODO erre azt hiszem nincs szukseg
-						setNeedFocus(false);						
-						
-						//Elteszem a mozgatando sprite-ot, hogy a drag muvelet tudja mivel dolgozzon
-						this.sprite = sprite;
-												
-						//El kell menteni az eredeti poziciojat
-						originalPosition = sprite.getPosition();
-					
-						//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
-						initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
-						
-						//Eltavolitom a permanens listabol
-						removeSprite(sprite);
-						
-						//El kell helyezni az atmeneti taroloba az uj pozicioval						
-						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
-						sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
-
-						
-						addTemporarySprite(sprite);	
-						
-						revalidateAndRepaintCoreCanvas();
-						
-						dragOneSpriteStarted = true;
-						
-						break;
-
-					}					
-				}				
-			}
-			
-		}
-		
-		@Override
-		public void mouseReleased(MouseEvent e) {	
-
-			if( dragAllSpriteStarted ){
-				
-				//visszahelyezni a Sprite-okat a vegleges taroloba
-				addDrawnBlocks( moveableSpriteList );
-				
-				//Engedelyezem a fokusz mukodeset
-				setNeedFocus(true);
-				
-				//Es ujra kell rajzoltatni a Permanens lista elemeit
-				revalidateAndRepaintCoreCanvas();
-			
-				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
-				fireMouseMoved();
-				
-				//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
-				dragAllSpriteStarted = false;
-				
-			}else if( dragOneSpriteStarted ){
-						
-				//Ha nem csatlakozik mas elemhez de nincs engedelyezve kapcsolat nelkuli lehelyezesre
-				if( !sprite.isConnected() && !sprite.isEnableToPlaceWithoutConnection() ){
-
-					//Akkor vissza kell helyezni az elozo pozicioba
-					//Visszairom az eredeti poziciot
-//					//sprite.setPosition( originalPosition );
-					
-					//General egy Drag muveletet vissza az eredeti pozicioba
-					MouseEvent me = new MouseEvent(coreCanvas, 11, 0, 0, Math.round((float)getMouseXPositionByWorld(originalPosition.getX() + initialDelta.getX())), Math.round((float)getMouseYPositionByWorld(originalPosition.getY() + initialDelta.getY())), 1, false);									
-					DragListener.mouseDragged(me);					
-									
-				}
-					
-				//El kell helyezni a vegleges taroloba az uj pozicioval			
-				addDrawnBlock(sprite);
-			
-				//Engedelyezem a fokusz mukodeset
-				setNeedFocus(true);
-				
-				//Es ujra kell rajzoltatni a Permanens lista elemeit
-				revalidateAndRepaintCoreCanvas();
-			
-				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
-				fireMouseMoved();
-				
-				//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
-				dragOneSpriteStarted = false;
-			}
-			
-			
-			
-		}
-		
-		@Override
-		public void mouseExited(MouseEvent e) {	
-						
-			//Ha elindult mar a drag es igy hagyom el a Canvas-t
-			if( dragOneSpriteStarted || dragAllSpriteStarted ){
-				
-				//mouseReleased( e );
-				
-			//Csak siman kisetalt a kurzor a kepernyorol, akkor minden Sprite-rol toroljuk a fokuszt
-			}else{
-				
-				boolean needToReprint = false;
-				
-				//Vegig az osszes Sprite-on
-				for( DrawnBlock sprite: drawnBlockList){
-					
-					//Ha az adot Sprite fokuszban volt
-					if( sprite.isInFocus() ){
-						
-						//Kiszedjuk a fokuszbol
-						sprite.setInFocus(false);
-						
-						//Es jelzem, hogy legalabb egy elem volt fokuszban
-						needToReprint = true;						
-							
-					}										
-				}
-				
-				if( needToReprint ){			
-				
-					//Azert kell, hogy az esetlegesen fokuszban levo Sprite-rol eltunjon a fokusz
-					repaintCoreCanvas();
-
-				}			
-			}						
-		}
-		
-		@Override
-		public void mouseDragged(MouseEvent e) {
-			
-			//
-			//Sprite csoport mozgatasa
-			//
-			if( dragAllSpriteStarted ){
-
-				//Uj pozicioi kiszamitasa
-				double xCursorPosition = getWorldXByPixel(e.getX() );
-				double yCursorPosition = getWorldYByPixel(e.getY());
-
-				double xNewSpritePosition = xCursorPosition - initialDelta.getX();
-				double yNewSpritePosition = yCursorPosition - initialDelta.getY();
-				
-				double xDelta = xNewSpritePosition - sprite.getPosition().getX();
-				double yDelta = yNewSpritePosition - sprite.getPosition().getY();
-
-				//A mozgatando Sprite Elozetes uj pozicioba helyezese
-//				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
-							
-//				draggedMagnet.blabla( draggedMagnet, new HashSet<Sprite>(), moveableSpriteList );				
-	
-				
-				//Az osszes Sprite-ot a mozgatando listabol a megfelelo helyre pozicionalok
-				for( DrawnBlock sprite: moveableSpriteList ){
-				
-					//A mozgatando Sprite Elozetes uj pozicioba helyezese
-					sprite.setPosition(new PositionValue(
-							sprite.getPosition().getX() + xDelta, 
-							sprite.getPosition().getY() + yDelta
-							)
-					);
-				}
-			
-				//Torlom a Sprite csoport minden kapcsolatat ami nem a csoporton belul kottetett
-				//Tulajdonkeppen a lehetseges kapcsolatokrol van szo
-				for( DrawnBlock sprite: moveableSpriteList ){
-					for( Magnet magnet: sprite.getMagnetList() ){
-						Magnet pairMagnet = magnet.getConnectedTo();
-						
-						//Kivulre mutato kapcsolat
-						if( null != pairMagnet && !moveableSpriteList.contains( pairMagnet.getParent() ) ){
-							
-							//Torolni kell a kapcsolatot
-							magnet.setConnectedTo(null);
-						}
-					}
-				}
-				
-				//Poziciok szukseg szerinti korrigalasa a magnes alapjan
-				doArangeBlockPositionByMagnet(moveableSpriteList);
-				
-				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
-				addTemporarySprites(moveableSpriteList);
-				
-				//A Permanens es atmeneti taroloban levo Sprite-ok ujrarajzolasa szukseges
-				revalidateAndRepaintCoreCanvas();
-				
-					
-		}
-		
-		@Override
-		public void mouseMoved(MouseEvent e) {}
-		
-		@Override
-		public void mouseEntered(MouseEvent e) {}
-		
-		@Override
-		public void mouseClicked(MouseEvent e) {}
-		
-	}
-*/	
-
 	
 	
 
