@@ -28,12 +28,13 @@ public class DrawnBlockCanvas extends MCanvas{
 	private ArrayList<DrawnBlock> drawnBlockList = new ArrayList<DrawnBlock>();
 	private ArrayList<DrawnBlock> temporaryDrawnBlockList = new ArrayList<DrawnBlock>();
 	
+	private DrawnBlockDrawListener drawnBlockDrawListener = new DrawnBlockDrawListener();
+	private DrawnBlockPainterListener drawnBlockPainterListener = new DrawnBlockPainterListener();
+	
+	private SecondaryCursor secondaryCursor = new SecondaryCursor();
+	
 	private boolean needFocus = true;
 	
-	private PositionValue secondaryStartCursorPosition = new PositionValue(0, 0);
-	private PositionValue secondaryActualCursorPosition = new PositionValue(0, 0);
-	private boolean drawnStarted = false;
-	private DrawnBlock drawnBlockToDraw = null;
 
 	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
 		super(borderType, background, possiblePixelPerUnits, positionToMiddle );		
@@ -51,10 +52,10 @@ public class DrawnBlockCanvas extends MCanvas{
 //		this.addMouseMotionListener( drawnBlockInFocusListener );
 		
 		//A kozepso reteget hasznaljuk a DrawnBlock-ok megjelenitesere
-		this.addPainterListenerToMiddle( new DrawnBlockPainterListener(), Level.ABOVE );
+		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.ABOVE );
 		
 		//A kurzor mozgasat vizsgalolo listener
-		this.addMouseInputListener( new DrawnBlockDrawListener() );
+		this.addMouseInputListener( drawnBlockDrawListener );
 		
 //		//Egy DrawnBlock mozgatasat figyeli
 //		this.addMouseInputListener( DragListener );
@@ -106,34 +107,36 @@ public class DrawnBlockCanvas extends MCanvas{
 		}	
 	}
 	
-	
-	//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
-//	addTemporarySprites(moveableSpriteList);
-	
-	//A Permanens es atmeneti taroloban levo Sprite-ok ujrarajzolasa szukseges
-//	revalidateAndRepaintCoreCanvas();
-	
-/*	
+	public void addTemporarySecondaryCursor( SecondaryCursor secondaryCursor ){
+		
+		//Minden megjelenites utan torlodik a listener, ezert kell mindig hozzaadni
+		this.addPainterListenerToTemporary( new TemporarySecondaryCursorPainterListener(), Level.ABOVE );
+		
+		//Itt nincs szukseg a lista megadasara, mert csak egy elem szerepel
+	}
+
 	public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint){
 		super.zoomIn(xCenter, yCenter, xPoint, yPoint);
-		
-		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
 
-		fireMouseMoved();
-		DragListener.loadSpriteToTemporary();
-		repaintCoreCanvas();
+		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo DrawnBlock ujra bekeruljon a temporary listaba
+		//Mozgast szimulal, mintha megmozdult volna a kurzor, ami azt eredmenyezi, hogy kirajzolodik a kurzor
+		//fireMouseMoved();
+
+		drawnBlockDrawListener.repaintSecondaryCursorAndDrawnBlockToDraw();
 	}
 	
 	public void zoomOut(double xCenter, double yCenter, int xPoint, int yPoint){
 		super.zoomOut(xCenter, yCenter, xPoint, yPoint);
 		
-		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo Sprite ujra bekeruljon a temporary listaba
+		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo DrawnBlock ujra bekeruljon a temporary listaba
 
-		fireMouseMoved();
-		DragListener.loadSpriteToTemporary();
-		repaintCoreCanvas();
+//		fireMouseMoved();
+		
+		drawnBlockDrawListener.repaintSecondaryCursorAndDrawnBlockToDraw();
+
 	}
-*/	
+	
+
 	
 	/**
 	 * 
@@ -148,13 +151,16 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	class DrawnBlockDrawListener implements MouseInputListener{
 		
-		int cursorX, cursorY;
+		private PositionValue secondaryStartCursorPosition = new PositionValue(0, 0);
+		
+		private boolean drawnStarted = false;
+		private DrawnBlock drawnBlockToDraw = null;
+
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			
 //System.err.println("clicked");			
-			// TODO Auto-generated method stub
 			
 		}
 
@@ -165,8 +171,8 @@ public class DrawnBlockCanvas extends MCanvas{
 			if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted ){
 
 				//A kurzor pozicioja
-				secondaryStartCursorPosition.setX( secondaryActualCursorPosition.getX() );
-				secondaryStartCursorPosition.setY( secondaryActualCursorPosition.getY() );
+				secondaryStartCursorPosition.setX( secondaryCursor.getX() );
+				secondaryStartCursorPosition.setY( secondaryCursor.getY() );
 
 				drawnStarted = true;
 				
@@ -193,6 +199,9 @@ public class DrawnBlockCanvas extends MCanvas{
 				
 				//Hozzaadom a statikusan kirajzolando DrawnBlock-ok listajahoz
 				addDrawnBlock( drawnBlockToDraw );
+
+				//Azert kell, hogy az elengedes pillanataban ne tunjon el a masodlagos kurzor
+				addTemporarySecondaryCursor(secondaryCursor);
 				
 				//Ujrarajzoltatom a Canvas-t az uj statikus DrawnBlock-kal egyutt
 				revalidateAndRepaintCoreCanvas();
@@ -216,7 +225,10 @@ public class DrawnBlockCanvas extends MCanvas{
 			findOutCursorPosition( e );
 
 			//Kirajzolja a masodlagos kurzort
-			drawCursor( e );
+			addTemporarySecondaryCursor( secondaryCursor );
+			
+//repaintCoreCanvas();
+			revalidateAndRepaintCoreCanvas();
 		}
 
 		@Override
@@ -228,7 +240,7 @@ public class DrawnBlockCanvas extends MCanvas{
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
-			double tmp;
+
 //System.err.println("dragged");			
 			
 			//Meghatarozza a masodlagos kurzor aktualis erteket
@@ -237,35 +249,31 @@ public class DrawnBlockCanvas extends MCanvas{
 			//Ha mar elkezdtem rajzolni
 			if( drawnStarted ){
 				
-				//Modositani kell a poziciot
-//				secondaryActualCursorPosition.setX( getWorldXByPixel( e.getX() ) );
-//				secondaryActualCursorPosition.setY( getWorldYByPixel( e.getY() ) );
-				
-				if( secondaryActualCursorPosition.getX() < secondaryStartCursorPosition.getX() ){
+				if( secondaryCursor.getX() < secondaryStartCursorPosition.getX() ){
 					drawnBlockToDraw.setX2( secondaryStartCursorPosition.getX());					
-					drawnBlockToDraw.setX1( secondaryActualCursorPosition.getX());
+					drawnBlockToDraw.setX1( secondaryCursor.getX());
 				}else{
-					drawnBlockToDraw.setX2( secondaryActualCursorPosition.getX());	
+					drawnBlockToDraw.setX2( secondaryCursor.getX());	
 				}
 				
-				if( secondaryActualCursorPosition.getY() < secondaryStartCursorPosition.getY() ){
+				if( secondaryCursor.getY() < secondaryStartCursorPosition.getY() ){
 					drawnBlockToDraw.setY2( secondaryStartCursorPosition.getY());					
-					drawnBlockToDraw.setY1( secondaryActualCursorPosition.getY());
+					drawnBlockToDraw.setY1( secondaryCursor.getY());
 				}else{
-					drawnBlockToDraw.setY2( secondaryActualCursorPosition.getY());
+					drawnBlockToDraw.setY2( secondaryCursor.getY());
 				}
 				
-				//Megnezi, hogy fed-e egy mar meglevo DrawnBlock-ot
-				for( DrawnBlock db: drawnBlockList ){
-					 
-				}
-				
-				//Elhelyezni a temporary listaban
+				//Elhelyezni a temporary listaban a most szerkesztendo DrawnBlock-ot
 				addTemporaryDrawnBlock( drawnBlockToDraw );
 			}
 
-			//Kirajzolja a masodlagos kurzort
-			drawCursor( e );
+			//Elhelyezi a temporary listaban a masodlagos kurzort
+			addTemporarySecondaryCursor( secondaryCursor );
+			
+			//Kirajzolja az elhelyezett szerkesztedno DrawnBlock-ot es a masodlagos kurzort
+//repaintCoreCanvas();
+			revalidateAndRepaintCoreCanvas();
+			
 		}
 
 		@Override
@@ -276,7 +284,11 @@ public class DrawnBlockCanvas extends MCanvas{
 			findOutCursorPosition( e );
 			
 			//Kirajzolja a masodlagos kurzort
-			drawCursor( e );
+			addTemporarySecondaryCursor( secondaryCursor );
+			
+			//Kirajzolja a masodlagos kurzort
+//repaintCoreCanvas();
+			revalidateAndRepaintCoreCanvas();
 		}
 		
 		/**
@@ -353,46 +365,28 @@ public class DrawnBlockCanvas extends MCanvas{
 						
 						//Akkor a masodlagos kurzor marad a regi pozicioban
 						return;
-					}else{
-						System.err.println(ty2 + ", " + tx2 + "   -  " + tmpX1 + ", " + tmpX2 );
 					}
 					
 				}
 				
 			}
 			
-			secondaryActualCursorPosition.setX( x );
-			secondaryActualCursorPosition.setY( y );
-			
+			//A Masodlagos kurzor poziciojanak beallitasa
+			secondaryCursor.setPosition( x, y );
 		}
 		
-		
-		/**
-		 * Az kurzor poziciojanak valtoztatasa es a
-		 * Temporary lista ujra rajzolasa
-		 * 
-		 * @param e
-		 */
-		private void drawCursor( MouseEvent e ){
-
-			addPainterListenerToTemporary( new TemporaryDrawnBlockPainterListener(){
+		public void repaintSecondaryCursorAndDrawnBlockToDraw(){
 			
-				@Override
-				public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {
-					
-					int x = getPixelXPositionByWorldBeforeTranslate( secondaryActualCursorPosition.getX() );
-					int y = getPixelYPositionByWorldBeforeTranslate( secondaryActualCursorPosition.getY() );
-						
-					g2.setColor( Color.white );
-					g2.setStroke( basicStroke );
-					g2.drawLine( x, y - 7, x, y + 7 );
-					g2.drawLine( x - 7, y, x + 7, y );
-					
-				}
-								
-			}, Level.ABOVE );	
+			if( null != drawnBlockToDraw ){
+				addTemporaryDrawnBlock( drawnBlockToDraw );
+			}
 			
-			revalidateAndRepaintCoreCanvas();
+			if( null != secondaryCursor ){
+				addTemporarySecondaryCursor( secondaryCursor );
+			}
+			
+			repaintCoreCanvas();
+			
 		}
 		
 	}
@@ -475,7 +469,7 @@ public class DrawnBlockCanvas extends MCanvas{
 	}
 	
 	/**
-	 * Az atmeneti retegben elhelyezett drawnBlock-ok kirajzolasaert felelos
+	 * Az atmeneti retegben elhelyezett DrawnBlock-ok kirajzolasaert felelos osztaly
 	 * 
 	 * @author akoel
 	 *
@@ -497,5 +491,68 @@ public class DrawnBlockCanvas extends MCanvas{
 		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
+	}
+	
+	class TemporarySecondaryCursorPainterListener implements PainterListener{
+
+		@Override
+		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void paintByCanvasAfterTransfer( MCanvas canvas, Graphics2D g2 ) {
+		
+			secondaryCursor.draw(g2);
+			
+		}
+		
+	}
+	
+	class SecondaryCursor{
+		PositionValue cursorPosition = null;
+		
+		public SecondaryCursor(){
+			this.cursorPosition = new PositionValue(0, 0);
+		}
+		
+		public SecondaryCursor( PositionValue cursorPosition ){
+			this.cursorPosition = new PositionValue( cursorPosition.getX(), cursorPosition.getY() );
+		}
+		
+		public void setPosition( double x, double y ){
+			this.cursorPosition.setX( x );
+			this.cursorPosition.setY( y );
+		}
+		
+		public void setPosition( PositionValue cursorPosition ){
+			this.cursorPosition.setX( cursorPosition.getX() );
+			this.cursorPosition.setY( cursorPosition.getY() );
+		}
+		
+		public double getX(){
+			return cursorPosition.getX();
+		}
+		
+		public double getY(){
+			return cursorPosition.getY();
+		}
+		
+		public void draw( Graphics2D g2 ){
+			int x, y;
+			
+			if( null != cursorPosition ){
+
+				x = getPixelXPositionByWorldBeforeTranslate( cursorPosition.getX() );
+				y = getPixelYPositionByWorldBeforeTranslate( cursorPosition.getY() );
+			
+				g2.setColor( Color.white );
+				g2.setStroke( basicStroke );
+				g2.drawLine( x, y - 8, x, y + 8 );
+				g2.drawLine( x - 8, y, x + 8, y );
+			}
+			
+		}
 	}
 }
