@@ -227,8 +227,9 @@ public class DrawnBlockCanvas extends MCanvas{
 			//Kirajzolja a masodlagos kurzort
 			addTemporarySecondaryCursor( secondaryCursor );
 			
-//repaintCoreCanvas();
-			revalidateAndRepaintCoreCanvas();
+repaintCoreCanvas();
+//revalidateAndRepaintCoreCanvas();
+
 		}
 
 		@Override
@@ -271,8 +272,8 @@ public class DrawnBlockCanvas extends MCanvas{
 			addTemporarySecondaryCursor( secondaryCursor );
 			
 			//Kirajzolja az elhelyezett szerkesztedno DrawnBlock-ot es a masodlagos kurzort
-//repaintCoreCanvas();
-			revalidateAndRepaintCoreCanvas();
+repaintCoreCanvas();
+//revalidateAndRepaintCoreCanvas();
 			
 		}
 
@@ -287,8 +288,37 @@ public class DrawnBlockCanvas extends MCanvas{
 			addTemporarySecondaryCursor( secondaryCursor );
 			
 			//Kirajzolja a masodlagos kurzort
-//repaintCoreCanvas();
-			revalidateAndRepaintCoreCanvas();
+repaintCoreCanvas();
+//revalidateAndRepaintCoreCanvas();
+
+		}
+		
+		
+		class Arrange{
+			DrawnBlock drawnBlockToArrangeX = null;
+			DrawnBlock drawnBlockToArrangeY = null;
+			
+			Double positionX = null;
+			Double positionY = null;
+			
+			public void addDrawnBlockToArrangeX( DrawnBlock drawnBlockToArrange, Double position ){
+				this.drawnBlockToArrangeX = drawnBlockToArrange;
+				this.positionX = position;
+			}
+
+			public void addDrawnBlockToArrangeY( DrawnBlock drawnBlockToArrange, Double position ){
+				this.drawnBlockToArrangeY = drawnBlockToArrange;
+				this.positionY = position;
+			}
+			
+			public Double getPositionX(){
+				return positionX;
+			}
+
+			public Double getPositionY(){
+				return positionY;
+			}
+
 		}
 		
 		/**
@@ -302,6 +332,81 @@ public class DrawnBlockCanvas extends MCanvas{
 			
 			double x = getWorldXByPixel( e.getX() );
 			double y = getWorldYByPixel( e.getY() );
+			
+			//--------------------------------------------------------------------------
+			//
+			// DrawnBlock-ok oldalahoz probalja igazitani a masodlagos kurzor poziciojat
+			//
+			//--------------------------------------------------------------------------
+			int delta = 15;
+			double dx = getWorldXLengthByPixel( delta );
+			double dy = getWorldXLengthByPixel( delta );
+			
+			double minDX = Double.MAX_VALUE;
+			double minDY = Double.MAX_VALUE;
+			Arrange arrange = new Arrange();
+			
+			for( DrawnBlock db : drawnBlockList ){
+				
+				//Ha megfelelo kozelsegben vagyok az egyik lehelyezett DrawnBlock-hoz. 
+				if( db.intersects( new Block( x-dx, y-dy, x+dx, y+dy) ) ){
+					
+					
+					//Bal oldalrol kozeliti a DrawnBlock-ot
+					if( ( db.getX1() - x ) >= 0 ){
+						
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi
+						if( ( db.getX1() - x ) < minDX ){
+							minDX = db.getX1() - x;
+							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
+						}
+						
+					//Jobb oldalrol kozeliti a DrawnBlock-ot
+					}else if( ( x - db.getX2() ) >= 0 ){
+
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi
+						if( ( x - db.getX2() ) < minDX ){
+							minDX = x - db.getX2();
+							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
+						}
+						
+					}
+					
+					//Fentrol kozeliti a DrawnBlock-ot
+					if( ( y - db.getY2() ) >= 0 ){
+						
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi
+						if( ( y - db.getY2() ) < minDY ){
+							minDY = y - db.getY2();
+							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
+						}
+						
+					//Alulrol kozeliti a DrawnBlock-ot
+					}else if( ( db.getY1() - y ) >= 0 ){
+
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi
+						if( ( db.getY1() - y ) < minDY ){
+							minDY = db.getY1() - y;
+							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
+						}
+					}					
+				}				
+			}
+			
+			//Van olyan oldal amihez igazitani lehet
+			if( null != arrange ){
+				if( null != arrange.getPositionX() ){
+					x = arrange.getPositionX();
+				}
+				
+				if( null != arrange.getPositionY() ){
+					y = arrange.getPositionY();
+				}
+			}
+			
+			
+			
+			
 			
 			//Ha meg nem kezdodott el a rajzolas
 			if( !drawnStarted ){
@@ -338,35 +443,11 @@ public class DrawnBlockCanvas extends MCanvas{
 				
 				//Megnezi, hogy a lehelyezendo DrawnBlock fedesbe kerul-e egy mar lehelyezett DrawnBlock-kal
 				for( DrawnBlock db: drawnBlockList ){
-//this->db
-//r->tmp
 					
-					double tx1 = db.getX1();
-					double ty1 = db.getY1();
-					double rx1 = tmpX1;
-					double ry1 = tmpY1;
-					
-					double tx2 = db.getX2();
-					double ty2 = db.getY2();
-					double rx2 = tmpX2;
-					double ry2 = tmpY2;
-					
-					if (tx1 < rx1) tx1 = rx1;
-					if (ty1 < ry1) ty1 = ry1;
-					if (tx2 > rx2) tx2 = rx2;
-					if (ty2 > ry2) ty2 = ry2;
-					tx2 -= tx1;
-					ty2 -= ty1;
-			
-					//Van kozos metszete a most rajzolando negyzetnek es a mar lehelyezett negyzetnek
-					if( 
-							ty2 >= 0 && tx2 >= 0
-					){
-						
-						//Akkor a masodlagos kurzor marad a regi pozicioban
+					if( db.intersectsOrContains( new Block( tmpX1, tmpY1, tmpX2, tmpY2 ) )){
 						return;
 					}
-					
+			
 				}
 				
 			}
@@ -375,6 +456,12 @@ public class DrawnBlockCanvas extends MCanvas{
 			secondaryCursor.setPosition( x, y );
 		}
 		
+			
+		/**
+		 * Megjeleniti a kurzort es a szerkesztes alatt allo DrawnBlock-ot
+		 * az atmeneti retegben
+		 * 
+		 */
 		public void repaintSecondaryCursorAndDrawnBlockToDraw(){
 			
 			if( null != drawnBlockToDraw ){
@@ -493,6 +580,12 @@ public class DrawnBlockCanvas extends MCanvas{
 		
 	}
 	
+	/**
+	 * Az Masodlagos kurzor kirajzolasaert felelos osztaly
+	 * 
+	 * @author afoldvarszky
+	 *
+	 */
 	class TemporarySecondaryCursorPainterListener implements PainterListener{
 
 		@Override
@@ -510,6 +603,12 @@ public class DrawnBlockCanvas extends MCanvas{
 		
 	}
 	
+	/**
+	 * Masodlagos kurzort megvalosito osztaly
+	 * 
+	 * @author afoldvarszky
+	 *
+	 */
 	class SecondaryCursor{
 		PositionValue cursorPosition = null;
 		
@@ -555,4 +654,5 @@ public class DrawnBlockCanvas extends MCanvas{
 			
 		}
 	}
+
 }
