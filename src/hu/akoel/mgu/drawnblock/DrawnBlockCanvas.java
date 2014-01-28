@@ -255,14 +255,14 @@ repaintCoreCanvas();
 			//Ha mar elkezdtem rajzolni
 			if( drawnStarted ){
 				
-				if( secondaryCursor.getX() < secondaryStartCursorPosition.getX() ){
+				if( secondaryCursor.getX() <= secondaryStartCursorPosition.getX() ){
 					drawnBlockToDraw.setX2( secondaryStartCursorPosition.getX());					
 					drawnBlockToDraw.setX1( secondaryCursor.getX());
 				}else{
 					drawnBlockToDraw.setX2( secondaryCursor.getX());	
 				}
 				
-				if( secondaryCursor.getY() < secondaryStartCursorPosition.getY() ){
+				if( secondaryCursor.getY() <= secondaryStartCursorPosition.getY() ){
 					drawnBlockToDraw.setY2( secondaryStartCursorPosition.getY());					
 					drawnBlockToDraw.setY1( secondaryCursor.getY());
 				}else{
@@ -486,7 +486,7 @@ repaintCoreCanvas();
 			//
 			}else{
 				
-				if( x < secondaryStartCursorPosition.getX() ){
+				if( x <= secondaryStartCursorPosition.getX() ){
 					tmpX1 = x;
 					tmpX2 = secondaryStartCursorPosition.getX();
 				}else{					
@@ -494,7 +494,7 @@ repaintCoreCanvas();
 					tmpX2 = x;
 				}
 				
-				if( y < secondaryStartCursorPosition.getY() ){
+				if( y <= secondaryStartCursorPosition.getY() ){
 					tmpY1 = y;
 					tmpY2 = secondaryStartCursorPosition.getY();
 				}else{					
