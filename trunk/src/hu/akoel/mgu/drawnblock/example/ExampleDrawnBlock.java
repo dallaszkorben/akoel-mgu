@@ -1,4 +1,4 @@
-package hu.akoel.mgy.drawnblock.example;
+package hu.akoel.mgu.drawnblock.example;
 
 
 import hu.akoel.mgu.PositionChangeListener;
