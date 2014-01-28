@@ -65,7 +65,7 @@ public class Block {
 		tx2 -= tx1;
 		ty2 -= ty1;
 
-		if( ty2 >= 0 && tx2 >= 0 ){
+		if( ty2 > 0 && tx2 > 0 ){
 			return true;
 		}else{
 			return false;
