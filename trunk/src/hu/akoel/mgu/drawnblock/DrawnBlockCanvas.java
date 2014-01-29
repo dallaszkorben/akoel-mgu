@@ -25,6 +25,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	private Stroke basicStroke = new BasicStroke();
 	
+	private DrawnBlockFactory drawnBlockFactory;
+	
 	private ArrayList<DrawnBlock> drawnBlockList = new ArrayList<DrawnBlock>();
 	private ArrayList<DrawnBlock> temporaryDrawnBlockList = new ArrayList<DrawnBlock>();
 	
@@ -68,6 +70,10 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	public boolean needFocus(){
 		return needFocus;
+	}
+	
+	public void setDrawnBlockFactory( DrawnBlockFactory drawnBlockFactory ){
+		this.drawnBlockFactory = drawnBlockFactory;
 	}
 	
 	/**
@@ -168,8 +174,8 @@ public class DrawnBlockCanvas extends MCanvas{
 		public void mousePressed(MouseEvent e) {
 			
 			//Ha a baloldali egergombot nyomtam es meg nem kezdtem el rajzolni
-			if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted ){
-
+			if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted && null != drawnBlockFactory ){
+				
 				//A kurzor pozicioja
 				secondaryStartCursorPosition.setX( secondaryCursor.getX() );
 				secondaryStartCursorPosition.setY( secondaryCursor.getY() );
@@ -177,8 +183,8 @@ public class DrawnBlockCanvas extends MCanvas{
 				drawnStarted = true;
 				
 				//A szerkesztendo DrawnBlock legyartasa
-				drawnBlockToDraw = new DrawnBlock(Status.INPROCESS, secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY(), secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY());
-				
+				drawnBlockToDraw = drawnBlockFactory.getNewDrawnBlock( Status.INPROCESS, secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY() ); 
+						
 				//Atmeneti listaba helyezi a most rajzolas alatt levo DrawnBlock-ot
 				addTemporaryDrawnBlock( drawnBlockToDraw );
 
@@ -255,6 +261,9 @@ repaintCoreCanvas();
 			//Ha mar elkezdtem rajzolni
 			if( drawnStarted ){
 				
+				//
+				// Sorba rendezi a koordinatakat
+				//
 				if( secondaryCursor.getX() <= secondaryStartCursorPosition.getX() ){
 					drawnBlockToDraw.setX2( secondaryStartCursorPosition.getX());					
 					drawnBlockToDraw.setX1( secondaryCursor.getX());
@@ -554,8 +563,6 @@ repaintCoreCanvas();
 		
 	}
 	
-	
-
 
 	
 	
@@ -609,6 +616,8 @@ repaintCoreCanvas();
 	}
 */	
 
+	
+	
 	/**
 	 * DrawnBlock-ok kirajzolasaert felelos osztaly
 	 * 			
