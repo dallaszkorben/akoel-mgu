@@ -342,6 +342,12 @@ repaintCoreCanvas();
 			//
 			// DrawnBlock-ok oldalvonalahoz probalja igazitani a masodlagos kurzor poziciojat
 			//
+			// -Vegig megy minden statikusan lehelyezett DrawnBlock-on
+			// -Megnezi, hogy valamelyik oldalahoz, vagy az oldalanak meghosszabbitasahoz eleg
+			//  kozel van-e a kurzor
+			// -X es Y iranyba a Kurzorhoz a legkozelebb levo oldalhoz (ha az adott kozelsegen belul van)
+			//  igazitja a Masodlagos Kurzort
+			//
 			//-------------------------------------------------------------------------------
 			int delta = 15;
 			double dx = getWorldXLengthByPixel( delta );
@@ -356,9 +362,8 @@ repaintCoreCanvas();
 				//Ha megfelelo kozelsegben vagyok az egyik lehelyezett DrawnBlock-hoz. 
 				//if( db.intersects( new Block( x-dx, y-dy, x+dx, y+dy) ) ){
 					
-					
 					//Bal oldalrol kozeliti a DrawnBlock balo ldalat
-					if( ( db.getX1() - x ) >= 0 && ( db.getX1() - x ) <= dx ){
+					if( ( db.getX1() - x ) > 0 && ( db.getX1() - x ) < dx ){
 						
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( db.getX1() - x ) < minDX ){
@@ -367,7 +372,7 @@ repaintCoreCanvas();
 						}
 						
 					//!!! Bal oldalrol kozeliti a DrawnBlock jobboldalat !!!
-					}else if( ( db.getX2() - x ) >= 0 && ( db.getX2() - x ) <= dx ){
+					}else if( ( db.getX2() - x ) > 0 && ( db.getX2() - x ) < dx ){
 							
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( db.getX2() - x ) < minDX ){
@@ -376,7 +381,7 @@ repaintCoreCanvas();
 						}
 						
 					//Jobb oldalrol kozeliti a DrawnBlock jobb oldalat
-					}else if( ( x - db.getX2() ) >= 0 && ( x - db.getX2() ) <= dx ){
+					}else if( ( x - db.getX2() ) > 0 && ( x - db.getX2() ) < dx ){
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( x - db.getX2() ) < minDX ){
@@ -385,7 +390,7 @@ repaintCoreCanvas();
 						}
 					
 					//!!! Jobb oldalrol kozeliti a DrawnBlock bal oldalat !!!
-					}else if( ( x - db.getX1() ) >= 0 && ( x - db.getX1() ) <= dx ){
+					}else if( ( x - db.getX1() ) > 0 && ( x - db.getX1() ) < dx ){
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( x - db.getX1() ) < minDX ){
@@ -395,7 +400,7 @@ repaintCoreCanvas();
 					}
 					
 					//Fentrol kozeliti a DrawnBlock tetejet
-					if( ( y - db.getY2() ) >= 0 && ( y - db.getY2() ) <= dy ){
+					if( ( y - db.getY2() ) > 0 && ( y - db.getY2() ) < dy ){
 						
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( y - db.getY2() ) < minDY ){
@@ -404,7 +409,7 @@ repaintCoreCanvas();
 						}
 					
 					//!!! Fentrol kozeliti a DrawBlock aljat !!!
-					}else if( ( y - db.getY1() ) >= 0 && ( y - db.getY1() ) <= dy ){
+					}else if( ( y - db.getY1() ) > 0 && ( y - db.getY1() ) < dy ){
 						
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( y - db.getY1() ) < minDY ){
@@ -413,7 +418,7 @@ repaintCoreCanvas();
 						}						
 					
 					//Alulrol kozeliti a DrawnBlock aljat
-					}else if( ( db.getY1() - y ) >= 0 && ( db.getY1() - y ) <= dy ){
+					}else if( ( db.getY1() - y ) > 0 && ( db.getY1() - y ) < dy ){
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( db.getY1() - y ) < minDY ){
@@ -422,7 +427,7 @@ repaintCoreCanvas();
 						}						
 					
 					//!!! Alulrol kozeliti a DrawnBlock tetejet !!!
-					}else if( ( db.getY2() - y ) >= 0 && ( db.getY2() - y ) <= dy ){
+					}else if( ( db.getY2() - y ) > 0 && ( db.getY2() - y ) < dy ){
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi
 						if( ( db.getY2() - y ) < minDY ){
@@ -433,7 +438,10 @@ repaintCoreCanvas();
 				//}				
 			}
 			
-			//Van olyan oldal amihez igazitani lehet
+			//
+			// Most vegzi el a kurzor leendo uj koordinatainak modositasat. 
+			// Meg nem tolti be a Masodlagos Kurzorba
+			//
 			//if( null != arrange ){
 				if( null != arrange.getPositionX() ){
 					x = arrange.getPositionX();
@@ -456,6 +464,7 @@ repaintCoreCanvas();
 			//
 			// Ha meg nem kezdodott el a rajzolas, szabadon mozgo kurzor
 			//
+//TODO itt meg kellene oldani, hogy ha ket egymast erinto blokk koze kerulne, az nem OK				
 			if( !drawnStarted ){
 
 				//Megnezi, hogy az aktualis kurzor egy lehelyezett DrawnBlock-ra esik-e
@@ -486,6 +495,9 @@ repaintCoreCanvas();
 			//
 			}else{
 				
+				//
+				// A feltetelezett uj DrawnBlock koordinatainak nagysag szerinti rendezese
+				//
 				if( x <= secondaryStartCursorPosition.getX() ){
 					tmpX1 = x;
 					tmpX2 = secondaryStartCursorPosition.getX();
@@ -502,10 +514,13 @@ repaintCoreCanvas();
 					tmpY2 = y;
 				}
 				
-				//Megnezi, hogy a lehelyezendo DrawnBlock fedesbe kerul-e egy mar lehelyezett DrawnBlock-kal
+				// Vegig a lehelyezett DrawnBlock-okon
 				for( DrawnBlock db: drawnBlockList ){
 					
+					//Ha a most szerkesztett DrawnBlock fedesbe kerulne egy mar lehelyezett DrawnBlock-kal
 					if( db.intersectsOrContains( new Block( tmpX1, tmpY1, tmpX2, tmpY2 ) )){
+						
+						//Akkor marad a regi kurzorpozicio
 						return;
 					}
 			
