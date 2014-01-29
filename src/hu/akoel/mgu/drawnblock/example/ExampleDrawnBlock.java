@@ -8,6 +8,7 @@ import hu.akoel.mgu.crossline.CrossLine;
 import hu.akoel.mgu.drawnblock.DrawnBlock;
 import hu.akoel.mgu.drawnblock.DrawnBlockCanvas;
 import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
+import hu.akoel.mgu.drawnblock.DrawnBlockFactory;
 import hu.akoel.mgu.example.CanvasControl;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
@@ -80,9 +81,6 @@ public class ExampleDrawnBlock extends JFrame {
 	
 	private CanvasControl canvasControl;
 	
-	private DrawnBlock drawnBlock;
-
-	
 	public static void main(String[] args) {		
 		new ExampleDrawnBlock();
 	}
@@ -90,7 +88,7 @@ public class ExampleDrawnBlock extends JFrame {
 	public ExampleDrawnBlock() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("Example :: Sprite");
+		this.setTitle("Example :: DrawnBlock");
 		this.setUndecorated(false);
 		this.setSize(700, 700);
 		this.createBufferStrategy(1);
@@ -135,29 +133,37 @@ public class ExampleDrawnBlock extends JFrame {
 		canvasControl = new CanvasControl( myCanvas, myCrossLine, myGrid, myAxis, myScale );
 
 		//
-		//Elhelyezi az eloterbe a Sprite-okat
+		//Elhelyezi a gombokat
 		//
 		JButton commandButtonAddBuildingMaterial = new JButton("add Building Material");
 		commandButtonAddBuildingMaterial.addActionListener(new ActionListener(){
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-	
-				drawnBlock = new DrawnBlock( Status.INPROCESS, 0,0,0,0);
-			
-				//A Sprite-ok elhelyezese a Canvas-on	
-//				myCanvas.addSprite(baseSprite);	
-						
-				//A Canvas ujrarajzolasa, az uj Sprite megjelenites miatt
-//				myCanvas.revalidateAndRepaintCoreCanvas();
+
+				DrawnBlockFactory dbf = new BuildingMaterialFactory();
+				myCanvas.setDrawnBlockFactory( dbf );
 				
 			}
 		});
-		
+
+		JButton commandButtonAddInsulation = new JButton("add Insulation");
+		commandButtonAddInsulation.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				DrawnBlockFactory dbf = new InsulationFactory();
+				myCanvas.setDrawnBlockFactory( dbf );
+				
+			}
+		});
+
 		//Parancsgomb panel
 		JPanel commandButtonPanel = new JPanel();
 		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
 		commandButtonPanel.add(commandButtonAddBuildingMaterial );
+		commandButtonPanel.add(commandButtonAddInsulation );
 //		commandButtonPanel.add(commandButtonAddHorizontal);
 //		commandButtonPanel.add(commandButtonAddDirectHorizontal);
 //		commandButtonPanel.add(commandButtonAddVertical);
@@ -191,6 +197,36 @@ public class ExampleDrawnBlock extends JFrame {
 		
 		this.setVisible(true);		
 
+	}
+	
+	//
+	//
+	// Epitoanyagot legyarto osztaly
+	//
+	//
+	class BuildingMaterialFactory implements DrawnBlockFactory{
+
+		@Override
+		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
+			
+			return new BuildingMaterialBlock( status , x1, y1, x1, y1 );
+		}
+		
+	}
+	
+	//
+	//
+	// Szigetelest legyarto osztaly
+	//
+	//
+	class InsulationFactory implements DrawnBlockFactory{
+
+		@Override
+		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
+			
+			return new InsulationBlock( status , x1, y1, x1, y1 );
+		}
+		
 	}
 }
 

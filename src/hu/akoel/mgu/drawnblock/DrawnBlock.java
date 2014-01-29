@@ -7,7 +7,7 @@ import java.awt.Stroke;
 import hu.akoel.mgu.MGraphics;
 
 
-public  class DrawnBlock extends Block{
+public abstract class DrawnBlock extends Block{
 	
 	public static enum Status{
 		NORMAL,
@@ -51,23 +51,75 @@ public  class DrawnBlock extends Block{
 		this.status = status;
 		
 		if( status.equals( Status.NORMAL ) ){
-			color = normalColor;
-			backgroundColor = normalBackgroundColor;
-			stroke = normalStroke;
+			color = getNormalColor();
+			backgroundColor = getNormalBackgroundColor();
+			stroke = getNormalStroke();
 		}else if( status.equals( Status.SELECTED ) ){
-			color = selectedColor;
-			backgroundColor = selectedBackgroundColor;
-			stroke = selectedStroke;
+			color = getSelectedColor();
+			backgroundColor = getSelectedBackgroundColor();
+			stroke = getSelectedStroke();
 		}else if( status.equals( Status.INFOCUS ) ){
-			color = infocusColor;
-			backgroundColor = infocusBackgroundColor;
-			stroke = infocusStroke;
+			color = getInfocusColor();
+			backgroundColor = getInfocusBackgroundColor();
+			stroke = getInfocusStroke();
 		}else if( status.equals( Status.INPROCESS ) ){
-			color = inprocessColor;
-			backgroundColor = inprocessBackgroundColor;
-			stroke = inprocessStroke;
+			color = getInprocessColor();
+			backgroundColor = getInprocessBackgroundColor();
+			stroke = getInprocessStroke();
 		}
 
+	}
+
+	public void refreshStatus(){
+		setStatus( status );
+	}	
+	
+	public Color getNormalColor() {
+		return normalColor;
+	}
+
+	public Stroke getNormalStroke() {
+		return normalStroke;
+	}
+
+	public Color getNormalBackgroundColor() {
+		return normalBackgroundColor;
+	}
+
+	public Color getSelectedColor() {
+		return selectedColor;
+	}
+
+	public Stroke getSelectedStroke() {
+		return selectedStroke;
+	}
+
+	public Color getSelectedBackgroundColor() {
+		return selectedBackgroundColor;
+	}
+
+	public Color getInfocusColor() {
+		return infocusColor;
+	}
+
+	public Stroke getInfocusStroke() {
+		return infocusStroke;
+	}
+
+	public Color getInfocusBackgroundColor() {
+		return infocusBackgroundColor;
+	}
+
+	public Color getInprocessColor() {
+		return inprocessColor;
+	}
+
+	public Stroke getInprocessStroke() {
+		return inprocessStroke;
+	}
+
+	public Color getInprocessBackgroundColor() {
+		return inprocessBackgroundColor;
 	}
 
 	public void setNormal( Color color, Stroke stroke, Color backgroundColor ){
@@ -75,7 +127,7 @@ public  class DrawnBlock extends Block{
 		this.normalStroke = stroke;
 		this.normalBackgroundColor = backgroundColor;
 		
-		setStatus( this.status );
+		refreshStatus();
 	}
 
 	public void setSelected( Color color, Stroke stroke, Color backgroundColor ){
@@ -83,7 +135,7 @@ public  class DrawnBlock extends Block{
 		this.selectedStroke = stroke;
 		this.selectedBackgroundColor = backgroundColor;
 		
-		setStatus( this.status );
+		refreshStatus();
 	}
 	
 	public void setInfocus( Color color, Stroke stroke, Color backgroundColor ){
@@ -91,7 +143,7 @@ public  class DrawnBlock extends Block{
 		this.infocusStroke = stroke;
 		this.infocusBackgroundColor = backgroundColor;
 		
-		setStatus( this.status );
+		refreshStatus();
 	}
 
 	public void setInprocess( Color color, Stroke stroke, Color backgroundColor ){
@@ -99,7 +151,7 @@ public  class DrawnBlock extends Block{
 		this.inprocessStroke = stroke;
 		this.inprocessBackgroundColor = backgroundColor;
 		
-		setStatus( this.status );
+		refreshStatus();
 	}
 
 	public void draw( MGraphics g2 ){
