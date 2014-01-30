@@ -209,7 +209,7 @@ public class ExampleDrawnBlock extends JFrame {
 		@Override
 		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
 			
-			return new BuildingMaterialBlock( status , x1, y1, x1, y1 );
+			return new BuildingMaterialBlock( status , x1, y1 );
 		}
 		
 	}
@@ -224,7 +224,7 @@ public class ExampleDrawnBlock extends JFrame {
 		@Override
 		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
 			
-			return new InsulationBlock( status , x1, y1, x1, y1 );
+			return new InsulationBlock( status , x1, y1, null, 3.0, null, 0.0 );
 		}
 		
 	}

@@ -3,6 +3,7 @@ package hu.akoel.mgu.drawnblock;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -260,24 +261,10 @@ repaintCoreCanvas();
 			
 			//Ha mar elkezdtem rajzolni
 			if( drawnStarted ){
-				
-				//
-				// Sorba rendezi a koordinatakat
-				//
-				if( secondaryCursor.getX() <= secondaryStartCursorPosition.getX() ){
-					drawnBlockToDraw.setX2( secondaryStartCursorPosition.getX());					
-					drawnBlockToDraw.setX1( secondaryCursor.getX());
-				}else{
-					drawnBlockToDraw.setX2( secondaryCursor.getX());	
-				}
-				
-				if( secondaryCursor.getY() <= secondaryStartCursorPosition.getY() ){
-					drawnBlockToDraw.setY2( secondaryStartCursorPosition.getY());					
-					drawnBlockToDraw.setY1( secondaryCursor.getY());
-				}else{
-					drawnBlockToDraw.setY2( secondaryCursor.getY());
-				}
-				
+	
+				// DrawnBlock meretet megvaltoztatja - automatikusan sorba rendezi a koordinatakat x1 <= x2, y1 <= y2
+				drawnBlockToDraw.changeSize( secondaryCursor.getX(), secondaryCursor.getY() );
+			
 				//Elhelyezni a temporary listaban a most szerkesztendo DrawnBlock-ot
 				addTemporaryDrawnBlock( drawnBlockToDraw );
 			}
@@ -527,7 +514,7 @@ repaintCoreCanvas();
 				for( DrawnBlock db: drawnBlockList ){
 					
 					//Ha a most szerkesztett DrawnBlock fedesbe kerulne egy mar lehelyezett DrawnBlock-kal
-					if( db.intersectsOrContains( new Block( tmpX1, tmpY1, tmpX2, tmpY2 ) )){
+					if( db.intersectsOrContains( new Rectangle.Double( tmpX1, tmpY1, tmpX2-tmpX1, tmpY2-tmpY1 ) )){
 						
 						//Akkor marad a regi kurzorpozicio
 						return;
@@ -536,6 +523,17 @@ repaintCoreCanvas();
 				}
 				
 			}
+			
+			
+			//------------------------------------------------
+			//
+			// A szerkesztendo elem megengedi-e az uj poziciot
+			//
+			//-------------------------------------------------
+			if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){
+				return;				
+			}
+			
 			
 			//A Masodlagos kurzor poziciojanak beallitasa
 			secondaryCursor.setPosition( x, y );
