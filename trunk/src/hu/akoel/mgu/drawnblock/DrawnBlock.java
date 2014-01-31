@@ -332,6 +332,31 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double{
 		double ry1 = block2.getY();
 		double rx2 = block2.getX() + block2.getWidth();
 		double ry2 = block2.getY() + block2.getHeight();
+	
+		
+		if( 
+				( 
+						( rx1 >= tx1 && rx2 <= tx2 && ( ( rx1 != tx1 || rx2 != tx1 ) && ( rx1 != tx2 || rx2 != tx2 ) ) ) || 
+						( tx1 >= rx1 && tx2 <= rx2 ) || 
+						( rx1 < tx1 && rx2 < tx2 ) || 
+						( rx1 < tx2 && rx2 > tx2 ) 
+				) &&
+				
+				
+				( ( ry1 >= ty1 && ry2 <= ty2 && ( ( ry1 == ty1 || ry2 != ty1 ) && ( ry1 != ty2 || ry2 != ty2 ) ) ) || ( ty1 >= ry1 && ty2 <= ry2 ) || ( ry1 < ty1 && ry2 < ty2 ) || ( ry1 < ty2 && ry2 > ty2 ) )
+				
+//				( ( rx1 >= tx1 && rx2 <= tx2 && !( ( rx1 == tx1 && rx2 == tx1 ) || ( rx1 == tx2 && rx2 == tx2 ) ) ) || ( tx1 >= rx1 && tx2 <= rx2 ) || ( rx1 < tx1 && rx2 < tx2 ) || ( rx1 < tx2 && rx2 > tx2 ) ) &&
+//				( ( ry1 >= ty1 && ry2 <= ty2 && !( ( ry1 == ty1 && ry2 == ty1 ) || ( ry1 == ty2 && ry2 == ty2 ) ) ) || ( ty1 >= ry1 && ty2 <= ry2 ) || ( ry1 < ty1 && ry2 < ty2 ) || ( ry1 < ty2 && ry2 > ty2 ) )
+//				( ( rx1 > tx1 && rx1 < tx2 ) || ( rx2 < tx2 && rx2 > tx1 ) ) &&
+//				( ( ry1 > ty1 && ry1 < ty2 ) || ( rx2 < tx2 && rx2 > tx1 ) )
+	
+		){
+			return true;
+		}
+		
+		return false;
+		
+/*		
 		
 		if (tx1 < rx1) tx1 = rx1;
 		if (ty1 < ry1) ty1 = ry1;
@@ -348,7 +373,7 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double{
 		}else{
 			return false;
 		}
-		
+*/		
 	}
 	
 	public boolean intersects( java.awt.geom.Rectangle2D.Double block2 ) {
