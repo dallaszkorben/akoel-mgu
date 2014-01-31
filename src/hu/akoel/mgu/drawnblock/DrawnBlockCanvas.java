@@ -38,7 +38,36 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	private boolean needFocus = true;
 	
+	private boolean neededSnapSideExtention = true;
+	private boolean neededSnapGrid = true;
 
+	/**
+	 * Engedelyezi a masodlagos kurzor legkozelebbi DrawnBlock oldalhoz, vagy annak
+	 * meghosszabbitasahoz valo igazitasat
+	 * 
+	 * @param needed
+	 */
+	public void setNeededSnapSideExtention( boolean needed ){
+		this.neededSnapSideExtention = needed;
+	}
+	
+	public boolean getNeededSnapSideExtention(){
+		return neededSnapSideExtention;
+	}
+
+	/**
+	 * Engedelyezi a masodlagos kurzor legkozelebbi Grid ponthoz valo igazitasat
+	 * 
+	 * @param needed
+	 */
+	public void setNeededSnapGrid( boolean needed ){
+		this.neededSnapGrid = needed;
+	}
+	
+	public boolean getNeededSnapGrid(){
+		return neededSnapGrid;
+	}
+	
 	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
 		super(borderType, background, possiblePixelPerUnits, positionToMiddle );		
 		commonConstructor();
