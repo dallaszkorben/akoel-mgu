@@ -42,7 +42,7 @@ public class MCanvas extends JPanel {
 	private PossiblePixelPerUnits possiblePixelPerUnits = null;
 	
 	private ArrayList<PixelPerUnitChangeListener> pixelPerUnitChangeListenerList = new ArrayList<PixelPerUnitChangeListener>();
-	private ArrayList<PositionChangeListener> positionChangeListenerList = new ArrayList<PositionChangeListener>();
+	private ArrayList<CursorPositionChangeListener> positionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
 	
 	//PERMANENT listak
 	ArrayList<PainterListener> highestList = new ArrayList<PainterListener>();
@@ -93,8 +93,7 @@ public class MCanvas extends JPanel {
 
 		}else{
 			setWasTransferedToMiddle(false);
-		}
-		
+		}		
 	}
 	
 	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, SizeValue boundSize ){
@@ -126,7 +125,7 @@ public class MCanvas extends JPanel {
 		this.pixelPerUnitChangeListenerList.add(listener);
 	}
 	
-	public void addPositionChangeListener( PositionChangeListener positionChangeListener ){
+	public void addCursorPositionChangeListener( CursorPositionChangeListener positionChangeListener ){
 		positionChangeListenerList.add(positionChangeListener);
 	}
 	
@@ -641,7 +640,7 @@ public class MCanvas extends JPanel {
 		@Override
 		public void mouseMoved(MouseEvent e) {
 			
-			for( PositionChangeListener listener : positionChangeListenerList){
+			for( CursorPositionChangeListener listener : positionChangeListenerList){
 				listener.getWorldPosition( canvas.getWorldXByPixel(e.getX()), canvas.getWorldYByPixel(e.getY()));
 			}			
 		}
@@ -866,6 +865,7 @@ public class MCanvas extends JPanel {
 	
 	
 	/**
+	 * A rajzolo felulet maga
 	 * 
 	 * @author akoel
 	 *

@@ -2,7 +2,7 @@ package hu.akoel.mgu.sprite.example;
 
 
 import hu.akoel.mgu.MControlPanel;
-import hu.akoel.mgu.PositionChangeListener;
+import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
@@ -406,7 +406,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		}
 		
 		// Kurzor pozicio figyelo
-		myCanvas.addPositionChangeListener( new PositionChangeListener() {
+		myCanvas.addCursorPositionChangeListener( new CursorPositionChangeListener() {
 			@Override
 			public void getWorldPosition(double xPosition, double yPosition) {
 				DecimalFormat df = new DecimalFormat("#.0000");				

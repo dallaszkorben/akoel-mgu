@@ -2,7 +2,7 @@ package hu.akoel.mgu.drawnblock.example;
 
 
 import hu.akoel.mgu.MControlPanel;
-import hu.akoel.mgu.PositionChangeListener;
+import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
@@ -93,6 +93,10 @@ public class ExampleDrawnBlock extends JFrame {
 			
 		myScale = new Scale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
 
+		//Kiegeszito beallitasok
+		myCanvas.setNeededSnapGrid(true, myGrid);
+		myCanvas.setNeededSnapSideExtention( true );
+		
 		//-----------------
 		//
 		// K-i oldali elem
@@ -104,6 +108,7 @@ public class ExampleDrawnBlock extends JFrame {
 		controlPanel.addElement( myGrid.getControl( myScale ) );
 		controlPanel.addElement( myCrossLine.getControl( myScale ) );
 		controlPanel.addElement( myAxis.getControl( ) );
+		controlPanel.addElement( myScale.getControl( ) );
 				
 		//------------------------------
 		//
@@ -155,7 +160,7 @@ public class ExampleDrawnBlock extends JFrame {
 		}
 		
 		// Kurzor pozicio figyelo
-		myCanvas.addPositionChangeListener( new PositionChangeListener() {
+		myCanvas.addCursorPositionChangeListener( new CursorPositionChangeListener() {
 			@Override
 			public void getWorldPosition(double xPosition, double yPosition) {
 				DecimalFormat df = new DecimalFormat("#.0000");				

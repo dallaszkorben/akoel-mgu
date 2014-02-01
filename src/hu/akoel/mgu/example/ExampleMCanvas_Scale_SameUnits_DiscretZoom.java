@@ -5,7 +5,7 @@ import hu.akoel.mgu.MControlPanel;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
-import hu.akoel.mgu.PositionChangeListener;
+import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
@@ -202,7 +202,7 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		}
 		
 		// Kurzor pozicio figyelo
-		myCanvas.addPositionChangeListener( new PositionChangeListener() {
+		myCanvas.addCursorPositionChangeListener( new CursorPositionChangeListener() {
 			@Override
 			public void getWorldPosition(double xPosition, double yPosition) {
 				DecimalFormat df = new DecimalFormat("#.0000");				
