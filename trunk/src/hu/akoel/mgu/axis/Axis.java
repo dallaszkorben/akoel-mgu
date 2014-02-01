@@ -10,9 +10,23 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.math.BigDecimal;
+
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.border.TitledBorder;
 
 
 public class Axis {
@@ -356,6 +370,124 @@ public class Axis {
     	
     }
  	
+    public JPanel getControl( ){
+    	final JRadioButton lbAxisSelector = new JRadioButton( "LEFT BOTTOM", true);
+    	final JRadioButton rbAxisSelector = new JRadioButton( "RIGHT BOTTOM");
+    	final JRadioButton ltAxisSelector = new JRadioButton( "LEFT TOP");
+    	final JRadioButton rtAxisSelector = new JRadioButton( "RIGHT TOP");
+    	final JRadioButton zzAxisSelector = new JRadioButton( "ZERO ZERO");
+    	
+    	ActionListener axisSelectorActionListener = new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if( e.getSource() == lbAxisSelector){
+					Axis.this.setAxisPosition( AxisPosition.AT_LEFT_BOTTOM );				
+				}else if( e.getSource() == rbAxisSelector){
+					Axis.this.setAxisPosition( AxisPosition.AT_RIGHT_BOTTOM );
+				}else if( e.getSource() == ltAxisSelector){
+					Axis.this.setAxisPosition( AxisPosition.AT_LEFT_TOP );
+				}else if( e.getSource() == rtAxisSelector){
+					Axis.this.setAxisPosition( AxisPosition.AT_RIGHT_TOP );
+				}else if( e.getSource() == zzAxisSelector){
+					Axis.this.setAxisPosition( AxisPosition.AT_ZERO_ZERO );
+				}
+				Axis.this.refresh();
+			}
+		};
+		
+		ButtonGroup bg = new ButtonGroup();
+		
+		bg.add(lbAxisSelector);
+		lbAxisSelector.addActionListener(axisSelectorActionListener);
+		
+		bg.add(rbAxisSelector);
+		rbAxisSelector.addActionListener(axisSelectorActionListener);
+		
+		bg.add(ltAxisSelector);
+		ltAxisSelector.addActionListener(axisSelectorActionListener);
+		
+		bg.add(rtAxisSelector);
+		rtAxisSelector.addActionListener(axisSelectorActionListener);
+		
+		bg.add(zzAxisSelector);
+		zzAxisSelector.addActionListener(axisSelectorActionListener);
+		
+		//
+		//Axis ki/be kapcsolo
+		//
+		JCheckBox turnOnAxis = new JCheckBox("Turn On Axis");
+		turnOnAxis.setSelected(true);
+		turnOnAxis.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					Axis.this.turnOff();
+					lbAxisSelector.setEnabled(false);
+					rbAxisSelector.setEnabled(false);
+					ltAxisSelector.setEnabled(false);
+					rtAxisSelector.setEnabled(false);
+					zzAxisSelector.setEnabled(false);					
+				}else{
+					Axis.this.turnOn();
+					lbAxisSelector.setEnabled(true);
+					rbAxisSelector.setEnabled(true);
+					ltAxisSelector.setEnabled(true);
+					rtAxisSelector.setEnabled(true);
+					zzAxisSelector.setEnabled(true);
+				}
+				Axis.this.canvas.repaint();
+			}
+		});
+		
+		JPanel axisPanel = new JPanel();
+		axisPanel.setLayout(new GridBagLayout());
+		axisPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Axis", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints axisPanelConstraints = new GridBagConstraints();
+		
+		axisPanelConstraints.gridx = 0;
+		axisPanelConstraints.gridy = 0;
+		axisPanelConstraints.gridwidth = 2;
+		axisPanelConstraints.anchor = GridBagConstraints.WEST;
+		axisPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		axisPanelConstraints.weightx = 1;
+		axisPanelConstraints.anchor = GridBagConstraints.WEST;				
+		axisPanel.add(turnOnAxis, axisPanelConstraints);
+		
+		axisPanelConstraints.gridx = 0;
+		axisPanelConstraints.gridy = 1;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanelConstraints.weightx = 0;
+		axisPanel.add(new JLabel("     "), axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 1;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(lbAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 2;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(rbAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 3;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(ltAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 4;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(rtAxisSelector, axisPanelConstraints );
+		
+		axisPanelConstraints.gridx = 1;
+		axisPanelConstraints.gridy = 5;
+		axisPanelConstraints.gridwidth = 1;
+		axisPanel.add(zzAxisSelector, axisPanelConstraints );
+		
+		return axisPanel;
+    }
 }
 	
 
