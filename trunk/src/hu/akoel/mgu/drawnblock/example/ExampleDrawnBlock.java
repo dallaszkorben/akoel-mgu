@@ -27,6 +27,9 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
@@ -78,11 +81,11 @@ public class ExampleDrawnBlock extends JFrame {
 
 	public ExampleDrawnBlock() {
 		
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setTitle("Example :: DrawnBlock");
-		this.setUndecorated(false);
-		this.setSize(700, 700);
-		this.createBufferStrategy(1);
+		this.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+		this.setTitle( "Example :: DrawnBlock" );
+		this.setUndecorated( false );
+		this.setSize( 700, 700 );
+		this.createBufferStrategy( 1 );
 
 		myCanvas = new DrawnBlockCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
 	
@@ -94,6 +97,8 @@ public class ExampleDrawnBlock extends JFrame {
 			
 		myScale = new Scale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
 
+
+		
 		//-----------------
 		//
 		// K-i oldali elem
