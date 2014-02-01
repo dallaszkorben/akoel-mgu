@@ -42,6 +42,7 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	private boolean needFocus = true;
 	
+	private int snapDelta = 0;
 	private boolean neededSnapSideExtention = false;
 	private boolean neededSnapGrid = false;
 	private Grid myGrid;
@@ -72,6 +73,24 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	public boolean getNeededSnapGrid(){
 		return neededSnapGrid;
+	}
+	
+	/**
+	 * Beallitja hogy a Snap muvelet mekkora pixel tartomanyban mukodjon
+	 * 
+	 * @param delta
+	 */
+	public void setSnapDelta( int delta ){
+		this.snapDelta = delta;
+	}
+	
+	/**
+	 * Visszaadja a Snap muvelet tartomanyat
+	 * 
+	 * @return
+	 */
+	public int getSnapDelta(){
+		return this.snapDelta;
 	}
 	
 	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
@@ -224,6 +243,7 @@ public class DrawnBlockCanvas extends MCanvas{
 				secondaryStartCursorPosition.setX( secondaryCursor.getX() );
 				secondaryStartCursorPosition.setY( secondaryCursor.getY() );
 
+				//Jelzem, hogy elkezdodott a rajzolas
 				drawnStarted = true;
 				
 				//A szerkesztendo DrawnBlock legyartasa
@@ -232,6 +252,14 @@ public class DrawnBlockCanvas extends MCanvas{
 				//Atmeneti listaba helyezi a most rajzolas alatt levo DrawnBlock-ot
 				addTemporaryDrawnBlock( drawnBlockToDraw );
 
+			//Ha jobboldali egergombot nyomok miutan mar elkezdtem a rajzot
+			}else if( e.getButton() == MouseEvent.BUTTON3 && drawnStarted ){
+				
+				//Abbahagyja a rajzolast
+				drawnStarted = false;
+				
+				//Ujrarajzoltatom a Canvas-t az elkezdett DrawnBlock nelkul
+				revalidateAndRepaintCoreCanvas();
 			}
 
 //System.err.println("pressed");			
@@ -282,8 +310,7 @@ public class DrawnBlockCanvas extends MCanvas{
 			//Kirajzolja a masodlagos kurzort
 			addTemporarySecondaryCursor( secondaryCursor );
 			
-repaintCoreCanvas();
-//revalidateAndRepaintCoreCanvas();
+			repaintCoreCanvas();
 
 		}
 
@@ -316,8 +343,7 @@ repaintCoreCanvas();
 			addTemporarySecondaryCursor( secondaryCursor );
 			
 			//Kirajzolja az elhelyezett szerkesztedno DrawnBlock-ot es a masodlagos kurzort
-repaintCoreCanvas();
-//revalidateAndRepaintCoreCanvas();
+			repaintCoreCanvas();
 			
 		}
 
@@ -332,8 +358,7 @@ repaintCoreCanvas();
 			addTemporarySecondaryCursor( secondaryCursor );
 			
 			//Kirajzolja a masodlagos kurzort
-repaintCoreCanvas();
-//revalidateAndRepaintCoreCanvas();
+			repaintCoreCanvas();
 
 		}
 		
@@ -388,7 +413,7 @@ repaintCoreCanvas();
 			//  igazitja a Masodlagos Kurzort
 			//
 			//-------------------------------------------------------------------------------
-			int delta = 15;
+			int delta = getSnapDelta();
 			double dx = getWorldXLengthByPixel( delta );
 			double dy = getWorldXLengthByPixel( delta );
 			
@@ -488,8 +513,6 @@ repaintCoreCanvas();
 			//--------------------------
 			
 			if( getNeededSnapGrid() ){
-				//double xStart = (int)( ( x + (0.0001)*Math.signum(x) ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
-				//double yStart = (int)( ( y + (0.0001)*Math.signum(y) ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
 				
 				double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
 				double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
@@ -817,5 +840,7 @@ repaintCoreCanvas();
 			
 		}
 	}
+	
+	
 
 }

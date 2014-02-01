@@ -8,6 +8,7 @@ import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
 import hu.akoel.mgu.drawnblock.DrawnBlock;
 import hu.akoel.mgu.drawnblock.DrawnBlockCanvas;
+import hu.akoel.mgu.drawnblock.DrawnBlockSnapControl;
 import hu.akoel.mgu.drawnblock.DrawnBlockStatusPanel;
 import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import hu.akoel.mgu.drawnblock.DrawnBlockFactory;
@@ -93,10 +94,6 @@ public class ExampleDrawnBlock extends JFrame {
 			
 		myScale = new Scale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
 
-		//Kiegeszito beallitasok
-		myCanvas.setNeededSnapGrid(true, myGrid);
-		myCanvas.setNeededSnapSideExtention( true );
-		
 		//-----------------
 		//
 		// K-i oldali elem
@@ -108,7 +105,8 @@ public class ExampleDrawnBlock extends JFrame {
 		controlPanel.addElement( myGrid.getControl( myScale ) );
 		controlPanel.addElement( myCrossLine.getControl( myScale ) );
 		controlPanel.addElement( myAxis.getControl( ) );
-		controlPanel.addElement( myScale.getControl( ) );
+		//controlPanel.addElement( myScale.getControl( ) );		
+		controlPanel.addElement( (new DrawnBlockSnapControl(myCanvas, myGrid).getControl()));
 				
 		//------------------------------
 		//
