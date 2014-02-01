@@ -4,12 +4,29 @@ import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.MCanvas.Level;
+import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 
 public class Grid {
@@ -184,6 +201,205 @@ public class Grid {
 		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {	}
 		
+	}
+	
+	public JPanel getControl( Scale scale ){
+		JTextField gridXDeltaField;
+		JTextField gridYDeltaField;
+		
+		final JComboBox<String> gridTypeCombo;
+		final JComboBox<String> gridWidthCombo;
+		JComboBox<String> crossLineWidthCombo;
+		
+		gridXDeltaField = new JTextField();
+		gridXDeltaField.setColumns( 8 );
+		gridXDeltaField.setText( String.valueOf( this.getDeltaGridX() ) );
+		gridXDeltaField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( Grid.this.getDeltaGridX() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            Grid.this.setDeltaGridX( Double.valueOf( goodValue ) );
+	            Grid.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
+			}
+		});
+		
+		gridYDeltaField = new JTextField();
+		gridYDeltaField.setColumns( 8 );
+		gridYDeltaField.setText( String.valueOf( Grid.this.getDeltaGridY() ) );
+		gridYDeltaField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( Grid.this.getDeltaGridY() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            Grid.this.setDeltaGridY( Double.valueOf(goodValue));
+	            Grid.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
+			}
+		});
+		
+		String[] gridWidthElements = { "1", "3" };
+		gridWidthCombo = new JComboBox<String>(gridWidthElements);
+		gridWidthCombo.setSelectedIndex(0);
+		gridWidthCombo.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
+				String cmbType = (String) jcmbType.getSelectedItem();
+				
+				if( cmbType.equals( "1")){					
+					Grid.this.setWidthInPixel(1);
+				}else if( cmbType.equals( "3")){
+					Grid.this.setWidthInPixel(3);
+				}
+				Grid.this.canvas.revalidateAndRepaintCoreCanvas();
+			}
+		});		
+		
+		String[] gridTypeElements = { "Solid", "Dashed", "Cross", "Dot" };
+		gridTypeCombo = new JComboBox<String>(gridTypeElements);
+		gridTypeCombo.setSelectedIndex(3);
+		gridTypeCombo.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
+				String cmbType = (String) jcmbType.getSelectedItem();
+				
+				if( cmbType.equals( "Solid")){
+					Grid.this.setType( Grid.Type.SOLID );
+				}else if( cmbType.equals( "Dashed")){
+					Grid.this.setType( Grid.Type.DASHED );
+				}else if( cmbType.equals( "Cross")){
+					Grid.this.setType( Grid.Type.CROSS );
+				}else if( cmbType.equals( "Dot")){
+					Grid.this.setType( Grid.Type.DOT );
+				}
+				Grid.this.canvas.revalidateAndRepaintCoreCanvas();
+			}
+		});
+		
+		JCheckBox turnOnGrid = new JCheckBox("Turn On Grid");
+		turnOnGrid.setSelected(true);
+		turnOnGrid.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					Grid.this.turnOff();
+					gridTypeCombo.setEnabled(false);
+					gridWidthCombo.setEnabled(false);
+				}else{
+					Grid.this.turnOn();
+					gridTypeCombo.setEnabled(true);
+					gridWidthCombo.setEnabled(true);
+				}
+				Grid.this.canvas.repaint();
+			}
+		});
+		
+		
+		JPanel gridPanel = new JPanel();
+		gridPanel.setLayout(new GridBagLayout());
+		gridPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Grid", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints gridPanelConstraints = new GridBagConstraints();
+		
+		//1. sor - Turn on grid
+		gridPanelConstraints.gridx = 0;
+		gridPanelConstraints.gridy = 0;
+		gridPanelConstraints.gridwidth = 4;
+		gridPanelConstraints.anchor = GridBagConstraints.WEST;
+		gridPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(turnOnGrid, gridPanelConstraints);
+		
+		//2. sor - Type
+		gridPanelConstraints.gridx = 0;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add(new JLabel("     "),gridPanelConstraints );
+
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Type: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridTypeCombo, gridPanelConstraints);
+		 
+		//3. sor - Width
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Width: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridWidthCombo, gridPanelConstraints);
+		
+		gridPanelConstraints.gridx = 3;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add(new JLabel(" px"),gridPanelConstraints );
+		
+		//4. sor - Grid delta x
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Delta X: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridXDeltaField, gridPanelConstraints);
+				
+		gridPanelConstraints.gridx = 3;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel(" " + scale.getUnitX().getSign() ), gridPanelConstraints );	
+		
+		//5. sor - Grid delta y
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Delta Y: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add(gridYDeltaField, gridPanelConstraints);
+				
+		gridPanelConstraints.gridx = 3;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel(" " + scale.getUnitY().getSign() ), gridPanelConstraints );	
+		
+		return gridPanel;
 	}
 	
 }

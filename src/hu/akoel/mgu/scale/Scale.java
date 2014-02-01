@@ -12,7 +12,18 @@ import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.ZoomRateValue;
 import hu.akoel.mgu.values.Value;
 
+import java.awt.Color;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
+import javax.swing.InputVerifier;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 public class Scale {
 
@@ -217,6 +228,121 @@ public class Scale {
 		double scaleX = getScaleByPixelPerUnit(pixelPerCm.getX(), unit.getUnitX(), canvas.getPixelPerUnit().getX());
 		double scaleY = getScaleByPixelPerUnit(pixelPerCm.getY(), unit.getUnitY(), canvas.getPixelPerUnit().getY());
 		return new ScaleValue( scaleX, scaleY );
+	}
+	
+	public JPanel getControl(){
+		JTextField pixelPerCmField;	
+		JTextField zoomRateField;	
+		
+		int row = 0;
+		
+		//Pixel per cm
+		JLabel pixelPerCmLabel = new JLabel("1 cm = ");
+		JLabel pixelPerCmUnit = new JLabel( "px" );
+		pixelPerCmField = new JTextField();
+		pixelPerCmField.setColumns(8);
+		pixelPerCmField.setText(String.valueOf( Scale.this.getPixelPerCm().getX() ) );
+		pixelPerCmField.setInputVerifier(new InputVerifier() {
+			String goodValue = String.valueOf( Scale.this.getPixelPerCm().getX() );
+
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField) input;
+				String possibleValue = text.getText();
+				try {
+					Double.valueOf(possibleValue);
+					goodValue = possibleValue;
+				} catch (NumberFormatException e) {
+					text.setText(goodValue);
+					return false;
+				}
+				Scale.this.setPixelPerCm( new PixelPerCmValue( Double.valueOf(goodValue), Double.valueOf(goodValue) ) );				
+				Scale.this.canvas.revalidateAndRepaintCoreCanvas();
+				return true;
+			}
+		});
+		
+
+		
+		//Rate
+		JLabel zoomRateLabel = new JLabel("Zoom rate: ");
+		zoomRateField = new JTextField();
+		zoomRateField.setColumns(8);
+		zoomRateField.setText(String.valueOf( Scale.this.getZoomRate().getX() ) );
+		zoomRateField.setInputVerifier(new InputVerifier() {
+			String goodValue = String.valueOf( Scale.this.getZoomRate().getX() );
+
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField) input;
+				String possibleValue = text.getText();
+				try {
+					Double.valueOf(possibleValue);
+					goodValue = possibleValue;
+				} catch (NumberFormatException e) {
+					text.setText(goodValue);
+					return false;
+				}
+				Scale.this.setZoomRate( new ZoomRateValue( Double.valueOf(goodValue), Double.valueOf(goodValue) ) );				
+				return true;
+			}
+		});
+		
+		JPanel scalePanel = new JPanel();
+		scalePanel.setLayout(new GridBagLayout());
+		scalePanel.setBorder(BorderFactory.createTitledBorder( BorderFactory.createLineBorder(Color.black), "Scale", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints scaleConstraints = new GridBagConstraints();
+
+		// 1. sor - pixel per cm
+		row = 0;
+		scaleConstraints.gridx = 0;
+		scaleConstraints.gridy = row;
+		scaleConstraints.gridwidth = 1;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scaleConstraints.fill = GridBagConstraints.HORIZONTAL;
+		scaleConstraints.weightx = 0;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scalePanel.add(pixelPerCmLabel, scaleConstraints);
+
+		scaleConstraints.gridx = 1;
+		scaleConstraints.gridy = row;
+		scaleConstraints.gridwidth = 1;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scaleConstraints.fill = GridBagConstraints.HORIZONTAL;
+		scaleConstraints.weightx = 0;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scalePanel.add(pixelPerCmField, scaleConstraints);
+
+		scaleConstraints.gridx = 2;
+		scaleConstraints.gridy = row;
+		scaleConstraints.gridwidth = 1;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scaleConstraints.fill = GridBagConstraints.HORIZONTAL;
+		scaleConstraints.weightx = 0;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scalePanel.add(pixelPerCmUnit, scaleConstraints);
+
+		// 2. sor - rate
+		row++;
+		scaleConstraints.gridx = 0;
+		scaleConstraints.gridy = row;
+		scaleConstraints.gridwidth = 1;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scaleConstraints.fill = GridBagConstraints.HORIZONTAL;
+		scaleConstraints.weightx = 0;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scalePanel.add(zoomRateLabel, scaleConstraints);
+
+		scaleConstraints.gridx = 1;
+		scaleConstraints.gridy = row;
+		scaleConstraints.gridwidth = 1;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scaleConstraints.fill = GridBagConstraints.HORIZONTAL;
+		scaleConstraints.weightx = 0;
+		scaleConstraints.anchor = GridBagConstraints.WEST;
+		scalePanel.add(zoomRateField, scaleConstraints);
+		
+		return scalePanel;
 	}
 }
 

@@ -1,34 +1,26 @@
 package hu.akoel.mgu.drawnblock.example;
 
 
+import hu.akoel.mgu.MControlPanel;
 import hu.akoel.mgu.PositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
 import hu.akoel.mgu.drawnblock.DrawnBlock;
 import hu.akoel.mgu.drawnblock.DrawnBlockCanvas;
+import hu.akoel.mgu.drawnblock.DrawnBlockStatusPanel;
 import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import hu.akoel.mgu.drawnblock.DrawnBlockFactory;
-import hu.akoel.mgu.example.CanvasControl;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
-import hu.akoel.mgu.sprite.ChangeSizeListener;
-import hu.akoel.mgu.sprite.Magnet;
-import hu.akoel.mgu.sprite.MagnetType;
-import hu.akoel.mgu.sprite.RectangleElement;
-import hu.akoel.mgu.sprite.Sprite;
-import hu.akoel.mgu.sprite.SpriteCanvas;
 import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
 import hu.akoel.mgu.values.PositionValue;
-import hu.akoel.mgu.values.RangeValueInPixel;
-import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
 import hu.akoel.mgu.values.Value;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
@@ -79,8 +71,6 @@ public class ExampleDrawnBlock extends JFrame {
 	private double minScale = 0.5;
 	private double maxScale =  600;
 	
-	private CanvasControl canvasControl;
-	
 	public static void main(String[] args) {		
 		new ExampleDrawnBlock();
 	}
@@ -94,16 +84,7 @@ public class ExampleDrawnBlock extends JFrame {
 		this.createBufferStrategy(1);
 
 		myCanvas = new DrawnBlockCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
-		myCanvas.addPositionChangeListener( new PositionChangeListener() {
-			
-			@Override
-			public void getWorldPosition(double xPosition, double yPosition) {
-				DecimalFormat df = new DecimalFormat("#.0000");				
-				canvasControl.setStatusPanelXPosition( "x: " + df.format(xPosition));
-				canvasControl.setStatusPanelYPosition( "y: " + df.format(yPosition));				
-			}
-		});
-		
+	
 		myGrid = new Grid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
 		myCrossLine = new CrossLine( myCanvas, crossLinePosition, crossLineColor, crossLineWidthInPixel, crossLineLength, crossLinePainterPosition);
@@ -111,30 +92,24 @@ public class ExampleDrawnBlock extends JFrame {
 		myAxis = new Axis(myCanvas, axisPosition, axisColor, axisWidthInPixel, painterPosition);
 			
 		myScale = new Scale(myCanvas, pixelPerCm, unit, startScale, rate, minScale, maxScale);
-		myScale.addScaleChangeListener(new ScaleChangeListener() {
-			
-			@Override
-			public void getScale(Value scale) {
-				DecimalFormat df = new DecimalFormat("#.00");
-				if( myScale.getScale().getX() < 1.0 ){
-					canvasControl.setStatusPanelXScale( "xM=" + df.format(1/myScale.getScale().getX() ) + ":1" );
-				}else{
-					canvasControl.setStatusPanelXScale( "xM=1:" + df.format(myScale.getScale().getX() ) );
-				}
 
-				if( myScale.getScale().getY() < 1.0 ){
-					canvasControl.setStatusPanelYScale( "yM=" + df.format(1/myScale.getScale().getY() ) + ":1" );
-				}else{				
-					canvasControl.setStatusPanelYScale( "yM=1:" + df.format(myScale.getScale().getY() ) );
-				}
-			}
-		});
-		
-		canvasControl = new CanvasControl( myCanvas, myCrossLine, myGrid, myAxis, myScale );
-
+		//-----------------
 		//
-		//Elhelyezi a gombokat
+		// K-i oldali elem
 		//
+		// Vezerlopanel
+		//
+		//-----------------
+		MControlPanel controlPanel = new MControlPanel();
+		controlPanel.addElement( myGrid.getControl( myScale ) );
+		controlPanel.addElement( myCrossLine.getControl( myScale ) );
+		controlPanel.addElement( myAxis.getControl( ) );
+				
+		//------------------------------
+		//
+		// Parancsgomb panel a gombokkal
+		//
+		//------------------------------
 		JButton commandButtonAddBuildingMaterial = new JButton("add Building Material");
 		commandButtonAddBuildingMaterial.addActionListener(new ActionListener(){
 			
@@ -159,51 +134,85 @@ public class ExampleDrawnBlock extends JFrame {
 			}
 		});
 
-		//Parancsgomb panel
 		JPanel commandButtonPanel = new JPanel();
 		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
 		commandButtonPanel.add(commandButtonAddBuildingMaterial );
 		commandButtonPanel.add(commandButtonAddInsulation );
-//		commandButtonPanel.add(commandButtonAddHorizontal);
-//		commandButtonPanel.add(commandButtonAddDirectHorizontal);
-//		commandButtonPanel.add(commandButtonAddVertical);
-//		commandButtonPanel.add(commandButtonAddDirectVertical);
-//		commandButtonPanel.add(commandButtonReport);
 		
+		//-------------
+		//
+		// Statuszpanel
+		//
+		//-------------
+		final DrawnBlockStatusPanel statusPanel = new DrawnBlockStatusPanel();
+
+		// Kezdo ertekek kiirasa
+		DecimalFormat df = new DecimalFormat("#.00");
+		if( myScale.getScale().getX() < 1.0 ){
+			statusPanel.setScale( "M=" + df.format(1/myScale.getScale().getX() ) + ":1" );
+		}else{
+			statusPanel.setScale( "M=1:" + df.format(myScale.getScale().getX() ) );
+		}
+		
+		// Kurzor pozicio figyelo
+		myCanvas.addPositionChangeListener( new PositionChangeListener() {
+			@Override
+			public void getWorldPosition(double xPosition, double yPosition) {
+				DecimalFormat df = new DecimalFormat("#.0000");				
+				statusPanel.setXPosition( "x: " + df.format(xPosition));
+				statusPanel.setYPosition( "y: " + df.format(yPosition));				
+			}
+		});
+		
+		// Meretarany figyelo
+		myScale.addScaleChangeListener(new ScaleChangeListener() {		
+			@Override
+			public void getScale(Value scale) {
+				DecimalFormat df = new DecimalFormat("#.00");
+				if( myScale.getScale().getX() < 1.0 ){
+					statusPanel.setScale( "M=" + df.format(1/myScale.getScale().getX() ) + ":1" );
+				}else{
+					statusPanel.setScale( "M=1:" + df.format(myScale.getScale().getX() ) );
+				}
+			}
+		});
+		
+		//--------------------------------------
+		//
+		// D-i oldali elemek
+		//
+		// Tartalmazzak a parancsgombi panelt es
+		// a status panel-t
+		//
+		//--------------------------------------
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS	));
 		
-		southPanel.add(commandButtonPanel);
-		southPanel.add( canvasControl.getStatusPanel() );
+		southPanel.add( commandButtonPanel );
+		southPanel.add( statusPanel );
 	
+		//--------------------------------
+		//
+		// Panelek elhelyezese az ablakban
+		//
+		//--------------------------------
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
 		this.getContentPane().add(southPanel, BorderLayout.SOUTH);
-		this.getContentPane().add(canvasControl.getControlPanel(), BorderLayout.EAST);
-
-		//Kezdo ertekek kiirasa
-		DecimalFormat df = new DecimalFormat("#.00");
-		if( myScale.getScale().getX() < 1.0 ){
-			canvasControl.setStatusPanelXScale( "xM=" + df.format(1/myScale.getScale().getX() ) + ":1" );
-		}else{
-			canvasControl.setStatusPanelXScale( "xM=1:" + df.format(myScale.getScale().getX() ) );
-		}
-
-		if( myScale.getScale().getY() < 1.0 ){
-			canvasControl.setStatusPanelYScale( "yM=" + df.format(1/myScale.getScale().getY() ) + ":1" );
-		}else{				
-			canvasControl.setStatusPanelYScale( "yM=1:" + df.format(myScale.getScale().getY() ) );
-		}
-		
+		this.getContentPane().add(controlPanel, BorderLayout.EAST);	
+	
 		this.setVisible(true);		
 
 	}
 	
-	//
-	//
-	// Epitoanyagot legyarto osztaly
-	//
-	//
+	
+	/**
+	 * 
+	 * Epitoanyagot legyarto osztaly
+	 * 
+	 * @author akoel
+	 *
+	 */
 	class BuildingMaterialFactory implements DrawnBlockFactory{
 
 		@Override
@@ -214,17 +223,19 @@ public class ExampleDrawnBlock extends JFrame {
 		
 	}
 	
-	//
-	//
-	// Szigetelest legyarto osztaly
-	//
-	//
+	/**
+	 *
+	 * Szigetelest legyarto osztaly
+	 * 
+	 * @author akoel
+	 *
+	 */
 	class InsulationFactory implements DrawnBlockFactory{
 
 		@Override
 		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
 			
-			return new InsulationBlock( status , x1, y1, null, 3.0, null, 0.0 );
+			return new InsulationBlock( status , x1, y1, null, 5.0, null, 0.0 );
 		}
 		
 	}

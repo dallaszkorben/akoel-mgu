@@ -1,6 +1,7 @@
 package hu.akoel.mgu.example;
 
 
+import hu.akoel.mgu.MControlPanel;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
@@ -8,6 +9,7 @@ import hu.akoel.mgu.PositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
+import hu.akoel.mgu.drawnblock.DrawnBlockStatusPanel;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
@@ -74,8 +76,6 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 //	private Position rate = new Position(1.2, 1.2);
 	private ArrayList<ScaleValue> possibleScaleList = new ArrayList<ScaleValue>();
 	
-	private CanvasControl canvasControl;
-	
 	public static void main(String[] args) {		
 		new ExampleMCanvas_Scale_SameUnits_DiscretZoom();
 	}
@@ -90,15 +90,6 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 
 //		myCanvas = new JCanvas(BorderFactory.createLoweredBevelBorder(), background, worldSize );
 		myCanvas = new MCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, boundSize);
-		myCanvas.addPositionChangeListener(new PositionChangeListener() {
-			
-			@Override
-			public void getWorldPosition(double xPosition, double yPosition) {
-				DecimalFormat df = new DecimalFormat("#.0000");				
-				canvasControl.setStatusPanelXPosition( "x: " + df.format(xPosition));
-				canvasControl.setStatusPanelYPosition( "y: " + df.format(yPosition));				
-			}
-		});
 		
 		myGrid = new Grid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
@@ -119,21 +110,26 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		possibleScaleList.add( new ScaleValue( 1000, 1000 ));
 			
 		myScale = new Scale( myCanvas, pixelPerCm, unit, possibleScaleList, 7 );
-		myScale.addScaleChangeListener(new ScaleChangeListener() {
-			
-			@Override
-			public void getScale(Value scale) {
-				DecimalFormat df = new DecimalFormat("#.00");
-				canvasControl.setStatusPanelXScale( "xM=" + df.format(scale.getX() ) );
-				canvasControl.setStatusPanelYScale( "yM=" + df.format(scale.getY() ) );
-			}
-		});
 		
-		canvasControl = new CanvasControl( myCanvas, myCrossLine, myGrid, myAxis, myScale );
-		
+		//-----------------
 		//
+		// K-i oldali elem
+		//
+		// Vezerlopanel
+		//
+		//-----------------
+		MControlPanel controlPanel = new MControlPanel();
+		controlPanel.addElement( myGrid.getControl( myScale ) );
+		controlPanel.addElement( myCrossLine.getControl( myScale ) );
+		controlPanel.addElement( myAxis.getControl( ) );
+				
+		//------------------------------
+		//
+		// Parancsgomb panel a gombokkal
+		//
+		//------------------------------
+
 		//Ujra rajzol minden statikus rajzi elemet
-		//
 		JButton reprintButton = new JButton("reprint");
 		reprintButton.addActionListener(new ActionListener(){
 			
@@ -143,9 +139,7 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 			}			
 		});	
 		
-		//
 		//Kirajzol eloterbe egy fuggvenyt
-		//
 		JButton commandButtonDrawFunction = new JButton("draw Function");
 		commandButtonDrawFunction.addActionListener(new ActionListener(){
 
@@ -187,27 +181,72 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 			
 		});
 
-
 		//Parancsgomb panel
 		JPanel commandButtonPanel = new JPanel();
 		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
 		commandButtonPanel.add(commandButtonDrawFunction);
+
+		//-------------
+		//
+		// Statuszpanel
+		//
+		//-------------
+		final DrawnBlockStatusPanel statusPanel = new DrawnBlockStatusPanel();
+
+		// Kezdo ertekek kiirasa
+		DecimalFormat df = new DecimalFormat("#.00");
+		if( myScale.getScale().getX() < 1.0 ){
+			statusPanel.setScale( "M=" + df.format(1/myScale.getScale().getX() ) + ":1" );
+		}else{
+			statusPanel.setScale( "M=1:" + df.format(myScale.getScale().getX() ) );
+		}
 		
+		// Kurzor pozicio figyelo
+		myCanvas.addPositionChangeListener( new PositionChangeListener() {
+			@Override
+			public void getWorldPosition(double xPosition, double yPosition) {
+				DecimalFormat df = new DecimalFormat("#.0000");				
+				statusPanel.setXPosition( "x: " + df.format(xPosition));
+				statusPanel.setYPosition( "y: " + df.format(yPosition));				
+			}
+		});
+		
+		// Meretarany figyelo
+		myScale.addScaleChangeListener(new ScaleChangeListener() {		
+			@Override
+			public void getScale(Value scale) {
+				DecimalFormat df = new DecimalFormat("#.00");
+				if( myScale.getScale().getX() < 1.0 ){
+					statusPanel.setScale( "xM=" + df.format(1/myScale.getScale().getX() ) + ":1" );
+				}else{
+					statusPanel.setScale( "xM=1:" + df.format(myScale.getScale().getX() ) );
+				}
+			}
+		});
+		
+		//--------------------------------------
+		//
+		// D-i oldali elemek
+		//
+		// Tartalmazzak a parancsgombi panelt es
+		// a status panel-t
+		//
+		//--------------------------------------
 		JPanel southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS	));
 		
-		southPanel.add(commandButtonPanel);
-		southPanel.add( canvasControl.getStatusPanel() );
+		southPanel.add( commandButtonPanel );
+		southPanel.add( statusPanel );
 	
+		//--------------------------------
+		//
+		// Panelek elhelyezese az ablakban
+		//
+		//--------------------------------
 		this.getContentPane().setLayout(new BorderLayout(10,10));
 		this.getContentPane().add(myCanvas, BorderLayout.CENTER);
 		this.getContentPane().add(southPanel, BorderLayout.SOUTH);
-		this.getContentPane().add(canvasControl.getControlPanel(), BorderLayout.EAST);
-
-		//Kezdo ertekek kiirasa
-		DecimalFormat df = new DecimalFormat("#.00");
-		canvasControl.setStatusPanelXScale( "xM=" + df.format( myScale.getScale().getX() ));
-		canvasControl.setStatusPanelYScale( "yM=" + df.format( myScale.getScale().getY() ));
+		this.getContentPane().add(controlPanel, BorderLayout.EAST);	
 		
 		this.setVisible(true);		
 

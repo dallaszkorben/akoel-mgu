@@ -4,11 +4,29 @@ import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.MCanvas.Level;
+import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.values.Value;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.InputVerifier;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 
 
 public class CrossLine {
@@ -121,4 +139,259 @@ public class CrossLine {
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 	}
 	
+	public JPanel getControl( Scale scale ){
+		final JTextField crossLineXPosField;
+		final JTextField crossLineYPosField;
+		final JTextField crossLineXLengthField;
+		final JTextField crossLineYLengthField;
+		
+		final JComboBox<String> crossLineWidthCombo;
+		
+		crossLineXPosField = new JTextField();
+		crossLineXPosField.setColumns( 8 );
+		crossLineXPosField.setText( String.valueOf( this.getPositionX() ) );
+		crossLineXPosField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( CrossLine.this.getPositionX() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            CrossLine.this.setPositionX( Double.valueOf(goodValue));
+	            CrossLine.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
+			}
+		});
+	
+		crossLineYPosField = new JTextField();
+		crossLineYPosField.setColumns( 8 );
+		crossLineYPosField.setText( String.valueOf( CrossLine.this.getPositionY() ) );
+		crossLineYPosField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( CrossLine.this.getPositionY() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            CrossLine.this.setPositionY( Double.valueOf(goodValue));
+	            CrossLine.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
+			}
+		});
+		
+		crossLineXLengthField = new JTextField();
+		crossLineXLengthField.setColumns( 8 );
+		crossLineXLengthField.setText( String.valueOf( CrossLine.this.getLengthX() ) );
+		crossLineXLengthField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( CrossLine.this.getLengthX() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            CrossLine.this.setLengthX( Double.valueOf( goodValue ) );
+	            CrossLine.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
+			}
+		});
+	
+		crossLineYLengthField = new JTextField();
+		crossLineYLengthField.setColumns( 8 );
+		crossLineYLengthField.setText( String.valueOf( CrossLine.this.getLengthY() ) );
+		crossLineYLengthField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( CrossLine.this.getLengthY() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            CrossLine.this.setLengthY( Double.valueOf( goodValue ) );
+	            CrossLine.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
+			}
+		});
+		
+
+		String[] crossLineWidthElements = { "1", "3", "5" };
+		crossLineWidthCombo = new JComboBox<String>(crossLineWidthElements);
+		crossLineWidthCombo.setSelectedIndex(2);
+		crossLineWidthCombo.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				JComboBox<String> jcmbType = (JComboBox<String>) e.getSource();
+				String cmbType = (String) jcmbType.getSelectedItem();
+				
+				if( cmbType.equals( "1")){					
+					CrossLine.this.setWidthInPixel(1);
+				}else if( cmbType.equals( "3")){
+					CrossLine.this.setWidthInPixel(3);
+				}else if( cmbType.equals( "5")){
+					CrossLine.this.setWidthInPixel(5);
+				}
+				CrossLine.this.canvas.revalidateAndRepaintCoreCanvas();
+			}
+		});		
+		
+		JCheckBox turnOnCrossLine = new JCheckBox("Turn On Crossline");
+		turnOnCrossLine.setSelected(true);
+		turnOnCrossLine.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					CrossLine.this.turnOff();
+					crossLineWidthCombo.setEnabled(false);
+					crossLineXPosField.setEnabled(false);
+					crossLineYPosField.setEnabled(false);
+					crossLineXLengthField.setEnabled(false);
+					crossLineYLengthField.setEnabled(false);
+				}else{
+					CrossLine.this.turnOn();
+					crossLineWidthCombo.setEnabled(true);
+					crossLineXPosField.setEnabled(true);
+					crossLineYPosField.setEnabled(true);
+					crossLineXLengthField.setEnabled(true);
+					crossLineYLengthField.setEnabled(true);
+				}
+				CrossLine.this.canvas.repaint();
+			}
+		});
+		
+		JColorChooser crossLineColor = new JColorChooser();
+		
+		JPanel crossLinePanel = new JPanel();
+		crossLinePanel.setLayout(new GridBagLayout());
+		crossLinePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Cross line", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints crossLinePanelConstraints = new GridBagConstraints();
+		
+		//1. sor - Turn on CrossLine
+		crossLinePanelConstraints.gridx = 0;
+		crossLinePanelConstraints.gridy = 0;
+		crossLinePanelConstraints.gridwidth = 4;
+		crossLinePanelConstraints.anchor = GridBagConstraints.WEST;
+		crossLinePanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanelConstraints.anchor = GridBagConstraints.WEST;
+		crossLinePanel.add(turnOnCrossLine, crossLinePanelConstraints);
+		
+		//2. sor - Position X
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Position X: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineXPosField, crossLinePanelConstraints);	
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + scale.getUnitX().getSign() ), crossLinePanelConstraints );
+
+		//3. sor - Position Y
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Position Y: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineYPosField, crossLinePanelConstraints);	
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + scale.getUnitY().getSign() ), crossLinePanelConstraints);
+		
+		//4. sor - Width
+		crossLinePanelConstraints.gridx = 0;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add(new JLabel("     "),crossLinePanelConstraints );
+		
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Width: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineWidthCombo, crossLinePanelConstraints);
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" px"), crossLinePanelConstraints);
+		
+		//5. sor - Length X
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Length X: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineXLengthField, crossLinePanelConstraints);
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + scale.getUnitX().getSign() ), crossLinePanelConstraints);
+		
+		//6. sor - Length Y
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Length Y: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add(crossLineYLengthField, crossLinePanelConstraints);
+		
+		crossLinePanelConstraints.gridx = 3;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel(" " + scale.getUnitY().getSign() ), crossLinePanelConstraints);
+
+		return crossLinePanel;
+	}
 }
