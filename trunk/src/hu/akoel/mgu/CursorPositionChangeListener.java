@@ -1,6 +1,6 @@
 package hu.akoel.mgu;
 
-public interface PositionChangeListener {
+public interface CursorPositionChangeListener {
 
 	public void getWorldPosition( double xPosition, double yPosition );
 }

@@ -14,8 +14,10 @@ import javax.swing.event.MouseInputListener;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.PainterListener;
+import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
+import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
@@ -24,6 +26,8 @@ public class DrawnBlockCanvas extends MCanvas{
 
 	private static final long serialVersionUID = -8308688255617119442L;
 	
+	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
+		
 	private Stroke basicStroke = new BasicStroke();
 	
 	private DrawnBlockFactory drawnBlockFactory;
@@ -38,9 +42,10 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	private boolean needFocus = true;
 	
-	private boolean neededSnapSideExtention = true;
-	private boolean neededSnapGrid = true;
-
+	private boolean neededSnapSideExtention = false;
+	private boolean neededSnapGrid = false;
+	private Grid myGrid;
+	
 	/**
 	 * Engedelyezi a masodlagos kurzor legkozelebbi DrawnBlock oldalhoz, vagy annak
 	 * meghosszabbitasahoz valo igazitasat
@@ -60,8 +65,9 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * 
 	 * @param needed
 	 */
-	public void setNeededSnapGrid( boolean needed ){
+	public void setNeededSnapGrid( boolean needed, Grid myGrid ){
 		this.neededSnapGrid = needed;
+		this.myGrid = myGrid;
 	}
 	
 	public boolean getNeededSnapGrid(){
@@ -83,14 +89,11 @@ public class DrawnBlockCanvas extends MCanvas{
 		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
 //		this.addMouseMotionListener( drawnBlockInFocusListener );
 		
-		//A kozepso reteget hasznaljuk a DrawnBlock-ok megjelenitesere
-		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.ABOVE );
+		//A kozepso reteg also felet hasznaljuk a DrawnBlock-ok megjelenitesere
+		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.UNDER );
 		
 		//A kurzor mozgasat vizsgalolo listener
 		this.addMouseInputListener( drawnBlockDrawListener );
-		
-//		//Egy DrawnBlock mozgatasat figyeli
-//		this.addMouseInputListener( DragListener );
 		
 	}
 
@@ -101,7 +104,19 @@ public class DrawnBlockCanvas extends MCanvas{
 	public boolean needFocus(){
 		return needFocus;
 	}
+
+	/**
+	 * A masodlagos kurzor poziciojanak valtozasat figyelo osztalyok listaja
+	 * 
+	 */
+	public void addCursorPositionChangeListener( CursorPositionChangeListener positionChangeListener ){
+		secondaryCursorPositionChangeListenerList.add( positionChangeListener );
+	}
 	
+	/**
+	 * Egy DrawnBlock rajzolasat elvegzo factory megadasa
+	 * @param drawnBlockFactory
+	 */
 	public void setDrawnBlockFactory( DrawnBlockFactory drawnBlockFactory ){
 		this.drawnBlockFactory = drawnBlockFactory;
 	}
@@ -165,7 +180,6 @@ public class DrawnBlockCanvas extends MCanvas{
 		super.zoomOut(xCenter, yCenter, xPoint, yPoint);
 		
 		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo DrawnBlock ujra bekeruljon a temporary listaba
-
 //		fireMouseMoved();
 		
 		drawnBlockDrawListener.repaintSecondaryCursorAndDrawnBlockToDraw();
@@ -382,6 +396,8 @@ repaintCoreCanvas();
 			double minDY = Double.MAX_VALUE;
 			Arrange arrange = new Arrange();
 			
+			if( getNeededSnapSideExtention() ){
+			
 			for( DrawnBlock db : drawnBlockList ){
 				
 				//Ha megfelelo kozelsegben vagyok az egyik lehelyezett DrawnBlock-hoz. 
@@ -463,19 +479,47 @@ repaintCoreCanvas();
 				//}				
 			}
 			
+			}
+			
+			//--------------------------
 			//
-			// Most vegzi el a kurzor leendo uj koordinatainak modositasat. 
-			// Meg nem tolti be a Masodlagos Kurzorba
+			// Grid-hez probal igazitani
 			//
-			//if( null != arrange ){
-				if( null != arrange.getPositionX() ){
-					x = arrange.getPositionX();
+			//--------------------------
+			
+			if( getNeededSnapGrid() ){
+				//double xStart = (int)( ( x + (0.0001)*Math.signum(x) ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
+				//double yStart = (int)( ( y + (0.0001)*Math.signum(y) ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
+				
+				double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
+				double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
+			
+				//Ha ez kozelebb van, mint az eddigi legkozelebbi
+				if( Math.abs( xStart - x ) < dx && Math.abs( xStart - x ) < minDX ){
+					minDX = Math.abs( xStart - x );
+					arrange.addDrawnBlockToArrangeX(null, xStart);				
 				}
 				
-				if( null != arrange.getPositionY() ){
-					y = arrange.getPositionY();
-				}
-			//}
+				if( Math.abs( yStart - y ) < dy && Math.abs( yStart - y ) < minDY ){
+					minDY = Math.abs( yStart - y );
+					arrange.addDrawnBlockToArrangeY(null, yStart);
+				}	
+			
+			}
+			
+			
+			//
+			// Most vegzi el a masodlagos kurzor leendo uj koordinatainak modositasat. 
+			// A valodi kurzorhoz legkozelebb illesztheto pontot veszi
+			// Meg nem tolti be a Masodlagos Kurzorba
+			//
+			if( null != arrange.getPositionX() ){
+				x = arrange.getPositionX();
+			}
+				
+			if( null != arrange.getPositionY() ){
+				y = arrange.getPositionY();
+			}
 			
 			
 			
@@ -547,10 +591,8 @@ repaintCoreCanvas();
 						
 						//Akkor marad a regi kurzorpozicio
 						return;
-					}
-			
-				}
-				
+					}			
+				}				
 			}
 			
 			
@@ -563,6 +605,15 @@ repaintCoreCanvas();
 				return;				
 			}
 			
+			//------------------------------
+			//
+			//
+			// Kurzor figyelo kiszolgalasa
+			//
+			//-------------------------------
+			for( CursorPositionChangeListener listener : secondaryCursorPositionChangeListenerList) {
+				listener.getWorldPosition( x, y );
+			}	
 			
 			//A Masodlagos kurzor poziciojanak beallitasa
 			secondaryCursor.setPosition( x, y );
