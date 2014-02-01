@@ -13,6 +13,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -230,7 +231,12 @@ public class MCanvas extends JPanel {
 		coreCanvas.addMouseListener(listener);
 		coreCanvas.addMouseMotionListener(listener);
 	}
-	
+
+//	public void addKeyListener( KeyListener listener ){
+//		System.err.println("HELLO");
+//		coreCanvas.addKeyListener( listener );
+//	}
+
 	//
 	//PERMANENT - Under list
 	//
@@ -879,6 +885,7 @@ public class MCanvas extends JPanel {
 
 		public CoreCanvas(MCanvas parent, Color background) {
 			super();
+
 			this.parent = parent;
 			
 			this.setBackground(background);
@@ -911,7 +918,7 @@ public class MCanvas extends JPanel {
 		    offImage = null;	    
 		  }
 		  
-		public void paintComponent(Graphics g) {
+		  public void paintComponent(Graphics g) {
 
 			if( !getWasTransferedToMiddle() ){
 				setWasTransferedToMiddle( true );

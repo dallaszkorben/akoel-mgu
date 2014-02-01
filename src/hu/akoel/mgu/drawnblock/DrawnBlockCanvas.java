@@ -5,6 +5,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.Stroke;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
@@ -113,7 +116,26 @@ public class DrawnBlockCanvas extends MCanvas{
 		
 		//A kurzor mozgasat vizsgalolo listener
 		this.addMouseInputListener( drawnBlockDrawListener );
-		
+			
+		//Ctrl-Z figyelese
+		this.addKeyListener( new KeyAdapter(){
+			public void keyPressed(KeyEvent ke){
+
+				//ctrl-z
+				if( ke.getKeyCode() == KeyEvent.VK_Z && ( ke.getModifiers() & KeyEvent.CTRL_MASK) != 0){
+					int lastElement = drawnBlockList.size() - 1;
+					if( lastElement >= 0 ){
+						
+						//Legutoljara elhelyezett elem kitorlese
+						drawnBlockList.remove( lastElement );
+
+						//Ujrarajzoltatom a Canvas-t az utolsonak elhelyezett DrawnBlock nelkul
+						revalidateAndRepaintCoreCanvas();
+					}
+					
+				}
+			 }		
+		});
 	}
 
 	public void setNeedFocus( boolean needFocus){
@@ -303,6 +325,10 @@ public class DrawnBlockCanvas extends MCanvas{
 		@Override
 		public void mouseEntered(MouseEvent e) {
 //System.err.println("entered");	
+			
+//Visszakeri a fokuszt amivel a			
+DrawnBlockCanvas.this.setFocusable(true);			
+DrawnBlockCanvas.this.requestFocusInWindow();
 			
 			//Meghatarozza a masodlagos kurzor aktualis erteket
 			findOutCursorPosition( e );

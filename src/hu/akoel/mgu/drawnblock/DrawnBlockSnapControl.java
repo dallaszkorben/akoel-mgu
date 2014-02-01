@@ -7,7 +7,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
 import hu.akoel.mgu.grid.Grid;
-import hu.akoel.mgu.scale.Scale;
 
 import javax.swing.BorderFactory;
 import javax.swing.InputVerifier;
@@ -22,8 +21,8 @@ public class DrawnBlockSnapControl extends JPanel{
 
 	private static final long serialVersionUID = -7405525427175628680L;
 
-	private static final boolean DEFAULT_GRIDSNAP = false;
-	private static final boolean DEFAULT_SIDEEXTENTIONSNAP = false;
+	private static final boolean DEFAULT_GRIDSNAP = true;
+	private static final boolean DEFAULT_SIDEEXTENTIONSNAP = true;
 	private static final int DEFAULT_SNAPDELTA = 15;
 	
 	private DrawnBlockCanvas canvas;
