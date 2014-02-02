@@ -23,7 +23,9 @@ public class DrawnBlockSnapControl extends JPanel{
 
 	private static final boolean DEFAULT_GRIDSNAP = true;
 	private static final boolean DEFAULT_SIDEEXTENTIONSNAP = true;
+	private static final boolean DEFAULT_SIDEDIVISIONSNAP = true;
 	private static final int DEFAULT_SNAPDELTA = 15;
+	private static final double DEFAULT_SNAPSIDEDIVISION = 0.5;
 	
 	private DrawnBlockCanvas canvas;
 	private Grid grid;
@@ -32,14 +34,21 @@ public class DrawnBlockSnapControl extends JPanel{
 		this.canvas = canvas;
 		this.grid = grid;
 		
-		//Nem engedelyezett a GridSnap
-		DrawnBlockSnapControl.this.canvas.setNeededSnapGrid( DEFAULT_GRIDSNAP, grid );
+		//GridSnap engedelyezese
+		DrawnBlockSnapControl.this.canvas.setNeededGridSnap( DEFAULT_GRIDSNAP, grid );
 		
-		//Nem engedelyezett az oldal meghosszabitasra igazitas
-		DrawnBlockSnapControl.this.canvas.setNeededSnapSideExtention( DEFAULT_SIDEEXTENTIONSNAP );
-		
+		//Oldal meghosszabitasra igazitas engedelyezese
+		DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( DEFAULT_SIDEEXTENTIONSNAP );
+
+		//Oldal osztaspontra igazitas engedelyezese
+		DrawnBlockSnapControl.this.canvas.setNeededSideDivisionSnap( DEFAULT_SIDEDIVISIONSNAP );
+
 		//Alapertelmezett snap tartomany
 		DrawnBlockSnapControl.this.canvas.setSnapDelta( DEFAULT_SNAPDELTA );
+		
+		//Alapertelmezett snap oldalfelosztas
+		DrawnBlockSnapControl.this.canvas.setSnapSideDivision( DEFAULT_SNAPSIDEDIVISION );
+				
 	}
 	
 	public JPanel getControl(){
@@ -74,9 +83,9 @@ public class DrawnBlockSnapControl extends JPanel{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
-					DrawnBlockSnapControl.this.canvas.setNeededSnapGrid( false, null );
+					DrawnBlockSnapControl.this.canvas.setNeededGridSnap( false, null );
 				}else{
-					DrawnBlockSnapControl.this.canvas.setNeededSnapGrid( true, grid );
+					DrawnBlockSnapControl.this.canvas.setNeededGridSnap( true, grid );
 				}
 				
 			}
@@ -89,10 +98,47 @@ public class DrawnBlockSnapControl extends JPanel{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
-					DrawnBlockSnapControl.this.canvas.setNeededSnapSideExtention( false );
+					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( false );
 				}else{
-					DrawnBlockSnapControl.this.canvas.setNeededSnapSideExtention( true );
+					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( true );
 				}				
+			}
+		});
+		
+		JCheckBox turnOnSideDivisionSnap = new JCheckBox("Side division");
+		turnOnSideDivisionSnap.setSelected( DEFAULT_SIDEDIVISIONSNAP );
+		turnOnSideDivisionSnap.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if( e.getStateChange() == ItemEvent.DESELECTED){
+					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( false );
+				}else{
+					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( true );
+				}				
+			}
+		});
+		
+		JTextField snapSideDivisionField = new JTextField();
+		snapSideDivisionField.setColumns( 8 );
+		snapSideDivisionField.setText( String.valueOf( DrawnBlockSnapControl.this.canvas.getSnapSideDivision() ) );
+		snapSideDivisionField.setInputVerifier( new InputVerifier() {
+			String goodValue =  String.valueOf( DrawnBlockSnapControl.this.canvas.getSnapSideDivision() );
+			
+			@Override
+			public boolean verify(JComponent input) {
+				JTextField text = (JTextField)input;
+	            String possibleValue = text.getText();
+	            try{
+	            	Double.valueOf(possibleValue);
+	            	goodValue = possibleValue;
+	            }catch(NumberFormatException e){
+	            	text.setText(goodValue);
+	            	return false;
+	            }
+	            DrawnBlockSnapControl.this.canvas.setSnapSideDivision( Double.valueOf( goodValue ) );
+	            DrawnBlockSnapControl.this.canvas.revalidateAndRepaintCoreCanvas();
+	            return true;
 			}
 		});
 		
@@ -104,16 +150,16 @@ public class DrawnBlockSnapControl extends JPanel{
 		//1. sor - Snap Range
 		snapPanelConstraints.gridx = 0;
 		snapPanelConstraints.gridy = 0;
-		snapPanelConstraints.gridwidth = 1;
+		snapPanelConstraints.gridwidth = 2;
 		snapPanelConstraints.weightx = 0;
 		snapPanel.add( new JLabel("Snap range: "), snapPanelConstraints);
 
-		snapPanelConstraints.gridx = 1;
+		snapPanelConstraints.gridx = 3;
 		snapPanelConstraints.gridwidth = 1;
 		snapPanelConstraints.weightx = 1;
 		snapPanel.add( snapDeltaField, snapPanelConstraints);
 				
-		snapPanelConstraints.gridx = 2;
+		snapPanelConstraints.gridx = 4;
 		snapPanelConstraints.gridwidth = 1;
 		snapPanelConstraints.weightx = 0;
 		snapPanel.add( new JLabel(" px" ), snapPanelConstraints );	
@@ -135,6 +181,29 @@ public class DrawnBlockSnapControl extends JPanel{
 		snapPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
 		snapPanelConstraints.weightx = 1;
 		snapPanel.add( turnOnSideExtentionSnap, snapPanelConstraints);
+		
+		//4. sor - SideDivision
+		snapPanelConstraints.gridx = 0;
+		snapPanelConstraints.gridy++;
+		snapPanelConstraints.gridwidth = 4;
+		snapPanelConstraints.anchor = GridBagConstraints.WEST;
+		snapPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		snapPanelConstraints.weightx = 1;
+		snapPanel.add( turnOnSideDivisionSnap, snapPanelConstraints );
+		
+		//5. sor - SideDivision value
+		snapPanelConstraints.gridx = 0;
+		snapPanelConstraints.gridy++;
+		snapPanelConstraints.gridwidth = 1;
+		snapPanel.add( new JLabel("     "), snapPanelConstraints );		
+		
+		//4. sor - SideDivision
+		snapPanelConstraints.gridx = 1;
+		snapPanelConstraints.gridwidth = 1;
+		snapPanelConstraints.anchor = GridBagConstraints.WEST;
+		snapPanelConstraints.fill = GridBagConstraints.HORIZONTAL;
+		snapPanelConstraints.weightx = 1;
+		snapPanel.add( snapSideDivisionField, snapPanelConstraints );
 		
 		return snapPanel;
 	}

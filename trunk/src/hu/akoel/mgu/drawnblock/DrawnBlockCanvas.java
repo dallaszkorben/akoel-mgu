@@ -46,8 +46,10 @@ public class DrawnBlockCanvas extends MCanvas{
 	private boolean needFocus = true;
 	
 	private int snapDelta = 0;
-	private boolean neededSnapSideExtention = false;
-	private boolean neededSnapGrid = false;
+	private double snapSideDivision = 0.5;
+	private boolean neededSideExtentionSnap = false;
+	private boolean neededGridSnap = false;
+	private boolean neededSideDivisionSnap = false;
 	private Grid myGrid;
 	
 	/**
@@ -56,12 +58,12 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * 
 	 * @param needed
 	 */
-	public void setNeededSnapSideExtention( boolean needed ){
-		this.neededSnapSideExtention = needed;
+	public void setNeededSideExtentionSnap( boolean needed ){
+		this.neededSideExtentionSnap = needed;
 	}
 	
-	public boolean getNeededSnapSideExtention(){
-		return neededSnapSideExtention;
+	public boolean getNeededSideExtentionSnap(){
+		return neededSideExtentionSnap;
 	}
 
 	/**
@@ -69,15 +71,22 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * 
 	 * @param needed
 	 */
-	public void setNeededSnapGrid( boolean needed, Grid myGrid ){
-		this.neededSnapGrid = needed;
+	public void setNeededGridSnap( boolean needed, Grid myGrid ){
+		this.neededGridSnap = needed;
 		this.myGrid = myGrid;
 	}
 	
-	public boolean getNeededSnapGrid(){
-		return neededSnapGrid;
+	public boolean getNeededGridSnap(){
+		return neededGridSnap;
 	}
 	
+	public void setNeededSideDivisionSnap( boolean needed ){
+		neededSideDivisionSnap = needed;
+	}
+	
+	public boolean getNeededSideDivisionSnap(){
+		return neededSideDivisionSnap;
+	}
 	/**
 	 * Beallitja hogy a Snap muvelet mekkora pixel tartomanyban mukodjon
 	 * 
@@ -94,6 +103,14 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	public int getSnapDelta(){
 		return this.snapDelta;
+	}
+	
+	public void setSnapSideDivision( double sideDivision ){
+		this.snapSideDivision = sideDivision;
+	}
+	
+	public double getSnapSideDivision(){
+		return this.snapSideDivision;
 	}
 	
 	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
@@ -406,6 +423,14 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				this.positionY = position;
 			}
 			
+			public DrawnBlock getDrawnBlockX(){
+				return drawnBlockToArrangeX;
+			}
+			
+			public DrawnBlock getDrawnBlockY(){
+				return drawnBlockToArrangeY;
+			}
+			
 			public Double getPositionX(){
 				return positionX;
 			}
@@ -447,18 +472,27 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			double minDY = Double.MAX_VALUE;
 			Arrange arrange = new Arrange();
 			
-			if( getNeededSnapSideExtention() ){
+			//--------------------------------------------------------
+			//
+			// Ha engedelyezett az oldal kiterjeszteshez valo igazitas
+			//
+			//--------------------------------------------------------
+			if( getNeededSideExtentionSnap() ){
 			
-			for( DrawnBlock db : drawnBlockList ){
+				for( DrawnBlock db : drawnBlockList ){
 				
 				//Ha megfelelo kozelsegben vagyok az egyik lehelyezett DrawnBlock-hoz. 
 				//if( db.intersects( new Block( x-dx, y-dy, x+dx, y+dy) ) ){
 					
-					//Bal oldalrol kozeliti a DrawnBlock balo ldalat
+					//Bal oldalrol kozeliti a DrawnBlock baloldalat
 					if( ( db.getX1() - x ) > 0 && ( db.getX1() - x ) < dx ){
 						
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( db.getX1() - x ) < minDX ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
+						if(
+								( ( db.getX1() - x ) < minDX ) || 
+								( ( db.getX1() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() ) 
+						){
 							minDX = db.getX1() - x;
 							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
 						}
@@ -466,8 +500,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//!!! Bal oldalrol kozeliti a DrawnBlock jobboldalat !!!
 					}else if( ( db.getX2() - x ) > 0 && ( db.getX2() - x ) < dx ){
 							
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( db.getX2() - x ) < minDX ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
+						if( 
+								( ( db.getX2() - x ) < minDX ) ||
+								( ( db.getX2() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
+						){
 							minDX = db.getX2() - x;
 							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
 						}
@@ -475,8 +513,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//Jobb oldalrol kozeliti a DrawnBlock jobb oldalat
 					}else if( ( x - db.getX2() ) > 0 && ( x - db.getX2() ) < dx ){
 
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( x - db.getX2() ) < minDX ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
+						if(
+								( ( x - db.getX2() ) < minDX ) ||
+								( ( x - db.getX2() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
+						){
 							minDX = x - db.getX2();
 							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
 						}
@@ -484,8 +526,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//!!! Jobb oldalrol kozeliti a DrawnBlock bal oldalat !!!
 					}else if( ( x - db.getX1() ) > 0 && ( x - db.getX1() ) < dx ){
 
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( x - db.getX1() ) < minDX ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
+						if( 
+								( ( x - db.getX1() ) < minDX ) ||
+								( ( x - db.getX1() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
+						){
 							minDX = x - db.getX1();
 							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
 						}						
@@ -494,8 +540,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//Fentrol kozeliti a DrawnBlock tetejet
 					if( ( y - db.getY2() ) > 0 && ( y - db.getY2() ) < dy ){
 						
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( y - db.getY2() ) < minDY ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
+						if(
+								( ( y - db.getY2() ) < minDY ) ||
+								( ( y - db.getY2() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+						){
 							minDY = y - db.getY2();
 							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
 						}
@@ -503,8 +553,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//!!! Fentrol kozeliti a DrawBlock aljat !!!
 					}else if( ( y - db.getY1() ) > 0 && ( y - db.getY1() ) < dy ){
 						
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( y - db.getY1() ) < minDY ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
+						if( 
+								( ( y - db.getY1() ) < minDY ) ||
+								( ( y - db.getY1() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+						){
 							minDY = y - db.getY1();
 							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
 						}						
@@ -512,8 +566,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//Alulrol kozeliti a DrawnBlock aljat
 					}else if( ( db.getY1() - y ) > 0 && ( db.getY1() - y ) < dy ){
 
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( db.getY1() - y ) < minDY ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
+						if( 
+								( ( db.getY1() - y ) < minDY ) ||
+								( ( db.getY1() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+						){
 							minDY = db.getY1() - y;
 							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
 						}						
@@ -521,24 +579,27 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					//!!! Alulrol kozeliti a DrawnBlock tetejet !!!
 					}else if( ( db.getY2() - y ) > 0 && ( db.getY2() - y ) < dy ){
 
-						//Ha ez kozelebb van, mint az eddigi legkozelebbi
-						if( ( db.getY2() - y ) < minDY ){
+						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
+						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
+						if( 
+								( ( db.getY2() - y ) < minDY ) ||
+								( ( db.getY2() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+						){
 							minDY = db.getY2() - y;
 							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
 						}
 					}	
 				//}				
+				}			
 			}
 			
-			}
-			
-			//--------------------------
+			//------------------------------------------
 			//
-			// Grid-hez probal igazitani
+			// Ha engedelyezett a Grid-hez valo igazitas
 			//
-			//--------------------------
+			//------------------------------------------
 			
-			if( getNeededSnapGrid() ){
+			if( getNeededGridSnap() ){
 				
 				double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
 				double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
@@ -546,17 +607,16 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				//Ha ez kozelebb van, mint az eddigi legkozelebbi
 				if( Math.abs( xStart - x ) < dx && Math.abs( xStart - x ) < minDX ){
 					minDX = Math.abs( xStart - x );
-					arrange.addDrawnBlockToArrangeX(null, xStart);				
+					arrange.addDrawnBlockToArrangeX( null, xStart );				
 				}
 				
 				if( Math.abs( yStart - y ) < dy && Math.abs( yStart - y ) < minDY ){
 					minDY = Math.abs( yStart - y );
-					arrange.addDrawnBlockToArrangeY(null, yStart);
+					arrange.addDrawnBlockToArrangeY( null, yStart );
 				}	
 			
 			}
-			
-			
+					
 			//
 			// Most vegzi el a masodlagos kurzor leendo uj koordinatainak modositasat. 
 			// A valodi kurzorhoz legkozelebb illesztheto pontot veszi
@@ -570,7 +630,47 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				y = arrange.getPositionY();
 			}
 			
+			//-------------------------------------------------
+			//
+			// Ha engedelyezett az oldal osztasra valo igazitas
+			//
+			//-------------------------------------------------
+			if( getNeededSideDivisionSnap() ){				
 			
+				double sideDivision = getSnapSideDivision();
+				int cycle = (int)( 1 / sideDivision );
+			
+				//Fuggoleges oldalak meghosszabitasara tortent illesztes DE
+				//nem tortent a vizszintes oldalak meghosszabitasara illesztes
+				if( null != arrange.getDrawnBlockX() && null == arrange.getDrawnBlockY() ){
+			
+					//Az Y erteket valtoztathatjuk
+					DrawnBlock db = arrange.getDrawnBlockX();
+//System.err.println( db.getX1() + ", " + db.getX2() + ", " + db.getY1() + ", " + db.getY2() );				
+					for( int i = 1; i < cycle; i++ ){
+						double possibleNewPosition = db.getY1() + i * sideDivision * db.getHeight();
+						if( Math.abs( possibleNewPosition - y ) < dy ){
+							y = possibleNewPosition;
+							break;
+						}
+					}
+			
+				//Vizszintes oldalak meghosszabitasara tortent illeszted DE
+				//Nem tortent a fuggoleges oldalak meghosszabbitasara illesztes
+				}else if( null != arrange.getDrawnBlockY() && null == arrange.getDrawnBlockX() ){
+				
+					//Az X erteket valtoztathatjuk
+					DrawnBlock db = arrange.getDrawnBlockY();
+				
+					for( int i = 1; i < cycle; i++ ){
+						double possibleNewPosition = db.getX1() + i * sideDivision * db.getWidth();
+						if( Math.abs( possibleNewPosition - x ) < dx ){
+							x = possibleNewPosition;
+							break;
+						}
+					}
+				}
+			}
 			
 			
 			//-----------------------------------
@@ -644,6 +744,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				}				
 			}
 			
+
 			
 			//------------------------------------------------
 			//
@@ -663,6 +764,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			for( CursorPositionChangeListener listener : secondaryCursorPositionChangeListenerList) {
 				listener.getWorldPosition( x, y );
 			}	
+			
 			
 			//A Masodlagos kurzor poziciojanak beallitasa
 			secondaryCursor.setPosition( x, y );

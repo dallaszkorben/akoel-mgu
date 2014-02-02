@@ -7,7 +7,7 @@ import java.awt.Stroke;
 import hu.akoel.mgu.MGraphics;
 
 
-public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double{
+public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implements Cloneable{
 	
 	private static final long serialVersionUID = -3676065835228116831L;
 
@@ -397,7 +397,10 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double{
 			
 			return false;
 		}
-
 	}
 	
+	@Override
+	public Object clone() {
+		return super.clone();
+	}
 }
