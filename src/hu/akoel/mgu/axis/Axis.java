@@ -446,6 +446,7 @@ public class Axis {
 		axisPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Axis", TitledBorder.LEFT, TitledBorder.TOP));
 		GridBagConstraints axisPanelConstraints = new GridBagConstraints();
 		
+		//1. sor - Turn On Axis
 		axisPanelConstraints.gridx = 0;
 		axisPanelConstraints.gridy = 0;
 		axisPanelConstraints.gridwidth = 2;
@@ -455,6 +456,7 @@ public class Axis {
 		axisPanelConstraints.anchor = GridBagConstraints.WEST;				
 		axisPanel.add(turnOnAxis, axisPanelConstraints);
 		
+		//2. sor - Left button
 		axisPanelConstraints.gridx = 0;
 		axisPanelConstraints.gridy = 1;
 		axisPanelConstraints.gridwidth = 1;
@@ -466,21 +468,25 @@ public class Axis {
 		axisPanelConstraints.gridwidth = 1;
 		axisPanel.add(lbAxisSelector, axisPanelConstraints );
 		
+		//3. sor - Right button
 		axisPanelConstraints.gridx = 1;
 		axisPanelConstraints.gridy = 2;
 		axisPanelConstraints.gridwidth = 1;
 		axisPanel.add(rbAxisSelector, axisPanelConstraints );
 		
+		//4. sor - Left Top button
 		axisPanelConstraints.gridx = 1;
 		axisPanelConstraints.gridy = 3;
 		axisPanelConstraints.gridwidth = 1;
 		axisPanel.add(ltAxisSelector, axisPanelConstraints );
 		
+		//5. sor - Right Top button
 		axisPanelConstraints.gridx = 1;
 		axisPanelConstraints.gridy = 4;
 		axisPanelConstraints.gridwidth = 1;
 		axisPanel.add(rtAxisSelector, axisPanelConstraints );
 		
+		//6. sor - Zero Zero button
 		axisPanelConstraints.gridx = 1;
 		axisPanelConstraints.gridy = 5;
 		axisPanelConstraints.gridwidth = 1;
