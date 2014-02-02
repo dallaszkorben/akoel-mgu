@@ -858,8 +858,8 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 
-			for( DrawnBlock sprite: drawnBlockList){
-				sprite.draw(g2);
+			for( DrawnBlock drawnBlock: drawnBlockList){
+				drawnBlock.draw(g2);
 			}
 			
 		}

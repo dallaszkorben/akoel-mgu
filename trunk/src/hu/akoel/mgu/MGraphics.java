@@ -1,10 +1,9 @@
 package hu.akoel.mgu;
 
-
-
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.awt.TexturePaint;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.Path2D;
@@ -162,6 +161,10 @@ public class MGraphics {
 	
 	public void setStroke( Stroke stroke ){
 		g2.setStroke(stroke);
+	}
+	
+	public void setPaint( TexturePaint texturePaint ){
+		g2.setPaint( texturePaint );
 	}
 	
 	public FontRenderContext getFontRenderContext(){

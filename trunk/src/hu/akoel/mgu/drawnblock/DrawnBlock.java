@@ -3,6 +3,7 @@ package hu.akoel.mgu.drawnblock;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
+import java.awt.TexturePaint;
 
 import hu.akoel.mgu.MGraphics;
 
@@ -20,19 +21,19 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 	
 	private static final Color NORMAL_COLOR = Color.white;
 	private static final Stroke NORMAL_STROKE = new BasicStroke(1);
-	private static final Color NORMAL_BACKGROUND = Color.black;
+	private static final Color NORMAL_BACKGROUND = null;
 	
 	private static final Color SELECTED_COLOR = Color.red;
 	private static final Stroke SELECTED_STROKE = new BasicStroke(3);
-	private static final Color SELECTED_BACKGROUND = Color.black;
+	private static final Color SELECTED_BACKGROUND = null;
 	
 	private static final Color INFOCUS_COLOR = Color.yellow;
 	private static final Stroke INFOCUS_STROKE = new BasicStroke(1);
-	private static final Color INFOCUS_BACKGROUND = Color.black;
+	private static final Color INFOCUS_BACKGROUND = null;
 	
 	private static final Color INPROCESS_COLOR = Color.red;
 	private static final Stroke INPROCESS_STROKE = new BasicStroke(3);
-	private static final Color INPROCESS_BACKGROUND = Color.black;
+	private static final Color INPROCESS_BACKGROUND = null;
 	
 	java.lang.Double minLength = null;
 	java.lang.Double minWidth = null;
@@ -44,22 +45,27 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 	private Color color;
 	private Color backgroundColor;
 	private Stroke stroke;
+	private TexturePaint texturePaint;
 		
 	private Color normalColor;
 	private Stroke normalStroke; 
 	private Color normalBackgroundColor;
+	private TexturePaint normalTexturePaint;
 	
 	private Color selectedColor;
 	private Stroke selectedStroke;
 	private Color selectedBackgroundColor;
+	private TexturePaint selectedTexturePaint;
 	
 	private Color infocusColor;
 	private Stroke infocusStroke;
 	private Color infocusBackgroundColor;
+	private TexturePaint infocusTexturePaint;
 	
 	private Color inprocessColor;
 	private Stroke inprocessStroke;
 	private Color inprocessBackgroundColor;
+	private TexturePaint inprocessTexturePaint;
 	
 	private double startX, startY;
 	
@@ -119,18 +125,22 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 			color = getNormalColor();
 			backgroundColor = getNormalBackgroundColor();
 			stroke = getNormalStroke();
+			texturePaint = getNormalTexturePaint();
 		}else if( status.equals( Status.SELECTED ) ){
 			color = getSelectedColor();
 			backgroundColor = getSelectedBackgroundColor();
 			stroke = getSelectedStroke();
+			texturePaint = getSelectedTexturePaint();
 		}else if( status.equals( Status.INFOCUS ) ){
 			color = getInfocusColor();
 			backgroundColor = getInfocusBackgroundColor();
 			stroke = getInfocusStroke();
+			texturePaint = getInfocusTexturePaint();
 		}else if( status.equals( Status.INPROCESS ) ){
 			color = getInprocessColor();
 			backgroundColor = getInprocessBackgroundColor();
 			stroke = getInprocessStroke();
+			texturePaint = getInprocessTexturePaint();
 		}
 	}
 	
@@ -244,6 +254,10 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		return normalBackgroundColor;
 	}
 
+	public TexturePaint getNormalTexturePaint(){
+		return normalTexturePaint;
+	}
+	
 	public Color getSelectedColor() {
 		return selectedColor;
 	}
@@ -254,6 +268,10 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 
 	public Color getSelectedBackgroundColor() {
 		return selectedBackgroundColor;
+	}
+	
+	public TexturePaint getSelectedTexturePaint(){
+		return selectedTexturePaint;
 	}
 
 	public Color getInfocusColor() {
@@ -268,10 +286,18 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		return infocusBackgroundColor;
 	}
 
+	public TexturePaint getInfocusTexturePaint(){
+		return infocusTexturePaint;
+	}
+	
 	public Color getInprocessColor() {
 		return inprocessColor;
 	}
 
+	public TexturePaint getInprocessTexturePaint(){
+		return inprocessTexturePaint;
+	}
+	
 	public Stroke getInprocessStroke() {
 		return inprocessStroke;
 	}
@@ -280,6 +306,7 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		return inprocessBackgroundColor;
 	}
 
+	//Normal
 	public void setNormal( Color color, Stroke stroke, Color backgroundColor ){
 		this.normalColor = color;
 		this.normalStroke = stroke;
@@ -288,6 +315,15 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		refreshStatus();
 	}
 
+	public void setNormal( Color color, Stroke stroke, TexturePaint texturePaint ){
+		this.normalColor = color;
+		this.normalStroke = stroke;
+		this.normalTexturePaint = texturePaint;
+		
+		refreshStatus();
+	}
+	
+	//Selected
 	public void setSelected( Color color, Stroke stroke, Color backgroundColor ){
 		this.selectedColor = color;
 		this.selectedStroke = stroke;
@@ -295,7 +331,16 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		
 		refreshStatus();
 	}
-	
+
+	public void setSelected( Color color, Stroke stroke, TexturePaint texturePaint ){
+		this.selectedColor = color;
+		this.selectedStroke = stroke;
+		this.selectedTexturePaint = texturePaint;
+		
+		refreshStatus();
+	}
+
+	//InFocus
 	public void setInfocus( Color color, Stroke stroke, Color backgroundColor ){
 		this.infocusColor = color;
 		this.infocusStroke = stroke;
@@ -304,6 +349,15 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		refreshStatus();
 	}
 
+	public void setInfocus( Color color, Stroke stroke, TexturePaint texturePaint ){
+		this.infocusColor = color;
+		this.infocusStroke = stroke;
+		this.infocusTexturePaint = texturePaint;
+		
+		refreshStatus();
+	}
+	
+	//InProcess
 	public void setInprocess( Color color, Stroke stroke, Color backgroundColor ){
 		this.inprocessColor = color;
 		this.inprocessStroke = stroke;
@@ -312,13 +366,27 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		refreshStatus();
 	}
 
-	public void draw( MGraphics g2 ){
+	public void setInprocess( Color color, Stroke stroke, TexturePaint texturePaint ){
+		this.inprocessColor = color;
+		this.inprocessStroke = stroke;
+		this.inprocessTexturePaint = texturePaint;
 		
-		g2.setColor( backgroundColor );		
+		refreshStatus();
+	}
+
+	public void draw( MGraphics g2 ){
+
+		if( null != texturePaint ){
+			g2.setPaint( texturePaint );
+		}
+		
+		if( null != backgroundColor ){
+			g2.setColor( backgroundColor );
+		}
 		g2.fillRectangle( getX1(), getY1(), getX2(), getY2());
 		
-		g2.setColor( color );
 		g2.setStroke( stroke );
+		g2.setColor( color );
 		g2.drawRectangle(getX1(), getY1(), getX2(), getY2());
 	}
 	
