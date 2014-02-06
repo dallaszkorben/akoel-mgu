@@ -26,18 +26,33 @@ public class ColorSelector extends JComboBox<Integer>{
 	ImageIcon icon;
 	
 	ImageIcon[] images;
-	private static final Color[] colorList = { 
+	private static final Color[] DEFAULT_COLOR_LIST = { 
 			Color.black, 
 			Color.red, 
 			Color.yellow, 
 			Color.blue,
 			Color.green,
 			Color.cyan,
-			Color.magenta
+			Color.magenta,
+			Color.white
 	}; 
+	
+	private Color[] colorList;
 	    
 	public ColorSelector(){
 		super();
+		commonConstructor( DEFAULT_COLOR_LIST );
+	}
+	
+	public ColorSelector( Color[] cl ){
+		super();
+		
+		commonConstructor( cl );
+	}
+	
+	private void commonConstructor( Color[] cl ){
+		
+		colorList = cl;
 		
 		//Most gyartja le a szineket
 		images = new ImageIcon[ colorList.length ];
@@ -58,7 +73,26 @@ public class ColorSelector extends JComboBox<Integer>{
         renderer.setPreferredSize(new Dimension( PREFERED_WIDTH, PREFERRED_HEIGHT));
         this.setRenderer(renderer);
         this.setMaximumRowCount(6);
-	 
+	}
+	
+
+	/**
+	 * Beallitja hogy a megadott szin legyen kivalasztva a listabol
+	 * Ha nem talalja a szint, akkor marad az utljara kivalasztotton
+	 * 
+	 * @param color
+	 */
+	public void setSelectedItem( Color color ){
+		for( int i = 0; i < colorList.length; i++ ){
+			if( color.equals( colorList[i] ) ){
+				this.setSelectedIndex( i );
+				break;
+			}
+		}
+	}
+	
+	public Color getSelectedColor(){
+		return colorList [this.getSelectedIndex()];
 	}
 	
 	
