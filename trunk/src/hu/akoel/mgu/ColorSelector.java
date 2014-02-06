@@ -105,9 +105,7 @@ public class ColorSelector extends JComboBox<Integer>{
 	class ComboBoxRenderer extends JLabel implements ListCellRenderer {
 		
 		private static final long serialVersionUID = -1604564045340814374L;
-		
-//		private Font uhOhFont;
-		
+
 		public ComboBoxRenderer() {
 			setOpaque(true);
 			setHorizontalAlignment(CENTER);
@@ -130,35 +128,7 @@ public class ColorSelector extends JComboBox<Integer>{
 			icon = images[ selectedIndex ];
 			setIcon(icon);
 
-			//Letrehozza a szin ikont
-//			BufferedImage colorBufferedImage = new BufferedImage( ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_RGB); 
-//			Graphics2D g2 = colorBufferedImage.createGraphics();
-//			g2.setColor( Color.red );
-//			g2.fillRect( 0, 0, ICON_WIDTH, ICON_HEIGHT );
-//			ImageIcon icon = new ImageIcon( colorBufferedImage );
-			
-/*			String pet = petStrings[selectedIndex];
-
-			if (icon != null) {
-				setText(pet);
-				setFont(list.getFont());
-			} else {
-				setUhOhText(pet + " (no image available)",	list.getFont());
-			}
-*/
 			return this;
-		}
-		
-/*		//Set the font and text when no image was found.
-        protected void setUhOhText(String uhOhText, Font normalFont) {
-            if (uhOhFont == null) { //lazily create this font
-                uhOhFont = normalFont.deriveFont(Font.ITALIC);
-            }
-            setFont(uhOhFont);
-            setText(uhOhText);
-        }
-*/
-		
-	}
-	
+		}		
+	}	
 }
