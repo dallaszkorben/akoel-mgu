@@ -7,9 +7,9 @@ import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
@@ -144,7 +144,8 @@ public class DrawnBlockCanvas extends MCanvas{
 					if( lastElement >= 0 ){
 						
 						//Legutoljara elhelyezett elem kitorlese
-						drawnBlockList.remove( lastElement );
+						removeDrawnBlock( lastElement );
+						//drawnBlockList.remove( lastElement );
 
 						//Ujrarajzoltatom a Canvas-t az utolsonak elhelyezett DrawnBlock nelkul
 						revalidateAndRepaintCoreCanvas();
@@ -180,6 +181,18 @@ public class DrawnBlockCanvas extends MCanvas{
 	}
 	
 	/**
+	 * Visszaadja a kirajzolando elemek listajat
+	 * @return
+	 */
+	public ArrayList<? extends DrawnBlock> getDrawnBlockList(){
+		return drawnBlockList;
+	}
+	
+	public Iterator<? extends DrawnBlock> iterator(){
+		return drawnBlockList.iterator();
+	}
+	
+	/**
 	 * Hozzaad a megjelenitendo listahoz egy DrawnBlock-ot
 	 * 
 	 * @param drawnBlock
@@ -196,10 +209,14 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * 
 	 * @param drawnBlock
 	 */
-	public void removeDrawnBlock( DrawnBlock drawnBlock ){
+//	public void removeDrawnBlock( DrawnBlock drawnBlock ){
+//		this.drawnBlockList.remove( drawnBlock );
+//	}
+		
+	public void removeDrawnBlock( int drawnBlock ){
 		this.drawnBlockList.remove( drawnBlock );
 	}
-		
+	
 	/**
 	 * Hozzaad egy DrawnBlock elemet a Temporary listahoz atmeneti megjelenitesre
 	 * 
