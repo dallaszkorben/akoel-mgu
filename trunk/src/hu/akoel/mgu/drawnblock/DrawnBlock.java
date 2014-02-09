@@ -210,6 +210,31 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		}
 		
 	}
+	
+	public double getStartX(){
+		return this.startX;
+	}
+	
+	public double getStartY(){
+		return this.startY;
+	}
+	
+	public double getStopX(){		
+		if( startX != this.x ){
+			return this.x;
+		}else{
+			return this.x + this.width;
+		}
+	}
+	
+	public double getStopY(){
+		if( startY != this.y ){
+			return this.y;
+		}else{
+			return this.y + this.height;
+		}		
+	}
+	
 	public double getX1() {
 		return getX();
 	}
