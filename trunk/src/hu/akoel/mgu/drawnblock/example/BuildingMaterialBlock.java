@@ -7,12 +7,11 @@ import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.awt.image.BufferedImage;
+import java.math.BigDecimal;
 
 import hu.akoel.mgu.drawnblock.DrawnBlock;
 
 public class BuildingMaterialBlock extends DrawnBlock{
-		
-	private static final long serialVersionUID = -292023974833641013L;
 	
 	private static final Color NORMAL_COLOR = Color.blue;
 	private static final Stroke NORMAL_STROKE = new BasicStroke(1);
@@ -30,7 +29,7 @@ public class BuildingMaterialBlock extends DrawnBlock{
 	private static final Stroke INPROCESS_STROKE = new BasicStroke(3);
 	private static final Color INPROCESS_BACKGROUND = Color.black;
 		
-	public BuildingMaterialBlock(Status status, double x1, double y1) {
+	public BuildingMaterialBlock(Status status, BigDecimal x1,BigDecimal y1) {
 		super(status, x1, y1);
 		
 		int patternSize = 15;

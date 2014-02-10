@@ -4,13 +4,15 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
+import java.math.BigDecimal;
 
 import hu.akoel.mgu.MGraphics;
 
 
-public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implements Cloneable{
+//public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implements Cloneable{
+public abstract class DrawnBlock extends Block{
 	
-	private static final long serialVersionUID = -3676065835228116831L;
+//	private static final long serialVersionUID = -3676065835228116831L;
 
 	public static enum Status{
 		NORMAL,
@@ -34,11 +36,6 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 	private static final Color INPROCESS_COLOR = Color.red;
 	private static final Stroke INPROCESS_STROKE = new BasicStroke(3);
 	private static final Color INPROCESS_BACKGROUND = null;
-	
-	java.lang.Double minLength = null;
-	java.lang.Double minWidth = null;
-	java.lang.Double maxLength = null;
-	java.lang.Double maxWidth = null;
 	
 	private Status status;
 	
@@ -66,15 +63,10 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 	private Stroke inprocessStroke;
 	private Color inprocessBackgroundColor;
 	private TexturePaint inprocessTexturePaint;
-	
-	private double startX, startY;
-	
-	public DrawnBlock( Status status, double x1, double y1 ){
-		super( x1, y1, 0, 0 );
-		
-		this.startX = x1;
-		this.startY = y1;
-		
+
+	public DrawnBlock( Status status, BigDecimal x1, BigDecimal y1 ){
+		super( x1, y1 );
+				
 		this.status = status;
 		
 		setNormal( NORMAL_COLOR, NORMAL_STROKE, NORMAL_BACKGROUND );
@@ -85,11 +77,9 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		refreshStatus();
 	}
 	
-	public DrawnBlock( Status status, double x1, double y1, java.lang.Double minLength, java.lang.Double maxLength, java.lang.Double minWidth, java.lang.Double maxWidth ){
-		super( x1, y1, 0, 0 );
-		
-		this.startX = x1;
-		this.startY = y1;
+	public DrawnBlock( Status status, BigDecimal x1, BigDecimal y1, BigDecimal minLength, BigDecimal maxLength, BigDecimal minWidth, BigDecimal maxWidth ){
+
+		super( x1, y1 );
 		
 		this.minLength = minLength;
 		this.maxLength = maxLength;
@@ -148,122 +138,81 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		setStatus( status );
 	}	
 	
-	public boolean enabledToChange( double x, double y ){
-		double w, h;
-		
-		if( x < this.startX ){
-			w =  this.startX - x;
-		}else{
-			w = x - this.startX;
-		}
-		
-		if( y < this.startY ){
-			h = this.startY - y;
-		}else{
-			h = y - this.startY;
-		}
+	public boolean enabledToChange( BigDecimal x, BigDecimal y ){
+		BigDecimal w = getWidth();
+		BigDecimal h = getHeight();
 		
 		// Ketiranyu korlatozas van megadva
 		if( null != maxWidth && null != maxLength ){
 
-			if( !( ( h <= maxWidth && w <= maxLength ) || (  w <= maxWidth && h <= maxLength ) ) ){
+			if( !( ( h.compareTo(maxWidth) <= 0 && w.compareTo(maxLength) <= 0 ) || ( w.compareTo(maxWidth) <=0 && h.compareTo(maxLength) <= 0) ) ){
 			
-			//if( ( h <= maxWidth && w > maxLength ) || ( w <= maxWidth && h > maxLength ) || ( h <= maxLength && w > maxWidth ) || ( w <= maxLength && h > maxWidth ) || ( w > maxLength && h > maxWidth ) || ( h > maxLength && w > maxWidth ) ){
 				return false;
 			}
-		
+				
 		// Csak az egyik oldalnak van megadva korlatozas
 		} else if( null != maxWidth ){
+
+			if( h.compareTo(maxWidth) > 0 && w.compareTo( maxWidth) > 0){
 			
-			if( h > maxWidth && w > maxWidth ){
 				return false;			
 			}
-			
+					
 		// Csak az egyik oldalnak van megadva korlatozas
 		} else if( null != maxLength ){
-						
-			if( h > maxLength && w > maxLength ){
+
+			if( h.compareTo(maxLength) > 0 && w.compareTo(maxLength) > 0 ){
+			
 				return false;
 			}
 		}
 		return true;
+				
+//		if( x < this.startX ){
+//			w =  this.startX - x;
+//		}else{
+//			w = x - this.startX;
+//		}
 		
-	}
-	
-	
-	public void changeSize( double x, double y ){
+//		if( y < this.startY ){
+//			h = this.startY - y;
+//		}else{
+//			h = y - this.startY;
+//		}
 		
-		if( x <= this.startX ){
-			this.width =  this.startX - x;
-			this.x = x;
-		}else{
-			this.width = x - this.startX;
-			this.x = startX;
-		}
+//		// Ketiranyu korlatozas van megadva
+//		if( null != maxWidth && null != maxLength ){
+//			if( !( ( h <= maxWidth && w <= maxLength ) || (  w <= maxWidth && h <= maxLength ) ) ){
+//				return false;
+//			}
+//		// Csak az egyik oldalnak van megadva korlatozas
+//		} else if( null != maxWidth ){
+//			if( h > maxWidth && w > maxWidth ){
+//				return false;			
+//			}
+//		// Csak az egyik oldalnak van megadva korlatozas
+//		} else if( null != maxLength ){
+//			if( h > maxLength && w > maxLength ){
+//				return false;
+//			}
+//		}
+//		return true;
 		
-		if( y <= this.startY ){
-			this.height = this.startY - y;
-			this.y = y;
-		}else{
-			this.height = y - this.startY;
-			this.y = startY;
-		}
-		
-	}
-	
-	public double getStartX(){
-		return this.startX;
-	}
-	
-	public double getStartY(){
-		return this.startY;
-	}
-	
-	public double getStopX(){		
-		if( startX != this.x ){
-			return this.x;
-		}else{
-			return this.x + this.width;
-		}
-	}
-	
-	public double getStopY(){
-		if( startY != this.y ){
-			return this.y;
-		}else{
-			return this.y + this.height;
-		}		
-	}
-	
-	public double getX1() {
-		return getX();
-	}
-	
-	public double getY1() {
-		return getY();
-	}
-	
-	public double getX2() {
-		return getX() + getWidth();
 	}
 
-	public double getY2() {
-		return getY() + getHeight();
-	}
-
-	public java.lang.Double getMinLength() {
+	public BigDecimal getMinLength() {
 		return minLength;
 	}
 
-	public java.lang.Double getMinWidth() {
+	public BigDecimal getMinWidth() {
 		return minWidth;
 	}
 
-	public java.lang.Double getMaxLength() {
+	public BigDecimal getMaxLength() {
 		return maxLength;
 	}
 
-	public java.lang.Double getMaxWidth() {
+	public BigDecimal getMaxWidth() {
 		return maxWidth;
 	}
 
@@ -400,7 +349,11 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 	}
 
 	public void draw( MGraphics g2 ){
-
+		double x1 = getX1().doubleValue();
+		double y1 = getY1().doubleValue();
+		double x2 = getX2().doubleValue();
+		double y2 = getY2().doubleValue();		
+		
 		if( null != texturePaint ){
 			g2.setPaint( texturePaint );
 		}
@@ -408,76 +361,100 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 		if( null != backgroundColor ){
 			g2.setColor( backgroundColor );
 		}
-		g2.fillRectangle( getX1(), getY1(), getX2(), getY2());
+		g2.fillRectangle( x1, y1, x2, y2 );
 		
 		g2.setStroke( stroke );
 		g2.setColor( color );
-		g2.drawRectangle(getX1(), getY1(), getX2(), getY2());
+		g2.drawRectangle( x1, y1, x2, y2 );
 	}
 	
-	public boolean intersectsOrContains( java.awt.geom.Rectangle2D.Double block2 ){
-		double tx1 = getX1();
-		double ty1 = getY1();
-		double tx2 = getX2();
-		double ty2 = getY2();
+	public boolean intersectsOrContains( Block block2 ){
+		BigDecimal tx1 = getX1();
+		BigDecimal ty1 = getY1();
+		BigDecimal tx2 = getX2();
+		BigDecimal ty2 = getY2();
 		
-		double rx1 = block2.getX();
-		double ry1 = block2.getY();
-		double rx2 = block2.getX() + block2.getWidth();
-		double ry2 = block2.getY() + block2.getHeight();	
+		BigDecimal rx1 = block2.getX1();
+		BigDecimal ry1 = block2.getY1();
+		BigDecimal rx2 = block2.getX2();
+		BigDecimal ry2 = block2.getY2();	
 		
 		if( 
-				( 
-						( rx1 >= tx1 && rx2 <= tx2 && ( ( rx1 != tx1 || rx2 != tx1 || tx1 == tx2 ) && ( rx1 != tx2 || rx2 != tx2 || tx1 == tx2 ) ) ) || 
-						( rx1 < tx1 && rx2 > tx1 ) || 
-						( rx1 < tx2 && rx2 > tx2 ) || 
-						( rx1 < tx1 && rx2 > tx2 ) 
+				(
+						(rx1.compareTo( tx1 ) >= 0 && rx2.compareTo( tx2 ) <= 0 && ( ( rx1.compareTo( tx1 ) != 0 || rx2.compareTo( tx1 ) != 0 || tx1.compareTo(tx2) == 0 ) && ( rx1.compareTo(tx2) != 0 || rx2.compareTo(tx2) != 0 || tx1.compareTo(tx2) == 0)  ) ) ||
+						(rx1.compareTo(tx1) < 0 && rx2.compareTo(tx1) > 0 ) ||
+						(rx1.compareTo(tx2) < 0 && rx2.compareTo( tx2 ) > 0 ) ||
+						(rx1.compareTo(tx1) < 0 && rx2.compareTo(tx2) > 0)
 				) &&
 				
-				( 
-						( ry1 >= ty1 && ry2 <= ty2 && ( ( ry1 != ty1 || ry2 != ty1 || ty1 == ty2 ) && ( ry1 != ty2 || ry2 != ty2 || ty1 == ty2 ) ) ) || 
-						( ry1 < ty1 && ry2 > ty1 ) || 
-						( ry1 < ty2 && ry2 > ty2 ) || 
-						( ry1 < ty1 && ry2 > ty2 ) 
-				)
-	
+				(
+						(ry1.compareTo(ty1) >= 0 && ry2.compareTo(ty2) <= 0 && ( ( ry1.compareTo( ty1 ) != 0 || ry2.compareTo( ty1 ) != 0 || ty1.compareTo(ty2) == 0 ) && ( ry1.compareTo(ty2) != 0 || ry2.compareTo(ty2) != 0 || ty1.compareTo(ty2) == 0)  ) ) ||
+						(ry1.compareTo(ty1) < 0 &&  ry2.compareTo(ty1) > 0 ) ||
+						(ry1.compareTo(ty2) < 0 &&  ry2.compareTo(ty2) > 0 ) ||
+						(ry1.compareTo(ty1) < 0 &&  ry2.compareTo(ty2) > 0)
+				) 
+				
 		){
 			return true;
 		}
 		
 		return false;
 		
+		
+		
+//		if( 
+//				( 
+//						( rx1 >= tx1 && rx2 <= tx2 && ( ( rx1 != tx1 || rx2 != tx1 || tx1 == tx2 ) && ( rx1 != tx2 || rx2 != tx2 || tx1 == tx2 ) ) ) || 
+//						( rx1 < tx1 && rx2 > tx1 ) || 
+//						( rx1 < tx2 && rx2 > tx2 ) || 
+//						( rx1 < tx1 && rx2 > tx2 ) 
+//				) &&
+//				( 
+//						( ry1 >= ty1 && ry2 <= ty2 && ( ( ry1 != ty1 || ry2 != ty1 || ty1 == ty2 ) && ( ry1 != ty2 || ry2 != ty2 || ty1 == ty2 ) ) ) || 
+//						( ry1 < ty1 && ry2 > ty1 ) || 
+//						( ry1 < ty2 && ry2 > ty2 ) || 
+//						( ry1 < ty1 && ry2 > ty2 ) 
+//				)	
+//		){
+//			return true;
+//		}
+//		return false;
+		
 	}
 	
-	public boolean intersects( java.awt.geom.Rectangle2D.Double block2 ) {
+	public boolean intersects( Block block2 ) {
 
-		double tx1 = getX1();
-		double ty1 = getY1();
-		double tx2 = getX2();
-		double ty2 = getY2();
+		BigDecimal tx1 = getX1();
+		BigDecimal ty1 = getY1();
+		BigDecimal tx2 = getX2();
+		BigDecimal ty2 = getY2();
+		BigDecimal tWidth = getWidth();
+		BigDecimal tHeight = getHeight();
 		
-		double rx1 = block2.getX();
-		double ry1 = block2.getY();
-		double rx2 = block2.getX() + block2.getWidth();
-		double ry2 = block2.getY() + block2.getHeight();
+		BigDecimal rx1 = block2.getX1();
+		BigDecimal ry1 = block2.getY1();
+		BigDecimal rx2 = block2.getX2();
+		BigDecimal ry2 = block2.getY2();
+		BigDecimal rWidth = block2.getWidth();
+		BigDecimal rHeight = block2.getHeight();
 		
-		if (tx1 < rx1) tx1 = rx1;
-		if (ty1 < ry1) ty1 = ry1;
-		if (tx2 > rx2) tx2 = rx2;
-		if (ty2 > ry2) ty2 = ry2;
-		tx2 -= tx1;
-		ty2 -= ty1;
-
+		if( tx1.compareTo( rx1 ) == -1 ) tx1 = rx1;
+		if( ty1.compareTo( ry1 ) == -1 ) ty1 = ry1;
+		if( tx2.compareTo( rx2 ) == 1 ) tx2 = rx2;
+		if( ty2.compareTo( ry2 ) == 1 ) ty2 = ry2;
+	
+		tx2 = tx2.subtract( tx1 );
+		ty2 = ty2.subtract( ty1 );
+		
 		//Biztos, hogy keresztezi vagy tartalmazza az egyik a masikat
-		if( ty2 >= 0 && tx2 >= 0 ){
-			tx2 += tx1;
-			ty2 += ty1;
-
+		if( ty2.compareTo(new BigDecimal("0")) >= 0 ){
+			tx2 = tx2.add( tx1 );
+			ty2 = ty2.add( ty1 );
+			
 			//Valamelyik tartalmazza a masikat
-			if( 
-					( ( ( tx2 - tx1 ) == ( getX2() - getX1() ) ) || ( ( tx2 - tx1 ) == ( block2.getWidth() ) ) ) &&
-					( ( ( ty2 - ty1 ) == ( getY2() - getY1() ) ) || ( ( ty2 - ty1 ) == ( block2.getHeight() ) ) ) 
-
+			if(
+					( tx2.subtract( tx1 ).compareTo( tWidth ) == 0 || tx2.subtract( tx1 ).compareTo( rWidth ) == 0 ) &&
+					( ty2.subtract( ty1 ).compareTo( tHeight ) == 0 || ty2.subtract( ty1 ).compareTo( rHeight ) == 0 )
 			){
 				return false;
 
@@ -485,15 +462,41 @@ public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implem
 			}else{
 				return true;
 			}
-			
 		}else{
-			
 			return false;
 		}
+		
+//		if (tx1 < rx1) tx1 = rx1;
+//		if (ty1 < ry1) ty1 = ry1;
+//		if (tx2 > rx2) tx2 = rx2;
+//		if (ty2 > ry2) ty2 = ry2;
+//		tx2 -= tx1;
+//		ty2 -= ty1;
+
+		//Biztos, hogy keresztezi vagy tartalmazza az egyik a masikat
+//		if( ty2 >= 0 && tx2 >= 0 ){
+//			tx2 += tx1;
+//			ty2 += ty1;
+
+			//Valamelyik tartalmazza a masikat
+//			if( 
+//					( ( ( tx2 - tx1 ) == ( getX2() - getX1() ) ) || ( ( tx2 - tx1 ) == ( block2.getWidth() ) ) ) &&
+//					( ( ( ty2 - ty1 ) == ( getY2() - getY1() ) ) || ( ( ty2 - ty1 ) == ( block2.getHeight() ) ) ) 
+//
+//			){
+//				return false;
+//			//Csak keresztezesrol van szo
+//			}else{
+//				return true;
+//			}			
+//		}else{
+//			return false;
+//		}
+					
 	}
 	
-	@Override
-	public Object clone() {
-		return super.clone();
-	}
+//	@Override
+//	public Object clone() {
+//		return super.clone();
+//	}
 }
