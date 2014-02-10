@@ -8,6 +8,10 @@ import java.awt.Stroke;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -28,6 +32,31 @@ import hu.akoel.mgu.values.TranslateValue;
 public class DrawnBlockCanvas extends MCanvas{
 
 	private static final long serialVersionUID = -8308688255617119442L;
+	
+	public static enum Precision{
+		ONE_10( "#.#", 1 ),
+		ONE_100( "#.##", 2 ),
+		ONE_1000( "#.###", 3),
+		ONE_10000( "#.####", 4),
+		ONE_100000( "#.#####", 5);
+		
+		String decimalFormat;
+		int precision;
+		private Precision( String decimalFormat, int precision ){
+			this.decimalFormat = decimalFormat;
+			this.precision = precision;
+		}
+		
+		String getDecimalFormat(){
+			return this.decimalFormat;
+		}
+		
+		int getPrecision(){
+			return precision;
+		}
+	}
+	
+	private DecimalFormatSymbols decimalSymbol = new DecimalFormatSymbols();			
 	
 	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
 		
@@ -51,6 +80,58 @@ public class DrawnBlockCanvas extends MCanvas{
 	private boolean neededGridSnap = false;
 	private boolean neededSideDivisionSnap = false;
 	private Grid myGrid;
+	
+	private Precision precision; 
+	
+	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, Precision precision ) {
+		super(borderType, background, possiblePixelPerUnits, positionToMiddle );		
+		commonConstructor( precision );
+	}
+	
+	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, SizeValue boundSize, Precision precision ) {
+		super(borderType, background, possiblePixelPerUnits, positionToMiddle, boundSize );
+		commonConstructor( precision );
+	}
+
+	private void commonConstructor( Precision precision ){
+		
+		this.decimalSymbol.setDecimalSeparator('.');		
+		this.precision = precision;
+		
+		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
+//		this.addMouseMotionListener( drawnBlockInFocusListener );
+		
+		//A kozepso reteg also felet hasznaljuk a DrawnBlock-ok megjelenitesere
+		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.UNDER );
+		
+		//A kurzor mozgasat vizsgalolo listener
+		this.addMouseInputListener( drawnBlockDrawListener );
+			
+		//Ctrl-Z figyelese
+		this.addKeyListener( new KeyAdapter(){
+			public void keyPressed(KeyEvent ke){
+
+				//ctrl-z
+				if( ke.getKeyCode() == KeyEvent.VK_Z && ( ke.getModifiers() & KeyEvent.CTRL_MASK) != 0){
+					int lastElement = drawnBlockList.size() - 1;
+					if( lastElement >= 0 ){
+						
+						//Legutoljara elhelyezett elem kitorlese
+						removeDrawnBlock( lastElement );
+						//drawnBlockList.remove( lastElement );
+
+						//Ujrarajzoltatom a Canvas-t az utolsonak elhelyezett DrawnBlock nelkul
+						revalidateAndRepaintCoreCanvas();
+					}
+					
+				}
+			 }		
+		});
+	}
+
+	public Precision getPrecision(){
+		return precision;
+	}
 	
 	/**
 	 * Engedelyezi a masodlagos kurzor legkozelebbi DrawnBlock oldalhoz, vagy annak
@@ -113,48 +194,6 @@ public class DrawnBlockCanvas extends MCanvas{
 		return this.snapSideDivision;
 	}
 	
-	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle ) {
-		super(borderType, background, possiblePixelPerUnits, positionToMiddle );		
-		commonConstructor();
-	}
-	
-	public DrawnBlockCanvas(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, TranslateValue positionToMiddle, SizeValue boundSize ) {
-		super(borderType, background, possiblePixelPerUnits, positionToMiddle, boundSize );
-		commonConstructor();
-	}
-
-	private void commonConstructor(){
-		
-		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
-//		this.addMouseMotionListener( drawnBlockInFocusListener );
-		
-		//A kozepso reteg also felet hasznaljuk a DrawnBlock-ok megjelenitesere
-		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.UNDER );
-		
-		//A kurzor mozgasat vizsgalolo listener
-		this.addMouseInputListener( drawnBlockDrawListener );
-			
-		//Ctrl-Z figyelese
-		this.addKeyListener( new KeyAdapter(){
-			public void keyPressed(KeyEvent ke){
-
-				//ctrl-z
-				if( ke.getKeyCode() == KeyEvent.VK_Z && ( ke.getModifiers() & KeyEvent.CTRL_MASK) != 0){
-					int lastElement = drawnBlockList.size() - 1;
-					if( lastElement >= 0 ){
-						
-						//Legutoljara elhelyezett elem kitorlese
-						removeDrawnBlock( lastElement );
-						//drawnBlockList.remove( lastElement );
-
-						//Ujrarajzoltatom a Canvas-t az utolsonak elhelyezett DrawnBlock nelkul
-						revalidateAndRepaintCoreCanvas();
-					}
-					
-				}
-			 }		
-		});
-	}
 
 	public void setNeedFocus( boolean needFocus){
 		this.needFocus = needFocus;
@@ -276,7 +315,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	class DrawnBlockDrawListener implements MouseInputListener{
 		
-		private PositionValue secondaryStartCursorPosition = new PositionValue(0, 0);
+		//private PositionValue secondaryStartCursorPosition = new PositionValue(0, 0);
+//		BigDecimal secondaryCursorPosition
 		
 		private boolean drawnStarted = false;
 		private DrawnBlock drawnBlockToDraw = null;
@@ -296,14 +336,14 @@ public class DrawnBlockCanvas extends MCanvas{
 			if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted && null != drawnBlockFactory ){
 				
 				//A kurzor pozicioja
-				secondaryStartCursorPosition.setX( secondaryCursor.getX() );
-				secondaryStartCursorPosition.setY( secondaryCursor.getY() );
+//				secondaryStartCursorPosition.setX( secondaryCursor.getX() );
+//				secondaryStartCursorPosition.setY( secondaryCursor.getY() );
 
 				//Jelzem, hogy elkezdodott a rajzolas
 				drawnStarted = true;
 				
 				//A szerkesztendo DrawnBlock legyartasa
-				drawnBlockToDraw = drawnBlockFactory.getNewDrawnBlock( Status.INPROCESS, secondaryStartCursorPosition.getX(), secondaryStartCursorPosition.getY() ); 
+				drawnBlockToDraw = drawnBlockFactory.getNewDrawnBlock( Status.INPROCESS, secondaryCursor.getX(), secondaryCursor.getY() ); 
 						
 				//Atmeneti listaba helyezi a most rajzolas alatt levo DrawnBlock-ot
 				addTemporaryDrawnBlock( drawnBlockToDraw );
@@ -332,7 +372,7 @@ public class DrawnBlockCanvas extends MCanvas{
 				drawnStarted = false;
 				
 				if( drawnBlockToDraw.getX1() != drawnBlockToDraw.getX2() || drawnBlockToDraw.getY1() != drawnBlockToDraw.getY2()){
-												
+//System.err.println(drawnBlockToDraw.getX1() + ", " + drawnBlockToDraw.getY1() + " | " + drawnBlockToDraw.getX2() + ", " + drawnBlockToDraw.getY2()  );												
 					//A lehelyezendo DrawnBlokk statusza NORMAL lesz
 					drawnBlockToDraw.setStatus( Status.NORMAL );
 				
@@ -427,15 +467,15 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			DrawnBlock drawnBlockToArrangeX = null;
 			DrawnBlock drawnBlockToArrangeY = null;
 			
-			Double positionX = null;
-			Double positionY = null;
+			BigDecimal positionX = null;
+			BigDecimal positionY = null;
 			
-			public void addDrawnBlockToArrangeX( DrawnBlock drawnBlockToArrange, Double position ){
+			public void addDrawnBlockToArrangeX( DrawnBlock drawnBlockToArrange, BigDecimal position ){
 				this.drawnBlockToArrangeX = drawnBlockToArrange;
 				this.positionX = position;
 			}
 
-			public void addDrawnBlockToArrangeY( DrawnBlock drawnBlockToArrange, Double position ){
+			public void addDrawnBlockToArrangeY( DrawnBlock drawnBlockToArrange, BigDecimal position ){
 				this.drawnBlockToArrangeY = drawnBlockToArrange;
 				this.positionY = position;
 			}
@@ -448,14 +488,25 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				return drawnBlockToArrangeY;
 			}
 			
-			public Double getPositionX(){
+			public BigDecimal getPositionX(){
 				return positionX;
 			}
 
-			public Double getPositionY(){
+			public BigDecimal getPositionY(){
 				return positionY;
 			}
 
+		}
+		
+		/**
+		 * A megadott pontossagra kerekiti a parametert
+		 * 
+		 * @param val
+		 * @return
+		 */
+		public BigDecimal getRoundedWithPrecision( double val ){
+//System.err.println( val + " = " + new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val));			
+			return new BigDecimal(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
 		}
 		
 		/**
@@ -463,12 +514,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		 * 
 		 * @param e
 		 */
-		private void findOutCursorPosition( MouseEvent e ){
-
-			double tmpX1, tmpX2, tmpY1, tmpY2;
+		private void findOutCursorPosition( MouseEvent e ){			
 			
-			double x = getWorldXByPixel( e.getX() );
-			double y = getWorldYByPixel( e.getY() );
+			BigDecimal tmpX1, tmpX2, tmpY1, tmpY2;
+			
+			BigDecimal x = getRoundedWithPrecision( getWorldXByPixel( e.getX() ) );
+			BigDecimal y = getRoundedWithPrecision( getWorldYByPixel( e.getY() ) );
 			
 			//-------------------------------------------------------------------------------
 			//
@@ -482,11 +533,12 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			//
 			//-------------------------------------------------------------------------------
 			int delta = getSnapDelta();
-			double dx = getWorldXLengthByPixel( delta );
-			double dy = getWorldXLengthByPixel( delta );
 			
-			double minDX = Double.MAX_VALUE;
-			double minDY = Double.MAX_VALUE;
+			BigDecimal dx = new BigDecimal( getWorldXLengthByPixel( delta ) );
+			BigDecimal dy = new BigDecimal( getWorldXLengthByPixel( delta ) );
+			
+			BigDecimal minDX = new BigDecimal( Double.MAX_VALUE );
+			BigDecimal minDY = new BigDecimal( Double.MAX_VALUE );
 			Arrange arrange = new Arrange();
 			
 			//--------------------------------------------------------
@@ -495,115 +547,157 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			//
 			//--------------------------------------------------------
 			if( getNeededSideExtentionSnap() ){
-			
+
 				for( DrawnBlock db : drawnBlockList ){
 				
 				//Ha megfelelo kozelsegben vagyok az egyik lehelyezett DrawnBlock-hoz. 
 				//if( db.intersects( new Block( x-dx, y-dy, x+dx, y+dy) ) ){
 					
 					//Bal oldalrol kozeliti a DrawnBlock baloldalat
-					if( ( db.getX1() - x ) > 0 && ( db.getX1() - x ) < dx ){
+					if( db.getX1().subtract( x ).compareTo( new BigDecimal("0" ) ) > 0 && db.getX1().subtract( x ).compareTo( dx ) < 0 ){
+					//if( ( db.getX1() - x ) > 0 && ( db.getX1() - x ) < dx ){
 						
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
 						if(
-								( ( db.getX1() - x ) < minDX ) || 
-								( ( db.getX1() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() ) 
+								( db.getX1().subtract( x ).compareTo( minDX ) < 0 ) ||
+								( db.getX1().subtract( x ).compareTo( minDX ) == 0 && y.compareTo(db.getY1()) >= 0 && y.compareTo( db.getY2()) <= 0 )
+//								( ( db.getX1() - x ) < minDX ) || 
+//								( ( db.getX1() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() ) 
 						){
-							minDX = db.getX1() - x;
-							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
+							minDX = db.getX1().subtract( x );
+							arrange.addDrawnBlockToArrangeX( db, db.getX1() );
+//							minDX = db.getX1() - x;
+//							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
 						}
 						
 					//!!! Bal oldalrol kozeliti a DrawnBlock jobboldalat !!!
-					}else if( ( db.getX2() - x ) > 0 && ( db.getX2() - x ) < dx ){
+					}else if( db.getX2().subtract( x ).compareTo(new BigDecimal("0" )) > 0 && db.getX2().subtract( x ).compareTo( dx ) < 0 ){
+					//}else if( ( db.getX2() - x ) > 0 && ( db.getX2() - x ) < dx ){
 							
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
 						if( 
-								( ( db.getX2() - x ) < minDX ) ||
-								( ( db.getX2() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
+								( db.getX2().subtract( x ).compareTo( minDX ) < 0 ) ||
+								( db.getX2().subtract( x ).compareTo( minDX ) == 0 &&  y.compareTo( db.getY1()) >= 0 && y.compareTo( db.getY2() ) <= 0 )
+//								( ( db.getX2() - x ) < minDX ) ||
+//								( ( db.getX2() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
 						){
-							minDX = db.getX2() - x;
+							minDX = db.getX2().subtract( x );
 							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
+//							minDX = db.getX2() - x;
+//							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
 						}
 						
 					//Jobb oldalrol kozeliti a DrawnBlock jobb oldalat
-					}else if( ( x - db.getX2() ) > 0 && ( x - db.getX2() ) < dx ){
+					}else if( x.subtract( db.getX2() ).compareTo( new BigDecimal("0" )) > 0 && x.subtract( db.getX2() ).compareTo( dx ) < 0 ){
+//					}else if( ( x - db.getX2() ) > 0 && ( x - db.getX2() ) < dx ){
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
 						if(
-								( ( x - db.getX2() ) < minDX ) ||
-								( ( x - db.getX2() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
+								( x.subtract( db.getX2() ).compareTo( minDX ) < 0 ) ||
+								( x.subtract( db.getX2() ).compareTo( minDX ) == 0 &&  y.compareTo( db.getY1() ) >= 0 && y.compareTo( db.getY2() ) <= 0 )
+//								( ( x - db.getX2() ) < minDX ) ||
+//								( ( x - db.getX2() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
 						){
-							minDX = x - db.getX2();
-							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
+							minDX = x.subtract( db.getX2() );
+							arrange.addDrawnBlockToArrangeX( db, db.getX2() );			
+//							minDX = x - db.getX2();
+//							arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
 						}
 					
 					//!!! Jobb oldalrol kozeliti a DrawnBlock bal oldalat !!!
-					}else if( ( x - db.getX1() ) > 0 && ( x - db.getX1() ) < dx ){
+					}else if( x.subtract( db.getX1() ).compareTo( new BigDecimal("0")) > 0 && x.subtract( db.getX1() ).compareTo( dx ) < 0 ){
+//					}else if( ( x - db.getX1() ) > 0 && ( x - db.getX1() ) < dx ){
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
 						if( 
-								( ( x - db.getX1() ) < minDX ) ||
-								( ( x - db.getX1() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
+								( x.subtract( db.getX1() ).compareTo( minDX ) < 0 ) ||
+								( x.subtract( db.getX1() ).compareTo( minDX ) == 0 &&  y.compareTo( db.getY1() ) >= 0 && y.compareTo( db.getY2() ) <= 0 )
+//								( ( x - db.getX1() ) < minDX ) ||
+//								( ( x - db.getX1() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
 						){
-							minDX = x - db.getX1();
-							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
+							minDX = x.subtract( db.getX1() );
+							arrange.addDrawnBlockToArrangeX( db, db.getX1() );
+//							minDX = x - db.getX1();
+//							arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
 						}						
 					}
 					
 					//Fentrol kozeliti a DrawnBlock tetejet
-					if( ( y - db.getY2() ) > 0 && ( y - db.getY2() ) < dy ){
+					if( y.subtract( db.getY2() ).compareTo( new BigDecimal("0")) > 0 && y.subtract( db.getY2() ).compareTo( dy ) < 0 ){
+//					if( ( y - db.getY2() ) > 0 && ( y - db.getY2() ) < dy ){						
 						
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 						if(
-								( ( y - db.getY2() ) < minDY ) ||
-								( ( y - db.getY2() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+								( y.subtract( db.getY2() ).compareTo( minDY ) < 0 ) ||
+								( y.subtract( db.getY2() ).compareTo( minDY ) == 0 &&  x.compareTo( db.getX1() ) >= 0 && x.compareTo( db.getX2() ) <= 0 )
+//								( ( y - db.getY2() ) < minDY ) ||
+//								( ( y - db.getY2() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 						){
-							minDY = y - db.getY2();
-							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
+							minDY = y.subtract( db.getY2() );
+							arrange.addDrawnBlockToArrangeY( db, db.getY2() );
+//							minDY = y - db.getY2();
+//							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
 						}
 					
 					//!!! Fentrol kozeliti a DrawBlock aljat !!!
-					}else if( ( y - db.getY1() ) > 0 && ( y - db.getY1() ) < dy ){
+					}else if( y.subtract( db.getY1() ).compareTo( new BigDecimal("0")) > 0 && y.subtract( db.getY1() ).compareTo( dy ) < 0 ){
+//					}else if( ( y - db.getY1() ) > 0 && ( y - db.getY1() ) < dy ){						
 						
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 						if( 
-								( ( y - db.getY1() ) < minDY ) ||
-								( ( y - db.getY1() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+								( y.subtract( db.getY1() ).compareTo( minDY ) < 0 )||
+								( y.subtract( db.getY1() ).compareTo( minDY ) == 0 &&  x.compareTo( db.getX1() ) >= 0 && x.compareTo( db.getX2() ) <= 0 )
+//								( ( y - db.getY1() ) < minDY ) ||
+//								( ( y - db.getY1() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 						){
-							minDY = y - db.getY1();
-							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
+							minDY = y.subtract( db.getY1() );
+							arrange.addDrawnBlockToArrangeY( db, db.getY1() );
+//							minDY = y - db.getY1();
+//							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
 						}						
 					
 					//Alulrol kozeliti a DrawnBlock aljat
-					}else if( ( db.getY1() - y ) > 0 && ( db.getY1() - y ) < dy ){
+					}else if( db.getY1().subtract( y ).compareTo(new BigDecimal("0")) > 0 && db.getY1().subtract( y ).compareTo(dy) < 0 ){
+//					}else if( ( db.getY1() - y ) > 0 && ( db.getY1() - y ) < dy ){						
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 						if( 
-								( ( db.getY1() - y ) < minDY ) ||
-								( ( db.getY1() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+								( db.getY1().subtract( y ).compareTo( minDY ) < 0 ) ||
+								( db.getY1().subtract( y ).compareTo( minDY ) == 0 &&  x.compareTo( db.getX1() ) >= 0 && x.compareTo( db.getX2() ) <= 0 )
+//								( ( db.getY1() - y ) < minDY ) ||
+//								( ( db.getY1() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 						){
-							minDY = db.getY1() - y;
-							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
+							minDY = db.getY1().subtract( y );
+							arrange.addDrawnBlockToArrangeY( db, db.getY1() );			
+//							minDY = db.getY1() - y;
+//							arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
 						}						
 					
 					//!!! Alulrol kozeliti a DrawnBlock tetejet !!!
-					}else if( ( db.getY2() - y ) > 0 && ( db.getY2() - y ) < dy ){
+					}else if( db.getY2().subtract( y ).compareTo(new BigDecimal("0")) > 0 && db.getY2().subtract(y).compareTo(dy) < 0 ){
+//					}else if( ( db.getY2() - y ) > 0 && ( db.getY2() - y ) < dy ){						
 
 						//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 						//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 						if( 
-								( ( db.getY2() - y ) < minDY ) ||
-								( ( db.getY2() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
+								( db.getY2().subtract( y ).compareTo( minDY ) < 0 ) ||
+								( db.getY2().subtract( y ).compareTo( minDY ) == 0 &&  x.compareTo(db.getX1()) >= 0 && x.compareTo( db.getX2() ) <= 0 )
+								
+//								( ( db.getY2() - y ) < minDY ) ||
+//								( ( db.getY2() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 						){
-							minDY = db.getY2() - y;
-							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
+							minDY = db.getY2().subtract( y );
+							arrange.addDrawnBlockToArrangeY( db, db.getY2() );
+//							minDY = db.getY2() - y;
+//							arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
+
 						}
 					}	
 				//}				
@@ -618,19 +712,32 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			
 			if( getNeededGridSnap() ){
 				
-				double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
-				double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
-			
+				BigDecimal xStart = new BigDecimal( String.valueOf(Math.round( ( x.doubleValue() ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX() ) );
+				BigDecimal yStart = new BigDecimal( String.valueOf(Math.round( ( y.doubleValue() ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY() ) );
+//				double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
+//				double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
+
+				
 				//Ha ez kozelebb van, mint az eddigi legkozelebbi
-				if( Math.abs( xStart - x ) < dx && Math.abs( xStart - x ) < minDX ){
-					minDX = Math.abs( xStart - x );
+				
+				if( xStart.subtract( x ).abs().compareTo( dx ) < 0 && xStart.subtract( x ).compareTo( minDX ) < 0 ){
+					minDX = xStart.subtract( x ).abs(); 
 					arrange.addDrawnBlockToArrangeX( null, xStart );				
 				}
 				
-				if( Math.abs( yStart - y ) < dy && Math.abs( yStart - y ) < minDY ){
-					minDY = Math.abs( yStart - y );
+				if( yStart.subtract( y ).abs().compareTo( dy ) < 0 && yStart.subtract( y ).compareTo( minDY ) < 0 ){
+					minDY = yStart.subtract( y ).abs(); 
 					arrange.addDrawnBlockToArrangeY( null, yStart );
 				}	
+				
+//				if( Math.abs( xStart - x ) < dx && Math.abs( xStart - x ) < minDX ){
+//					minDX = Math.abs( xStart - x );
+//					arrange.addDrawnBlockToArrangeX( null, xStart );				
+//				}
+//				if( Math.abs( yStart - y ) < dy && Math.abs( yStart - y ) < minDY ){
+//					minDY = Math.abs( yStart - y );
+//					arrange.addDrawnBlockToArrangeY( null, yStart );
+//				}	
 			
 			}
 					
@@ -652,24 +759,32 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			// Ha engedelyezett az oldal osztasra valo igazitas
 			//
 			//-------------------------------------------------
-			if( getNeededSideDivisionSnap() ){				
+			if( getNeededSideDivisionSnap() ){
 			
-				double sideDivision = getSnapSideDivision();
-				int cycle = (int)( 1 / sideDivision );
-			
+				BigDecimal sideDivision = new BigDecimal( String.valueOf( getSnapSideDivision() ) );
+				
+				int cycle = ( new BigDecimal("1").divide( sideDivision, getPrecision().getPrecision(), RoundingMode.HALF_UP ) ).intValue();
+		
 				//Fuggoleges oldalak meghosszabitasara tortent illesztes DE
 				//nem tortent a vizszintes oldalak meghosszabitasara illesztes
 				if( null != arrange.getDrawnBlockX() && null == arrange.getDrawnBlockY() ){
 			
 					//Az Y erteket valtoztathatjuk
 					DrawnBlock db = arrange.getDrawnBlockX();
-//System.err.println( db.getX1() + ", " + db.getX2() + ", " + db.getY1() + ", " + db.getY2() );				
-					for( int i = 1; i < cycle; i++ ){
-						double possibleNewPosition = db.getY1() + i * sideDivision * db.getHeight();
-						if( Math.abs( possibleNewPosition - y ) < dy ){
+		
+					for( int i = 1; i < cycle; i++ ){						
+						
+						BigDecimal possibleNewPosition = db.getY1().add( sideDivision.multiply(db.getHeight() ).multiply( new BigDecimal(i) ) );
+						if( possibleNewPosition.subtract(y).abs().compareTo(dy) < 0){
 							y = possibleNewPosition;
 							break;
 						}
+					
+						//double possibleNewPosition = db.getY1() + i * sideDivision * db.getHeight();
+						//if( Math.abs( possibleNewPosition - y ) < dy ){
+//							y = possibleNewPosition;
+//							break;
+//						}
 					}
 			
 				//Vizszintes oldalak meghosszabitasara tortent illeszted DE
@@ -680,11 +795,18 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 					DrawnBlock db = arrange.getDrawnBlockY();
 				
 					for( int i = 1; i < cycle; i++ ){
-						double possibleNewPosition = db.getX1() + i * sideDivision * db.getWidth();
-						if( Math.abs( possibleNewPosition - x ) < dx ){
+						
+						BigDecimal possibleNewPosition = db.getX1().add( sideDivision.multiply(db.getWidth() ).multiply( new BigDecimal(i) ) );
+						if( possibleNewPosition.subtract(x).abs().compareTo(dx) < 0){
 							x = possibleNewPosition;
 							break;
 						}
+						
+//						double possibleNewPosition = db.getX1() + i * sideDivision * db.getWidth();
+//						if( Math.abs( possibleNewPosition - x ) < dx ){
+//							x = possibleNewPosition;
+//							break;
+//						}
 					}
 				}
 			}
@@ -706,14 +828,18 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				for( DrawnBlock db: drawnBlockList ){
 				
 					//Beleesik a kurzor egy lehelyezett DrawnBlock belsejeben
-					if( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
+					if( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 && y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ){
+//					if( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
 
 						//Ha az elobbi X poziciot hasznalom, akkor kivul kerulok
-						if( ( secondaryCursor.getX() <= db.getX1() || secondaryCursor.getX() >= db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
+						if( ( secondaryCursor.getX().compareTo( db.getX1() ) <= 0 || secondaryCursor.getX().compareTo( db.getX2() ) >= 0 ) && ( y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ) ){
+//						if( ( secondaryCursor.getX() <= db.getX1() || secondaryCursor.getX() >= db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
 							x = secondaryCursor.getX();
 						
 						//Ha az elobbi Y poziciot hasznalom, akkor kivul kerulok
-						}else if( ( x > db.getX1() && x < db.getX2() ) && ( secondaryCursor.getY() <= db.getY1() || secondaryCursor.getY() >= db.getY2() ) ){
+						}else if( ( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 ) && ( secondaryCursor.getY().compareTo( db.getY1() ) <= 0 || secondaryCursor.getY().compareTo( db.getY2() ) >= 0 ) ){
+//						}else if( ( x > db.getX1() && x < db.getX2() ) && ( secondaryCursor.getY() <= db.getY1() || secondaryCursor.getY() >= db.getY2() ) ){
+							
 							y = secondaryCursor.getY();
 						
 						//Kulonben
@@ -733,28 +859,51 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				//
 				// A feltetelezett uj DrawnBlock koordinatainak nagysag szerinti rendezese
 				//
-				if( x <= secondaryStartCursorPosition.getX() ){
+				if( x.compareTo( drawnBlockToDraw.getStartX() ) <= 0 ){
 					tmpX1 = x;
-					tmpX2 = secondaryStartCursorPosition.getX();
+					tmpX2 = drawnBlockToDraw.getStartX();
 				}else{					
-					tmpX1 = secondaryStartCursorPosition.getX();
+					tmpX1 = drawnBlockToDraw.getStartX();
 					tmpX2 = x;
 				}
 				
-				if( y <= secondaryStartCursorPosition.getY() ){
+				if( y.compareTo( drawnBlockToDraw.getStartY() ) <= 0 ){
 					tmpY1 = y;
-					tmpY2 = secondaryStartCursorPosition.getY();
+					tmpY2 =  drawnBlockToDraw.getStartY();
 				}else{					
-					tmpY1 = secondaryStartCursorPosition.getY();
+					tmpY1 =  drawnBlockToDraw.getStartY();
 					tmpY2 = y;
 				}
+				
+				
+				
+//				if( x.compareTo( secondaryStartCursorPosition.getX() ) <= 0 ){
+//					tmpX1 = x;
+//					tmpX2 = secondaryStartCursorPosition.getX();
+//				}else{					
+//					tmpX1 = secondaryStartCursorPosition.getX();
+//					tmpX2 = x;
+//				}
+//				
+//				if( y <= secondaryStartCursorPosition.getY() ){
+//					tmpY1 = y;
+//					tmpY2 = secondaryStartCursorPosition.getY();
+//				}else{					
+//					tmpY1 = secondaryStartCursorPosition.getY();
+//					tmpY2 = y;
+//				}
+
 				
 				// Vegig a lehelyezett DrawnBlock-okon
 				for( DrawnBlock db: drawnBlockList ){
 					
 					//Ha a most szerkesztett DrawnBlock fedesbe kerulne egy mar lehelyezett DrawnBlock-kal
-					if( db.intersectsOrContains( new Rectangle.Double( tmpX1, tmpY1, tmpX2-tmpX1, tmpY2-tmpY1 ) )){
-						
+					Block block = new Block(tmpX1, tmpY1);
+					block.changeSize( tmpX2, tmpY2 );
+					
+					if( db.intersectsOrContains( block )){
+//					if( db.intersectsOrContains( new Rectangle.Double( tmpX1, tmpY1, tmpX2-tmpX1, tmpY2-tmpY1 ) )){
+					
 						//Akkor marad a regi kurzorpozicio
 						return;
 					}			
@@ -778,8 +927,9 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			// Kurzor figyelo kiszolgalasa
 			//
 			//-------------------------------
+//TODO figyelem double atadas			
 			for( CursorPositionChangeListener listener : secondaryCursorPositionChangeListenerList) {
-				listener.getWorldPosition( x, y );
+				listener.getWorldPosition( x.doubleValue(), y.doubleValue() );
 			}	
 			
 			
@@ -941,41 +1091,36 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 	 *
 	 */
 	class SecondaryCursor{
-		PositionValue cursorPosition = null;
+		
+//		PositionValue cursorPosition = null;
+		BigDecimal positionX;
+		BigDecimal positionY;
 		
 		public SecondaryCursor(){
-			this.cursorPosition = new PositionValue(0, 0);
+			positionX = new BigDecimal("0");
+			positionY = new BigDecimal("0");
 		}
 		
-		public SecondaryCursor( PositionValue cursorPosition ){
-			this.cursorPosition = new PositionValue( cursorPosition.getX(), cursorPosition.getY() );
+		public void setPosition( BigDecimal x, BigDecimal y ){
+			positionX = x;
+			positionY = y;
 		}
 		
-		public void setPosition( double x, double y ){
-			this.cursorPosition.setX( x );
-			this.cursorPosition.setY( y );
+		public BigDecimal getX(){
+			return positionX;
 		}
 		
-		public void setPosition( PositionValue cursorPosition ){
-			this.cursorPosition.setX( cursorPosition.getX() );
-			this.cursorPosition.setY( cursorPosition.getY() );
-		}
-		
-		public double getX(){
-			return cursorPosition.getX();
-		}
-		
-		public double getY(){
-			return cursorPosition.getY();
+		public BigDecimal getY(){
+			return positionY;
 		}
 		
 		public void draw( Graphics2D g2 ){
 			int x, y;
 			
-			if( null != cursorPosition ){
+			if( null != positionX && null != positionY ){
 
-				x = getPixelXPositionByWorldBeforeTranslate( cursorPosition.getX() );
-				y = getPixelYPositionByWorldBeforeTranslate( cursorPosition.getY() );
+				x = getPixelXPositionByWorldBeforeTranslate( positionX.doubleValue() );
+				y = getPixelYPositionByWorldBeforeTranslate( positionY.doubleValue() );
 			
 				g2.setColor( Color.white );
 				g2.setStroke( basicStroke );

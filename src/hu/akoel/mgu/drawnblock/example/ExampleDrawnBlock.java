@@ -1,6 +1,5 @@
 package hu.akoel.mgu.drawnblock.example;
 
-
 import hu.akoel.mgu.MControlPanel;
 import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
@@ -27,9 +26,7 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
@@ -74,6 +71,7 @@ public class ExampleDrawnBlock extends JFrame {
 	private double rate = 1.2;
 	private double minScale = 0.5;
 	private double maxScale =  600;
+	private DrawnBlockCanvas.Precision precision = DrawnBlockCanvas.Precision.ONE_100;
 	
 	public static void main(String[] args) {		
 		new ExampleDrawnBlock();
@@ -87,7 +85,7 @@ public class ExampleDrawnBlock extends JFrame {
 		this.setSize( 700, 700 );
 		this.createBufferStrategy( 1 );
 
-		myCanvas = new DrawnBlockCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle);
+		myCanvas = new DrawnBlockCanvas(BorderFactory.createLoweredBevelBorder(), background, possiblePixelPerUnits, positionToMiddle, precision );
 	
 		myGrid = new Grid( myCanvas, gridType, gridColor, gridWidth, gridPosition, gridDelta );		
 		
@@ -224,7 +222,7 @@ public class ExampleDrawnBlock extends JFrame {
 	class BuildingMaterialFactory implements DrawnBlockFactory{
 
 		@Override
-		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
+		public DrawnBlock getNewDrawnBlock( Status status, BigDecimal x1, BigDecimal y1 ) {
 			
 			return new BuildingMaterialBlock( status , x1, y1 );
 		}
@@ -241,9 +239,9 @@ public class ExampleDrawnBlock extends JFrame {
 	class InsulationFactory implements DrawnBlockFactory{
 
 		@Override
-		public DrawnBlock getNewDrawnBlock( Status status, double x1, double y1 ) {
+		public DrawnBlock getNewDrawnBlock( Status status, BigDecimal x1, BigDecimal y1 ) {
 			
-			return new InsulationBlock( status , x1, y1, null, 5.0, null, 0.0 );
+			return new InsulationBlock( status , x1, y1, null, new BigDecimal("15.0"), null, new BigDecimal("0.0") );
 		}
 		
 	}

@@ -112,9 +112,9 @@ public class DrawnBlockSnapControl extends JPanel{
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
-					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( false );
+					DrawnBlockSnapControl.this.canvas.setNeededSideDivisionSnap( false );
 				}else{
-					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( true );
+					DrawnBlockSnapControl.this.canvas.setNeededSideDivisionSnap( true );
 				}				
 			}
 		});
