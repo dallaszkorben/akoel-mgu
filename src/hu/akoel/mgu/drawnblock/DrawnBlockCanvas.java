@@ -41,18 +41,18 @@ public class DrawnBlockCanvas extends MCanvas{
 		ONE_100000( "#.#####", 5);
 		
 		String decimalFormat;
-		int precision;
-		private Precision( String decimalFormat, int precision ){
+		int scale;
+		private Precision( String decimalFormat, int scale ){
 			this.decimalFormat = decimalFormat;
-			this.precision = precision;
+			this.scale = scale;
 		}
 		
-		String getDecimalFormat(){
+		public String getDecimalFormat(){
 			return this.decimalFormat;
 		}
 		
-		int getPrecision(){
-			return precision;
+		public int getScale(){
+			return scale;
 		}
 	}
 	
@@ -497,18 +497,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			}
 
 		}
-		
-		/**
-		 * A megadott pontossagra kerekiti a parametert
-		 * 
-		 * @param val
-		 * @return
-		 */
-		public BigDecimal getRoundedWithPrecision( double val ){
-//System.err.println( val + " = " + new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val));			
-			return new BigDecimal(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
-		}
-		
+
 		/**
 		 * Meghatarozza a masodlagos kurzor aktualis erteket
 		 * 
@@ -518,8 +507,8 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			
 			BigDecimal tmpX1, tmpX2, tmpY1, tmpY2;
 			
-			BigDecimal x = getRoundedWithPrecision( getWorldXByPixel( e.getX() ) );
-			BigDecimal y = getRoundedWithPrecision( getWorldYByPixel( e.getY() ) );
+			BigDecimal x = getRoundedBigDecimalWithPrecision( getWorldXByPixel( e.getX() ) );
+			BigDecimal y = getRoundedBigDecimalWithPrecision( getWorldYByPixel( e.getY() ) );
 			
 			//-------------------------------------------------------------------------------
 			//
@@ -763,7 +752,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			
 				BigDecimal sideDivision = new BigDecimal( String.valueOf( getSnapSideDivision() ) );
 				
-				int cycle = ( new BigDecimal("1").divide( sideDivision, getPrecision().getPrecision(), RoundingMode.HALF_UP ) ).intValue();
+				int cycle = ( new BigDecimal("1").divide( sideDivision, getPrecision().getScale(), RoundingMode.HALF_UP ) ).intValue();
 		
 				//Fuggoleges oldalak meghosszabitasara tortent illesztes DE
 				//nem tortent a vizszintes oldalak meghosszabitasara illesztes
@@ -1012,6 +1001,20 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 	}
 */	
 
+	/**
+	 * A megadott pontossagra kerekiti a parametert
+	 * 
+	 * @param val
+	 * @return
+	 */
+	public BigDecimal getRoundedBigDecimalWithPrecision( double val ){
+//System.err.println( val + " = " + new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val));			
+		return new BigDecimal(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
+	}
+	
+	public Double getRoundedWitPrecision( double val ){
+		return Double.valueOf(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
+	}
 	
 	
 	/**
