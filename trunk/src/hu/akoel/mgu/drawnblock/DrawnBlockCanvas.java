@@ -34,17 +34,20 @@ public class DrawnBlockCanvas extends MCanvas{
 	private static final long serialVersionUID = -8308688255617119442L;
 	
 	public static enum Precision{
-		ONE_10( "#.#", 1 ),
-		ONE_100( "#.##", 2 ),
-		ONE_1000( "#.###", 3),
-		ONE_10000( "#.####", 4),
-		ONE_100000( "#.#####", 5);
+		ONE_10( "#.#", 1, 10 ),
+		ONE_100( "#.##", 2, 100 ),
+		ONE_1000( "#.###", 3, 1000 ),
+		ONE_10000( "#.####", 4, 10000 ),
+		ONE_100000( "#.#####", 5, 100000 );
 		
-		String decimalFormat;
-		int scale;
-		private Precision( String decimalFormat, int scale ){
+		private String decimalFormat;
+		private int scale;
+		private int powered;
+		
+		private Precision( String decimalFormat, int scale, int powered ){
 			this.decimalFormat = decimalFormat;
 			this.scale = scale;
+			this.powered = powered;
 		}
 		
 		public String getDecimalFormat(){
@@ -53,6 +56,10 @@ public class DrawnBlockCanvas extends MCanvas{
 		
 		public int getScale(){
 			return scale;
+		}
+		
+		public int getPowered(){
+			return powered;
 		}
 	}
 	
@@ -426,9 +433,13 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 
 //System.err.println("dragged");			
 			
+//System.err.println("elotte: " + secondaryCursor);			
+			
 			//Meghatarozza a masodlagos kurzor aktualis erteket
 			findOutCursorPosition( e );
-			
+//System.out.println("utanna: " + secondaryCursor);
+//System.err.println("");
+
 			//Ha mar elkezdtem rajzolni
 			if( drawnStarted ){
 	
@@ -507,6 +518,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			
 			BigDecimal tmpX1, tmpX2, tmpY1, tmpY2;
 			
+			//Kurzor poziciojanak kerekitese a megadott pontossagra
 			BigDecimal x = getRoundedBigDecimalWithPrecision( getWorldXByPixel( e.getX() ) );
 			BigDecimal y = getRoundedBigDecimalWithPrecision( getWorldYByPixel( e.getY() ) );
 			
@@ -711,12 +723,14 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				
 				if( xStart.subtract( x ).abs().compareTo( dx ) < 0 && xStart.subtract( x ).compareTo( minDX ) < 0 ){
 					minDX = xStart.subtract( x ).abs(); 
-					arrange.addDrawnBlockToArrangeX( null, xStart );				
+					arrange.addDrawnBlockToArrangeX( null, getRoundedBigDecimalWithPrecisionFormBigDecimal( xStart ) );				
+					//arrange.addDrawnBlockToArrangeX( null, xStart );
 				}
 				
 				if( yStart.subtract( y ).abs().compareTo( dy ) < 0 && yStart.subtract( y ).compareTo( minDY ) < 0 ){
 					minDY = yStart.subtract( y ).abs(); 
-					arrange.addDrawnBlockToArrangeY( null, yStart );
+					arrange.addDrawnBlockToArrangeY( null, getRoundedBigDecimalWithPrecisionFormBigDecimal( yStart ) );
+					//arrange.addDrawnBlockToArrangeY( null, yStart );
 				}	
 				
 //				if( Math.abs( xStart - x ) < dx && Math.abs( xStart - x ) < minDX ){
@@ -752,7 +766,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			
 				BigDecimal sideDivision = new BigDecimal( String.valueOf( getSnapSideDivision() ) );
 				
-				int cycle = ( new BigDecimal("1").divide( sideDivision, getPrecision().getScale(), RoundingMode.HALF_UP ) ).intValue();
+				int cycle = ( new BigDecimal("1").divide( sideDivision, 10, RoundingMode.HALF_UP ) ).intValue();
 		
 				//Fuggoleges oldalak meghosszabitasara tortent illesztes DE
 				//nem tortent a vizszintes oldalak meghosszabitasara illesztes
@@ -906,10 +920,13 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			// A szerkesztendo elem megengedi-e az uj poziciot
 			//
 			//-------------------------------------------------
+//System.err.println(drawnBlockToDraw);
+//System.err.println(secondaryCursor);	
 			if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){
+				
 				return;				
 			}
-			
+
 			//------------------------------
 			//
 			//
@@ -1008,11 +1025,14 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 	 * @return
 	 */
 	public BigDecimal getRoundedBigDecimalWithPrecision( double val ){
-//System.err.println( val + " = " + new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val));			
 		return new BigDecimal(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
 	}
+
+	public BigDecimal getRoundedBigDecimalWithPrecisionFormBigDecimal( BigDecimal val ){
+		return val.setScale( getPrecision().getScale(), RoundingMode.HALF_UP );
+	}
 	
-	public Double getRoundedWitPrecision( double val ){
+	public Double getRoundedDoubleWitPrecision( double val ){
 		return Double.valueOf(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
 	}
 	
@@ -1131,6 +1151,10 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 				g2.drawLine( x - 8, y, x + 8, y );
 			}
 			
+		}
+		
+		public String toString(){
+			return new String( positionX.toPlainString() + ", " + positionY.toPlainString());
 		}
 	}
 	

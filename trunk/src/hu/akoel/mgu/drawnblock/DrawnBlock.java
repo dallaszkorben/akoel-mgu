@@ -139,8 +139,20 @@ public abstract class DrawnBlock extends Block{
 	}	
 	
 	public boolean enabledToChange( BigDecimal x, BigDecimal y ){
-		BigDecimal w = getWidth();
-		BigDecimal h = getHeight();
+		BigDecimal w;
+		BigDecimal h;
+		
+		if( x.compareTo( this.getStartX() ) < 0 ){
+			w =  this.getStartX().subtract( x );
+		}else{
+			w = x.subtract( this.getStartX() );
+		}
+		
+		if( y.compareTo( this.getStartY() ) < 0 ){
+			h = this.getStartY().subtract( y );
+		}else{
+			h = y.subtract( this.getStartY() );
+		}
 		
 		// Ketiranyu korlatozas van megadva
 		if( null != maxWidth && null != maxLength ){
@@ -152,7 +164,7 @@ public abstract class DrawnBlock extends Block{
 				
 		// Csak az egyik oldalnak van megadva korlatozas
 		} else if( null != maxWidth ){
-
+//System.err.println( (h.compareTo(maxWidth) > 0) + ", " + (w.compareTo( maxWidth) > 0 ) );
 			if( h.compareTo(maxWidth) > 0 && w.compareTo( maxWidth) > 0){
 			
 				return false;			
@@ -499,4 +511,8 @@ public abstract class DrawnBlock extends Block{
 //	public Object clone() {
 //		return super.clone();
 //	}
+	
+	public String toString(){
+		return new String( "(" + this.getX1() + ", " + this.getY1() + ") (" + this.getX2() + ", " + this.getY2() +")" );
+	}
 }
