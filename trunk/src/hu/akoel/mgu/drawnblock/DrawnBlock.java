@@ -6,6 +6,10 @@ import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.math.BigDecimal;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import hu.akoel.mgu.MGraphics;
 
 
@@ -514,5 +518,221 @@ public abstract class DrawnBlock extends Block{
 	
 	public String toString(){
 		return new String( "(" + this.getX1() + ", " + this.getY1() + ") (" + this.getX2() + ", " + this.getY2() +")" );
+	}
+	
+	public Element getXMLElement( Document document ){
+		Attr attr;
+		
+		Element drawnBlockElement = document.createElement("drawnblock");		
+
+		//Position
+		Element positionElement = document.createElement( "position" );
+		drawnBlockElement.appendChild( positionElement );
+		
+		attr = document.createAttribute("x1");
+		attr.setValue( getX1().toPlainString());
+		positionElement.setAttributeNode(attr);
+		
+		attr = document.createAttribute("y1");
+		attr.setValue( getY1().toPlainString());
+		positionElement.setAttributeNode(attr);
+
+		attr = document.createAttribute("x2");
+		attr.setValue( getX2().toPlainString());
+		positionElement.setAttributeNode(attr);
+		
+		attr = document.createAttribute("y2");
+		attr.setValue( getY2().toPlainString());
+		positionElement.setAttributeNode(attr);
+
+		//Descriptor
+		Element descriptorElement = document.createElement( "descriptor" );
+		drawnBlockElement.appendChild( descriptorElement );
+		
+		//
+		//Normal Descriptor
+		//
+		Element normalDescriptorElement = document.createElement( "normal" );
+		descriptorElement.appendChild( normalDescriptorElement );
+		
+		//Color - Normal - Descriptor
+		Element colorNormalDescriptorElement = document.createElement( "color" );
+		normalDescriptorElement.appendChild( colorNormalDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getNormalColor().getGreen() ) );
+		colorNormalDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getNormalColor().getRed() ) );
+		colorNormalDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getNormalColor().getBlue() ) );
+		colorNormalDescriptorElement.setAttributeNode(attr);	
+		
+		//Background - Normal - Descriptor
+		Element backgroundNormalDescriptorElement = document.createElement( "background" );
+		normalDescriptorElement.appendChild( backgroundNormalDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getNormalBackgroundColor().getGreen() ) );
+		backgroundNormalDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getNormalBackgroundColor().getRed() ) );
+		backgroundNormalDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getNormalBackgroundColor().getBlue() ) );
+		backgroundNormalDescriptorElement.setAttributeNode(attr);	
+
+		//Stroke - Normal - Descriptor
+		Element strokeNormalDescriptorElement = document.createElement( "stroke" );
+		normalDescriptorElement.appendChild( strokeNormalDescriptorElement );
+				
+		attr = document.createAttribute("linewidth");
+		attr.setValue( String.valueOf( ((BasicStroke)getNormalStroke()).getLineWidth() ) );
+		strokeNormalDescriptorElement.setAttributeNode(attr);	
+
+		//
+		//Selected Descriptor
+		//
+		Element selectedDescriptorElement = document.createElement( "selected" );
+		descriptorElement.appendChild( selectedDescriptorElement );
+		
+		//Color - Normal - Descriptor
+		Element colorSelectedDescriptorElement = document.createElement( "color" );
+		selectedDescriptorElement.appendChild( colorSelectedDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getSelectedColor().getGreen() ) );
+		colorSelectedDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getSelectedColor().getRed() ) );
+		colorSelectedDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getSelectedColor().getBlue() ) );
+		colorSelectedDescriptorElement.setAttributeNode(attr);	
+		
+		//Background - Normal - Descriptor
+		Element backgroundSelectedDescriptorElement = document.createElement( "background" );
+		selectedDescriptorElement.appendChild( backgroundSelectedDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getSelectedBackgroundColor().getGreen() ) );
+		backgroundSelectedDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getSelectedBackgroundColor().getRed() ) );
+		backgroundSelectedDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getSelectedBackgroundColor().getBlue() ) );
+		backgroundSelectedDescriptorElement.setAttributeNode(attr);	
+
+		//Stroke - Normal - Descriptor
+		Element strokeSelectedDescriptorElement = document.createElement( "stroke" );
+		selectedDescriptorElement.appendChild( strokeSelectedDescriptorElement );
+				
+		attr = document.createAttribute("linewidth");
+		attr.setValue( String.valueOf( ((BasicStroke)getSelectedStroke()).getLineWidth() ) );
+		strokeSelectedDescriptorElement.setAttributeNode(attr);	
+		
+		//
+		//Infocus Descriptor
+		//
+		Element infocusDescriptorElement = document.createElement( "infocus" );
+		descriptorElement.appendChild( infocusDescriptorElement );
+		
+		//Color - Normal - Descriptor
+		Element colorInfocusDescriptorElement = document.createElement( "color" );
+		infocusDescriptorElement.appendChild( colorInfocusDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getInfocusColor().getGreen() ) );
+		colorInfocusDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getInfocusColor().getRed() ) );
+		colorInfocusDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getInfocusColor().getBlue() ) );
+		colorInfocusDescriptorElement.setAttributeNode(attr);	
+		
+		//Background - Normal - Descriptor
+		Element backgroundInfocusDescriptorElement = document.createElement( "background" );
+		infocusDescriptorElement.appendChild( backgroundInfocusDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getInfocusBackgroundColor().getGreen() ) );
+		backgroundInfocusDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getInfocusBackgroundColor().getRed() ) );
+		backgroundInfocusDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getInfocusBackgroundColor().getBlue() ) );
+		backgroundInfocusDescriptorElement.setAttributeNode(attr);	
+
+		//Stroke - Normal - Descriptor
+		Element strokeInfocusDescriptorElement = document.createElement( "stroke" );
+		infocusDescriptorElement.appendChild( strokeInfocusDescriptorElement );
+				
+		attr = document.createAttribute("linewidth");
+		attr.setValue( String.valueOf( ((BasicStroke)getInfocusStroke()).getLineWidth() ) );
+		strokeInfocusDescriptorElement.setAttributeNode(attr);	
+		
+		//
+		//Inprocess Descriptor
+		//
+		Element inprocessDescriptorElement = document.createElement( "inprocess" );
+		descriptorElement.appendChild( inprocessDescriptorElement );
+		
+		//Color - Normal - Descriptor
+		Element colorInprocessDescriptorElement = document.createElement( "color" );
+		inprocessDescriptorElement.appendChild( colorInprocessDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getInprocessColor().getGreen() ) );
+		colorInprocessDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getInprocessColor().getRed() ) );
+		colorInprocessDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getInprocessColor().getBlue() ) );
+		colorInprocessDescriptorElement.setAttributeNode(attr);	
+		
+		//Background - Normal - Descriptor
+		Element backgroundInprocessDescriptorElement = document.createElement( "background" );
+		inprocessDescriptorElement.appendChild( backgroundInprocessDescriptorElement );
+				
+		attr = document.createAttribute("green");
+		attr.setValue( String.valueOf( getInprocessBackgroundColor().getGreen() ) );
+		backgroundInprocessDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("red");
+		attr.setValue( String.valueOf( getInprocessBackgroundColor().getRed() ) );
+		backgroundInprocessDescriptorElement.setAttributeNode(attr);	
+
+		attr = document.createAttribute("blue");
+		attr.setValue( String.valueOf( getInprocessBackgroundColor().getBlue() ) );
+		backgroundInprocessDescriptorElement.setAttributeNode(attr);	
+
+		//Stroke - Normal - Descriptor
+		Element strokeInprocessDescriptorElement = document.createElement( "stroke" );
+		inprocessDescriptorElement.appendChild( strokeInprocessDescriptorElement );
+				
+		attr = document.createAttribute("linewidth");
+		attr.setValue( String.valueOf( ((BasicStroke)getInprocessStroke()).getLineWidth() ) );
+		strokeInprocessDescriptorElement.setAttributeNode(attr);					
+		
+		return drawnBlockElement;
 	}
 }

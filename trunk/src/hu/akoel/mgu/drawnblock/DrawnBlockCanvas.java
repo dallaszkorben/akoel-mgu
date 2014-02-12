@@ -3,7 +3,6 @@ package hu.akoel.mgu.drawnblock;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.Stroke;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -25,7 +24,6 @@ import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import hu.akoel.mgu.grid.Grid;
-import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
 
