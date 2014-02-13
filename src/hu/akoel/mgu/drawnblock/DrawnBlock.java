@@ -27,19 +27,19 @@ public abstract class DrawnBlock extends Block{
 	
 	private static final Color NORMAL_COLOR = Color.white;
 	private static final Stroke NORMAL_STROKE = new BasicStroke(1);
-	private static final Color NORMAL_BACKGROUND = null;
+	private static final Color NORMAL_BACKGROUND = Color.black;
 	
 	private static final Color SELECTED_COLOR = Color.red;
 	private static final Stroke SELECTED_STROKE = new BasicStroke(3);
-	private static final Color SELECTED_BACKGROUND = null;
+	private static final Color SELECTED_BACKGROUND = Color.black;
 	
 	private static final Color INFOCUS_COLOR = Color.yellow;
 	private static final Stroke INFOCUS_STROKE = new BasicStroke(1);
-	private static final Color INFOCUS_BACKGROUND = null;
+	private static final Color INFOCUS_BACKGROUND = Color.black;
 	
 	private static final Color INPROCESS_COLOR = Color.red;
 	private static final Stroke INPROCESS_STROKE = new BasicStroke(3);
-	private static final Color INPROCESS_BACKGROUND = null;
+	private static final Color INPROCESS_BACKGROUND = Color.black;
 	
 	private Status status;
 	
@@ -216,6 +216,46 @@ public abstract class DrawnBlock extends Block{
 		
 	}
 
+	public Color getColor(){
+		return color;		
+	}
+	
+	public Color getBackgroundColor(){
+		return backgroundColor;
+	}
+	
+	public Stroke getStroke(){
+		return stroke;
+	}
+	
+	public TexturePaint texturePaint(){
+		return texturePaint;
+	}
+	
+	
+	
+	public void setTexturalPaint( TexturePaint texturePaint ){
+		this.texturePaint = texturePaint;
+	}
+	
+	public void setNormalTexturalPaint( TexturePaint texturePaint ){
+		this.normalTexturePaint = texturePaint;
+	}
+	
+	public void setSelectedTexturalPaint( TexturePaint texturePaint ){
+		this.selectedTexturePaint = texturePaint;
+	}
+	
+	public void setInfocusTexturalPaint( TexturePaint texturePaint ){
+		this.infocusTexturePaint = texturePaint;
+	}
+
+	public void setInprocessTexturalPaint( TexturePaint texturePaint ){
+		this.inprocessTexturePaint = texturePaint;
+	}
+
+	
+	
 	public BigDecimal getMinLength() {
 		return minLength;
 	}
@@ -232,6 +272,8 @@ public abstract class DrawnBlock extends Block{
 		return maxWidth;
 	}
 
+	
+	
 	public Color getNormalColor() {
 		return normalColor;
 	}
@@ -247,6 +289,7 @@ public abstract class DrawnBlock extends Block{
 	public TexturePaint getNormalTexturePaint(){
 		return normalTexturePaint;
 	}
+	
 	
 	public Color getSelectedColor() {
 		return selectedColor;
@@ -304,7 +347,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-
+/*
 	public void setNormal( Color color, Stroke stroke, TexturePaint texturePaint ){
 		this.normalColor = color;
 		this.normalStroke = stroke;
@@ -312,7 +355,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-	
+*/	
 	//Selected
 	public void setSelected( Color color, Stroke stroke, Color backgroundColor ){
 		this.selectedColor = color;
@@ -321,7 +364,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-
+/*
 	public void setSelected( Color color, Stroke stroke, TexturePaint texturePaint ){
 		this.selectedColor = color;
 		this.selectedStroke = stroke;
@@ -329,7 +372,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-
+*/
 	//InFocus
 	public void setInfocus( Color color, Stroke stroke, Color backgroundColor ){
 		this.infocusColor = color;
@@ -338,7 +381,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-
+/*
 	public void setInfocus( Color color, Stroke stroke, TexturePaint texturePaint ){
 		this.infocusColor = color;
 		this.infocusStroke = stroke;
@@ -346,7 +389,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-	
+*/	
 	//InProcess
 	public void setInprocess( Color color, Stroke stroke, Color backgroundColor ){
 		this.inprocessColor = color;
@@ -355,7 +398,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-
+/*
 	public void setInprocess( Color color, Stroke stroke, TexturePaint texturePaint ){
 		this.inprocessColor = color;
 		this.inprocessStroke = stroke;
@@ -363,7 +406,7 @@ public abstract class DrawnBlock extends Block{
 		
 		refreshStatus();
 	}
-
+*/
 	public void draw( MGraphics g2 ){
 		double x1 = getX1().doubleValue();
 		double y1 = getY1().doubleValue();
@@ -372,9 +415,9 @@ public abstract class DrawnBlock extends Block{
 		
 		if( null != texturePaint ){
 			g2.setPaint( texturePaint );
-		}
+		}else{
 		
-		if( null != backgroundColor ){
+//		if( null != backgroundColor ){
 			g2.setColor( backgroundColor );
 		}
 		g2.fillRectangle( x1, y1, x2, y2 );
