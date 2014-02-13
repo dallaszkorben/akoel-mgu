@@ -93,12 +93,18 @@ public class BuildingMaterialBlock extends DrawnBlock{
 		 
 		inprocessTexturePaint = new TexturePaint( bi4,r ); 
 
-		setNormal( NORMAL_COLOR, NORMAL_STROKE, normalTexturePaint );
-		setSelected( SELECTED_COLOR, SELECTED_STROKE, selectedTexturePaint );
-		setInfocus(INFOCUS_COLOR, INFOCUS_STROKE, infocusTexturePaint );
-		setInprocess( INPROCESS_COLOR, INPROCESS_STROKE, inprocessTexturePaint );
 		
-
+		setNormal( NORMAL_COLOR, NORMAL_STROKE, NORMAL_BACKGROUND );
+		setSelected( SELECTED_COLOR, SELECTED_STROKE, SELECTED_BACKGROUND );
+		setInfocus(INFOCUS_COLOR, INFOCUS_STROKE, INFOCUS_BACKGROUND );
+		setInprocess( INPROCESS_COLOR, INPROCESS_STROKE, INPROCESS_BACKGROUND );
+		
+		setNormalTexturalPaint( normalTexturePaint );
+		setSelectedTexturalPaint( selectedTexturePaint );
+		setInfocusTexturalPaint( infocusTexturePaint );
+		setInprocessTexturalPaint( inprocessTexturePaint );
+		
+		refreshStatus();
 	}
 
 
