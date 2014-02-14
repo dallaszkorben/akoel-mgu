@@ -21,6 +21,16 @@ public class Block {
 		this.y2 = y1;
 	}
 	
+	public void reset( BigDecimal x1, BigDecimal y1 ){
+		this.startX = x1;
+		this.startY = y1;
+
+		this.x1 = x1;
+		this.y1 = y1;
+		this.x2 = x1;
+		this.y2 = y1;
+	}
+	
 	public BigDecimal getStartX(){
 		return this.startX;
 	}

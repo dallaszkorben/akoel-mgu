@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import hu.akoel.mgu.MGraphics;
 
@@ -106,6 +108,157 @@ public abstract class DrawnBlock extends Block{
 		setInprocess( INPROCESS_COLOR, INPROCESS_STROKE, INPROCESS_BACKGROUND );
 				
 		refreshStatus();
+	}
+	
+	public DrawnBlock( Element xmlElement ){
+		super( new BigDecimal("0"), new BigDecimal("0") );
+		this.status = Status.NORMAL;
+		
+		NodeList mainNodeList = xmlElement.getChildNodes();
+		for (int i = 0; i < mainNodeList.getLength(); i++) {
+			
+			Node mainNode = mainNodeList.item( i );
+			
+			if (mainNode.getNodeType() == Node.ELEMENT_NODE) {
+				Element drawnBlockElement = (Element) mainNode;
+
+				//Ha egy POSITION elemrol van szo
+				if( drawnBlockElement.getNodeName().equals( "position" )){
+
+					//X1, Y1
+					this.reset( new BigDecimal( drawnBlockElement.getAttribute("x1") ), new BigDecimal( drawnBlockElement.getAttribute("y1") ) );
+					
+					//X2, Y2
+					this.changeSize( new BigDecimal( drawnBlockElement.getAttribute("x2") ), new BigDecimal( drawnBlockElement.getAttribute("y2") ) );					
+					
+				//Ha egy DESCRIPTOR elemrol van szo
+				}else if( drawnBlockElement.getNodeName().equals( "descriptor" ) ){
+					
+					NodeList descriptorList = drawnBlockElement.getChildNodes();
+					for (int j = 0; j < descriptorList.getLength(); j++) {
+						
+						Node descriptorNode = descriptorList.item( j );
+						
+						if (descriptorNode.getNodeType() == Node.ELEMENT_NODE) {
+							Element descriptorElement = (Element) descriptorNode;
+							
+							//Ha egy NORMAL elemrol van szo
+							if( descriptorElement.getNodeName().equals( "normal" )){
+
+								NodeList normalList = descriptorElement.getChildNodes();
+								for (int k = 0; k < normalList.getLength(); k++) {
+									
+									Node normalNode = normalList.item( k );
+									
+									if (normalNode.getNodeType() == Node.ELEMENT_NODE) {
+										Element normalElement = (Element) normalNode;
+										
+										//Ha egy COLOR elemrol van szo
+										if( normalElement.getNodeName().equals( "color" )){
+											Color color = new Color(Integer.valueOf( normalElement.getAttribute("red") ), Integer.valueOf( normalElement.getAttribute("green") ), Integer.valueOf( normalElement.getAttribute("blue") ) );
+											setNormalColor( color );
+										//Ha egy BACKGROUND elemrol van szo
+										}else if( normalElement.getNodeName().equals( "background" )){
+											Color background = new Color(Integer.valueOf( normalElement.getAttribute("red") ), Integer.valueOf( normalElement.getAttribute("green") ), Integer.valueOf( normalElement.getAttribute("blue") ) );
+											setNormalBackgroundColor(background);
+										//Ha egy STROKE elemrol van szo
+										}else if( normalElement.getNodeName().equals( "stroke" )){
+											Stroke stroke = new BasicStroke( Float.valueOf( normalElement.getAttribute("linewidth") ) );
+											setNormalStroke(stroke);
+										}
+									}
+								}
+								
+							//Ha egy SELECTED elemrol van szo
+							}else if( descriptorElement.getNodeName().equals( "selected" )){
+								
+								NodeList selectedList = descriptorElement.getChildNodes();
+								for (int k = 0; k < selectedList.getLength(); k++) {
+									
+									Node selectedNode = selectedList.item( k );
+									
+									if (selectedNode.getNodeType() == Node.ELEMENT_NODE) {
+										Element selectedElement = (Element) selectedNode;
+										
+										//Ha egy COLOR elemrol van szo
+										if( selectedElement.getNodeName().equals( "color" )){
+											Color color = new Color(Integer.valueOf( selectedElement.getAttribute("red") ), Integer.valueOf( selectedElement.getAttribute("green") ), Integer.valueOf( selectedElement.getAttribute("blue") ) );
+											setSelectedColor( color );
+										//Ha egy BACKGROUND elemrol van szo
+										}else if( selectedElement.getNodeName().equals( "background" )){
+											Color background = new Color(Integer.valueOf( selectedElement.getAttribute("red") ), Integer.valueOf( selectedElement.getAttribute("green") ), Integer.valueOf( selectedElement.getAttribute("blue") ) );
+											setSelectedBackgroundColor(background);
+										//Ha egy STROKE elemrol van szo
+										}else if( selectedElement.getNodeName().equals( "stroke" )){
+											Stroke stroke = new BasicStroke( Float.valueOf( selectedElement.getAttribute("linewidth") ) );
+											setSelectedStroke(stroke);
+										}
+									}
+								}
+								
+							//Ha egy INFOCUS elemrol van szo
+							}else if( descriptorElement.getNodeName().equals( "infocus" )){
+
+								NodeList infocusList = descriptorElement.getChildNodes();
+								for (int k = 0; k < infocusList.getLength(); k++) {
+									
+									Node infocusNode = infocusList.item( k );
+									
+									if (infocusNode.getNodeType() == Node.ELEMENT_NODE) {
+										Element infocusElement = (Element) infocusNode;
+										
+										//Ha egy COLOR elemrol van szo
+										if( infocusElement.getNodeName().equals( "color" )){
+											Color color = new Color(Integer.valueOf( infocusElement.getAttribute("red") ), Integer.valueOf( infocusElement.getAttribute("green") ), Integer.valueOf( infocusElement.getAttribute("blue") ) );
+											setInfocusColor( color );
+										//Ha egy BACKGROUND elemrol van szo
+										}else if( infocusElement.getNodeName().equals( "background" )){
+											Color background = new Color(Integer.valueOf( infocusElement.getAttribute("red") ), Integer.valueOf( infocusElement.getAttribute("green") ), Integer.valueOf( infocusElement.getAttribute("blue") ) );
+											setInfocusBackgroundColor(background);
+										//Ha egy STROKE elemrol van szo
+										}else if( infocusElement.getNodeName().equals( "stroke" )){
+											Stroke stroke = new BasicStroke( Float.valueOf( infocusElement.getAttribute("linewidth") ) );
+											setInfocusStroke(stroke);
+										}
+									}
+								}
+								
+							//Ha egy INPROCESS elemrol van szo
+							}else if( descriptorElement.getNodeName().equals( "inprocess" )){
+
+								NodeList inprocesList = descriptorElement.getChildNodes();
+								for (int k = 0; k < inprocesList.getLength(); k++) {
+									
+									Node inprocessNode = inprocesList.item( k );
+									
+									if (inprocessNode.getNodeType() == Node.ELEMENT_NODE) {
+										Element inprocessElement = (Element) inprocessNode;
+										
+										//Ha egy COLOR elemrol van szo
+										if( inprocessElement.getNodeName().equals( "color" )){
+											Color color = new Color(Integer.valueOf( inprocessElement.getAttribute("red") ), Integer.valueOf( inprocessElement.getAttribute("green") ), Integer.valueOf( inprocessElement.getAttribute("blue") ) );
+											setInprocessColor( color );
+										//Ha egy BACKGROUND elemrol van szo
+										}else if( inprocessElement.getNodeName().equals( "background" )){
+											Color background = new Color(Integer.valueOf( inprocessElement.getAttribute("red") ), Integer.valueOf( inprocessElement.getAttribute("green") ), Integer.valueOf( inprocessElement.getAttribute("blue") ) );
+											setInprocessBackgroundColor(background);
+										//Ha egy STROKE elemrol van szo
+										}else if( inprocessElement.getNodeName().equals( "stroke" )){
+											Stroke stroke = new BasicStroke( Float.valueOf( inprocessElement.getAttribute("linewidth") ) );
+											setInprocessStroke(stroke);
+										}
+									}
+								}								
+							}							
+						}
+					}					
+				}
+			}
+			
+		}
+		
+		refreshStatus();
+		
 	}
 	
 	public Status getStatus() {
@@ -273,7 +426,9 @@ public abstract class DrawnBlock extends Block{
 	}
 
 	
-	
+	//
+	// Normal
+	//
 	public Color getNormalColor() {
 		return normalColor;
 	}
@@ -285,12 +440,26 @@ public abstract class DrawnBlock extends Block{
 	public Color getNormalBackgroundColor() {
 		return normalBackgroundColor;
 	}
-
+	
 	public TexturePaint getNormalTexturePaint(){
 		return normalTexturePaint;
 	}
+
+	public void setNormalColor( Color color ){
+		this.normalColor = color;
+	}
 	
+	public void setNormalBackgroundColor( Color color ){
+		this.normalBackgroundColor = color;
+	}
 	
+	public void setNormalStroke( Stroke stroke ){
+		this.normalStroke = stroke;
+	}
+	
+	//
+	// Selected
+	//
 	public Color getSelectedColor() {
 		return selectedColor;
 	}
@@ -307,6 +476,21 @@ public abstract class DrawnBlock extends Block{
 		return selectedTexturePaint;
 	}
 
+	public void setSelectedColor( Color color ){
+		this.selectedColor = color;
+	}
+	
+	public void setSelectedBackgroundColor( Color color ){
+		this.selectedBackgroundColor = color;
+	}
+	
+	public void setSelectedStroke( Stroke stroke ){
+		this.selectedStroke = stroke;
+	}
+
+	//
+	// Infocus
+	//
 	public Color getInfocusColor() {
 		return infocusColor;
 	}
@@ -323,6 +507,21 @@ public abstract class DrawnBlock extends Block{
 		return infocusTexturePaint;
 	}
 	
+	public void setInfocusColor( Color color ){
+		this.infocusColor = color;
+	}
+	
+	public void setInfocusBackgroundColor( Color color ){
+		this.infocusBackgroundColor = color;
+	}
+	
+	public void setInfocusStroke( Stroke stroke ){
+		this.infocusStroke = stroke;
+	}
+
+	//
+	// Inporcess
+	//
 	public Color getInprocessColor() {
 		return inprocessColor;
 	}
@@ -338,6 +537,20 @@ public abstract class DrawnBlock extends Block{
 	public Color getInprocessBackgroundColor() {
 		return inprocessBackgroundColor;
 	}
+	
+	public void setInprocessColor( Color color ){
+		this.inprocessColor = color;
+	}
+	
+	public void setInprocessBackgroundColor( Color color ){
+		this.inprocessBackgroundColor = color;
+	}
+	
+	public void setInprocessStroke( Stroke stroke ){
+		this.inprocessStroke = stroke;
+	}
+	
+	
 
 	//Normal
 	public void setNormal( Color color, Stroke stroke, Color backgroundColor ){
