@@ -241,20 +241,20 @@ public class MCanvas extends JPanel {
 	//PERMANENT - Under list
 	//
 	public void addPainterListenerToDeepest(PainterListener painterListener, Level position) {
-		if(!this.deepestList.contains(painterListener)){
+		//if(!this.deepestList.contains(painterListener)){
 			if (position.equals(Level.ABOVE)) {
 				deepestList.add(painterListener);
 			} else {
 				deepestList.add(0, painterListener);
 			}
 			coreCanvas.invalidate();
-		}
+		//}
 	}
 
 	public void addPainterListenerToDeepest(PainterListener painterListener) {
-		if(!this.deepestList.contains(painterListener)){
+		//if(!this.deepestList.contains(painterListener)){
 			addPainterListenerToDeepest(painterListener, Level.ABOVE);
-		}
+		//}
 	}
 	
 	public void removePainterListenerFromDeepest( PainterListener painterListener ){
@@ -271,20 +271,20 @@ public class MCanvas extends JPanel {
 	//PERMANENT - Middle list
 	//
 	public void addPainterListenerToMiddle(PainterListener painterListener, Level position) {
-		if(!this.middleList.contains(painterListener)){
+		//if(!this.middleList.contains(painterListener)){
 			if (position.equals(Level.ABOVE)) {
 				this.middleList.add(painterListener);
 			} else {
 				this.middleList.add(0, painterListener);
 			}
 			coreCanvas.invalidate();
-		}
+		//}
 	}
 
 	public void addPainterListenerToMiddle(PainterListener painterListener) {
-		if(!this.middleList.contains(painterListener)){
+		//if(!this.middleList.contains(painterListener)){
 			this.addPainterListenerToMiddle(painterListener, Level.ABOVE);
-		}
+		//}
 	}
 	
 	public void removePainterListenerFromMiddle( PainterListener painterListener ){
@@ -301,20 +301,20 @@ public class MCanvas extends JPanel {
 	//PERMANENT - Above list
 	//
 	public void addPainterListenerToHighest(PainterListener painterListener, Level position) {
-		if(!this.highestList.contains(painterListener)){
+		//if(!this.highestList.contains(painterListener)){
 			if (position.equals(Level.ABOVE)) {
 				this.highestList.add(painterListener);
 			} else {
 				this.highestList.add(0, painterListener);
 			}
 			coreCanvas.invalidate();
-		}
+		//}
 	}
 
 	public void addPainterListenerToHighest(PainterListener painterListener) {
-		if(!this.highestList.contains(painterListener)){
+		//if(!this.highestList.contains(painterListener)){
 			this.addPainterListenerToHighest(painterListener, Level.ABOVE);
-		}
+		//}
 	}
 	
 	public void removePainterListenerFromHighest( PainterListener painterListener ){
@@ -332,13 +332,13 @@ public class MCanvas extends JPanel {
 	//
 	public void addPainterListenerToTemporary(PainterListener painterListener, Level position) {
 		
-		if(!this.temporaryList.contains(painterListener)){			
+		//if(!this.temporaryList.contains(painterListener)){			
 			if (position.equals(Level.ABOVE)){
 				this.temporaryList.add(painterListener);
 			} else {			
 				this.temporaryList.add(0, painterListener);
 			}
-		}
+		//}
 	}
 
 	public void addPainterListenerToTemporary(PainterListener painterListener ) {

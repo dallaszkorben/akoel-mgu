@@ -26,33 +26,80 @@ public class ColorSelector extends JComboBox<Integer>{
 	ImageIcon icon;
 	
 	ImageIcon[] images;
-	private static final Color[] DEFAULT_COLOR_LIST = { 
-			Color.black, 
-			Color.red, 
-			Color.yellow, 
-			Color.blue,
-			Color.green,
-			Color.cyan,
-			Color.magenta,
-			Color.white
-	}; 
 	
-	private Color[] colorList;
+	private static enum DefaultColor implements ColorForSelectorInterface{
+		BLACK( Color.black, "Black"),
+		
+		
+		
+	
+		
+		
+		BLUE( Color.blue, "Blue"),
+		DEEPSKYBLUE( new Color(0, 191, 255), "DeepSkyBlue" ),		
+		LIGHTSKYBLUE( new Color(135, 206, 250), "LightSkyBlue" ),
+		TURQUOISE( new Color(64, 224, 208), "Turquoise" ),
+		AQUAMARINE( new Color(127, 255, 212), "Aquamarine" ),		
+		CYAN( Color.cyan, "Cyan"), 
+		
+		SEEREEN( new Color(46, 139, 87), "SeeGreen" ),
+		YELLOGREEN( new Color(154, 205, 50), "YellowGreen" ),	
+		GREEN( Color.green, "Green"),
+		LIGHTGREEN( new Color(144, 238, 144), "LightGreen" ),
+		
+		
+		YELLOW( Color.yellow, "Yellow"),
+		LIGHTGOLDENYELLOW( new Color(250, 250, 210), "LightGoldenYellow" ),	
+		
+		
+		BRAUN( new Color(184, 92, 0), "Braun" ),		
+		CORAL( new Color(255, 127, 80), "Coral" ),
+		ORANGE( new Color(255, 165, 0), "Orange" ),
+		
+		PINK( new Color(255, 192, 203), "Pink" ),
+		PLUM( new Color(221, 160, 221), "Plum" ),
+		BLUEVIOLET( new Color(138, 43, 226), "BlueViolet" ),
+		MAGENTA( Color.magenta, "Magenta" ),
+		
+		RED( Color.red, "Red"),
+			
+		;
+		
+		private Color color;
+		private String name;
+		
+		DefaultColor( Color color, String name ){
+			this.color = color;
+			this.name = name;
+		}
+		
+		public String getName(){
+			return name;
+		}
+		
+		public Color getColor(){
+			return color;
+		}
+		
+	}
+	
+	private ColorForSelectorInterface[] colorList;
 	    
 	public ColorSelector(){
 		super();
-		commonConstructor( DEFAULT_COLOR_LIST );
+		
+		commonConstructor( DefaultColor.values() );
 	}
 	
-	public ColorSelector( Color[] cl ){
+	public ColorSelector( ColorForSelectorInterface[] cl ){
 		super();
 		
 		commonConstructor( cl );
 	}
 	
-	private void commonConstructor( Color[] cl ){
+	private void commonConstructor( ColorForSelectorInterface[] colorList ){
 		
-		colorList = cl;
+		this.colorList = colorList;
 		
 		//Most gyartja le a szineket
 		images = new ImageIcon[ colorList.length ];
@@ -63,7 +110,7 @@ public class ColorSelector extends JComboBox<Integer>{
         	
         	colorBufferedImage = new BufferedImage( ICON_WIDTH, ICON_HEIGHT, BufferedImage.TYPE_INT_RGB); 
 			g2 = colorBufferedImage.createGraphics();
-			g2.setColor( colorList[ i ] );
+			g2.setColor( colorList[ i ].getColor() );
 			g2.fillRect( 0, 0, ICON_WIDTH, ICON_HEIGHT );
 			icon = new ImageIcon( colorBufferedImage );
 			images[ i ] = icon;
@@ -72,7 +119,7 @@ public class ColorSelector extends JComboBox<Integer>{
         ComboBoxRenderer renderer= new ComboBoxRenderer();
         renderer.setPreferredSize(new Dimension( PREFERED_WIDTH, PREFERRED_HEIGHT));
         this.setRenderer(renderer);
-        this.setMaximumRowCount(6);
+        this.setMaximumRowCount(21);
 	}
 	
 
@@ -84,17 +131,30 @@ public class ColorSelector extends JComboBox<Integer>{
 	 */
 	public void setSelectedItem( Color color ){
 		for( int i = 0; i < colorList.length; i++ ){
-			if( color.equals( colorList[i] ) ){
+			if( color.equals( colorList[i].getColor() ) ){
 				this.setSelectedIndex( i );
 				break;
 			}
 		}
 	}
 	
+	/**
+	 * Visszaadja a kivalasztott szin Color objektumat
+	 * 
+	 * @return
+	 */
 	public Color getSelectedColor(){
-		return colorList [this.getSelectedIndex()];
+		return colorList [this.getSelectedIndex()].getColor();
 	}
 	
+	/**
+	 * Visszaadja a kivalasztott szin nevet
+	 * 
+	 * @return
+	 */
+	public String getSelectedName(){
+		return colorList [this.getSelectedIndex()].getName();
+	}
 	
 	/**
 	 * Szineket mint szinek jeleniti meg a ComboBox-ban
