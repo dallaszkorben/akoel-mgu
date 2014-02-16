@@ -71,7 +71,7 @@ public class ExampleDrawnBlock extends JFrame {
 	private double rate = 1.2;
 	private double minScale = 0.5;
 	private double maxScale =  600;
-	private DrawnBlockCanvas.Precision precision = DrawnBlockCanvas.Precision.ONE_100;
+	private DrawnBlockCanvas.Precision precision = DrawnBlockCanvas.Precision.cm;
 	
 	public static void main(String[] args) {		
 		new ExampleDrawnBlock();

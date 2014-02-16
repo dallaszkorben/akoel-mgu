@@ -32,11 +32,11 @@ public class DrawnBlockCanvas extends MCanvas{
 	private static final long serialVersionUID = -8308688255617119442L;
 	
 	public static enum Precision{
-		ONE_10( "#.#", 1, 10 ),
-		ONE_100( "#.##", 2, 100 ),
-		ONE_1000( "#.###", 3, 1000 ),
-		ONE_10000( "#.####", 4, 10000 ),
-		ONE_100000( "#.#####", 5, 100000 );
+		dm( "#.#", 1, 10 ),					//1/10		dm
+		cm( "#.##", 2, 100 ),				//1/100		cm
+		mm( "#.###", 3, 1000 ),				//1/1000	mm
+		tenthmm( "#.####", 4, 10000 ),		//1/10000	1/10 mm		
+		hundredthmm( "#.#####", 5, 100000 );//1/100000	1/100 mm
 		
 		private String decimalFormat;
 		private int scale;
@@ -78,6 +78,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	private SecondaryCursor secondaryCursor = new SecondaryCursor();
 	
 	private boolean needFocus = true;
+	
+	private boolean enabledDrawn = true;
 	
 	private int snapDelta = 0;
 	private double snapSideDivision = 0.5;
@@ -136,6 +138,14 @@ public class DrawnBlockCanvas extends MCanvas{
 
 	public Precision getPrecision(){
 		return precision;
+	}
+	
+	public void setEnabledDrawn( boolean enabled ){
+		this.enabledDrawn = enabled;
+	}
+	
+	public boolean IsEnabledDrawn(){
+		return this.enabledDrawn;
 	}
 	
 	/**
@@ -823,7 +833,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			// Ha meg nem kezdodott el a rajzolas, szabadon mozgo kurzor
 			//
 //TODO itt meg kellene oldani, hogy ha ket egymast erinto blokk koze kerulne, az nem OK				
-			if( !drawnStarted ){
+			if( !drawnStarted && IsEnabledDrawn() ){
 
 				//Megnezi, hogy az aktualis kurzor egy lehelyezett DrawnBlock-ra esik-e
 				for( DrawnBlock db: drawnBlockList ){
@@ -855,7 +865,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			//
 			// Ha mar elkezdte a rajzolast
 			//
-			}else{
+			}else if( IsEnabledDrawn() ){
 				
 				//
 				// A feltetelezett uj DrawnBlock koordinatainak nagysag szerinti rendezese
