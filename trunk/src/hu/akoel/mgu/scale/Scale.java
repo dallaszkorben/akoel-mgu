@@ -4,7 +4,6 @@ package hu.akoel.mgu.scale;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PixelPerUnitChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
-import hu.akoel.mgu.scale.Scale.UNIT;
 import hu.akoel.mgu.scale.values.PixelPerCmValue;
 import hu.akoel.mgu.scale.values.ScaleValue;
 import hu.akoel.mgu.scale.values.UnitValue;
