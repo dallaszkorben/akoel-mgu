@@ -64,8 +64,6 @@ public class DrawnBlockCanvas extends MCanvas{
 	private DecimalFormatSymbols decimalSymbol = new DecimalFormatSymbols();			
 	
 	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
-		
-	private Stroke basicStroke = new BasicStroke();
 	
 	private DrawnBlockFactory drawnBlockFactory;
 	
@@ -75,7 +73,7 @@ public class DrawnBlockCanvas extends MCanvas{
 	private DrawnBlockDrawListener drawnBlockDrawListener = new DrawnBlockDrawListener();
 	private DrawnBlockPainterListener drawnBlockPainterListener = new DrawnBlockPainterListener();
 	
-	private SecondaryCursor secondaryCursor = new SecondaryCursor();
+	private SecondaryCursor secondaryCursor = new DefaultSecondaryCursor( this );
 	
 	private boolean needFocus = true;
 	
@@ -136,6 +134,16 @@ public class DrawnBlockCanvas extends MCanvas{
 		});
 	}
 
+	/**
+	 * Beallit egy masik Masodlakos kurzort
+	 * 
+	 * @param secondaryCursor
+	 */
+	public void setSecondaryCursor( SecondaryCursor secondaryCursor ){
+		this.secondaryCursor = secondaryCursor;
+		revalidateAndRepaintCoreCanvas();
+	}
+	
 	public Precision getPrecision(){
 		return precision;
 	}
@@ -1115,57 +1123,4 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		
 	}
 	
-	/**
-	 * Masodlagos kurzort megvalosito osztaly
-	 * 
-	 * @author afoldvarszky
-	 *
-	 */
-	class SecondaryCursor{
-		
-//		PositionValue cursorPosition = null;
-		BigDecimal positionX;
-		BigDecimal positionY;
-		
-		public SecondaryCursor(){
-			positionX = new BigDecimal("0");
-			positionY = new BigDecimal("0");
-		}
-		
-		public void setPosition( BigDecimal x, BigDecimal y ){
-			positionX = x;
-			positionY = y;
-		}
-		
-		public BigDecimal getX(){
-			return positionX;
-		}
-		
-		public BigDecimal getY(){
-			return positionY;
-		}
-		
-		public void draw( Graphics2D g2 ){
-			int x, y;
-			
-			if( null != positionX && null != positionY ){
-
-				x = getPixelXPositionByWorldBeforeTranslate( positionX.doubleValue() );
-				y = getPixelYPositionByWorldBeforeTranslate( positionY.doubleValue() );
-			
-				g2.setColor( Color.white );
-				g2.setStroke( basicStroke );
-				g2.drawLine( x, y - 8, x, y + 8 );
-				g2.drawLine( x - 8, y, x + 8, y );
-			}
-			
-		}
-		
-		public String toString(){
-			return new String( positionX.toPlainString() + ", " + positionY.toPlainString());
-		}
-	}
-	
-	
-
 }
