@@ -6,6 +6,8 @@ import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.event.MouseInputListener;
 
@@ -16,9 +18,9 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 	private DrawnBlockCanvas canvas;
 	private DrawnBlockFactory drawnBlockFactory;
 	
-	public DrawnBlockDrawnListener( DrawnBlockCanvas canvas, DrawnBlockFactory drawnBlockFactory ){
+	
+	public DrawnBlockDrawnListener( DrawnBlockCanvas canvas ){
 		this.canvas = canvas;
-		this.drawnBlockFactory = drawnBlockFactory;
 	}
 	
 	@Override
@@ -40,10 +42,11 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 			drawnStarted = true;
 			
 			//A szerkesztendo DrawnBlock legyartasa
+			SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
 			drawnBlockToDraw = drawnBlockFactory.getNewDrawnBlock( Status.INPROCESS, secondaryCursor.getX(), secondaryCursor.getY() ); 
 					
 			//Atmeneti listaba helyezi a most rajzolas alatt levo DrawnBlock-ot
-			addTemporaryDrawnBlock( drawnBlockToDraw );
+			canvas.addTemporaryDrawnBlock( drawnBlockToDraw );
 
 		//Ha jobboldali egergombot nyomok miutan mar elkezdtem a rajzot
 		}else if( e.getButton() == MouseEvent.BUTTON3 && drawnStarted ){
@@ -52,7 +55,7 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 			drawnStarted = false;
 			
 			//Ujrarajzoltatom a Canvas-t az elkezdett DrawnBlock nelkul
-			revalidateAndRepaintCoreCanvas();
+			canvas.revalidateAndRepaintCoreCanvas();
 		}
 		
 	}
@@ -72,7 +75,7 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 				drawnBlockToDraw.setStatus( Status.NORMAL );
 			
 				//Hozzaadom a statikusan kirajzolando DrawnBlock-ok listajahoz
-				addDrawnBlock( drawnBlockToDraw );
+				canvas.addDrawnBlock( drawnBlockToDraw );
 
 			}
 			
@@ -80,10 +83,10 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 			drawnBlockToDraw = null;
 			
 			//Azert kell, hogy az elengedes pillanataban ne tunjon el a masodlagos kurzor
-			addTemporarySecondaryCursor(secondaryCursor);
+			canvas.addTemporarySecondaryCursor( canvas.getSecondaryCursor() );
 			
 			//Ujrarajzoltatom a Canvas-t az uj statikus DrawnBlock-kal egyutt
-			revalidateAndRepaintCoreCanvas();
+			canvas.revalidateAndRepaintCoreCanvas();
 							
 		}
 		
@@ -93,40 +96,35 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-//System.err.println("entered");	
 		
 //Visszakeri a fokuszt amivel a			
-DrawnBlockCanvas.this.setFocusable(true);			
-DrawnBlockCanvas.this.requestFocusInWindow();
+canvas.setFocusable(true);			
+canvas.requestFocusInWindow();
 		
 		//Meghatarozza a masodlagos kurzor aktualis erteket
 		findOutCursorPosition( e );
 
 		//Kirajzolja a masodlagos kurzort
-		addTemporarySecondaryCursor( secondaryCursor );
+		canvas.addTemporarySecondaryCursor( canvas.getSecondaryCursor() );
 		
-		repaintCoreCanvas();
+		canvas.repaintCoreCanvas();
 
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-//System.err.println("exited");			
-		revalidateAndRepaintCoreCanvas();
+		
+		canvas.revalidateAndRepaintCoreCanvas();
 		
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
-
-//System.err.println("dragged");			
+	public void mouseDragged(MouseEvent e) {		
 		
-//System.err.println("elotte: " + secondaryCursor);			
+		 SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
 		
 		//Meghatarozza a masodlagos kurzor aktualis erteket
 		findOutCursorPosition( e );
-//System.out.println("utanna: " + secondaryCursor);
-//System.err.println("");
 
 		//Ha mar elkezdtem rajzolni
 		if( drawnStarted ){
@@ -135,29 +133,28 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			drawnBlockToDraw.changeSize( secondaryCursor.getX(), secondaryCursor.getY() );
 		
 			//Elhelyezni a temporary listaban a most szerkesztendo DrawnBlock-ot
-			addTemporaryDrawnBlock( drawnBlockToDraw );
+			canvas.addTemporaryDrawnBlock( drawnBlockToDraw );
 		}
 
 		//Elhelyezi a temporary listaban a masodlagos kurzort
-		addTemporarySecondaryCursor( secondaryCursor );
+		canvas.addTemporarySecondaryCursor( secondaryCursor );
 		
 		//Kirajzolja az elhelyezett szerkesztedno DrawnBlock-ot es a masodlagos kurzort
-		repaintCoreCanvas();
+		canvas.repaintCoreCanvas();
 		
 	}
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-//System.err.println("moved");
 		
 		//Meghatarozza a masodlagos kurzor aktualis erteket
 		findOutCursorPosition( e );
 		
 		//Kirajzolja a masodlagos kurzort
-		addTemporarySecondaryCursor( secondaryCursor );
+		canvas.addTemporarySecondaryCursor( canvas.getSecondaryCursor() );
 		
 		//Kirajzolja a masodlagos kurzort
-		repaintCoreCanvas();
+		canvas.repaintCoreCanvas();
 
 	}
 	
@@ -207,8 +204,8 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		BigDecimal tmpX1, tmpX2, tmpY1, tmpY2;
 		
 		//Kurzor poziciojanak kerekitese a megadott pontossagra
-		BigDecimal x = getRoundedBigDecimalWithPrecision( getWorldXByPixel( e.getX() ) );
-		BigDecimal y = getRoundedBigDecimalWithPrecision( getWorldYByPixel( e.getY() ) );
+		BigDecimal x = canvas.getRoundedBigDecimalWithPrecision( canvas.getWorldXByPixel( e.getX() ) );
+		BigDecimal y = canvas.getRoundedBigDecimalWithPrecision( canvas.getWorldYByPixel( e.getY() ) );
 		
 		//-------------------------------------------------------------------------------
 		//
@@ -221,23 +218,29 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		//  igazitja a Masodlagos Kurzort
 		//
 		//-------------------------------------------------------------------------------
-		int delta = getSnapDelta();
+		int delta = canvas.getSnapDelta();
 		
-		BigDecimal dx = new BigDecimal( getWorldXLengthByPixel( delta ) );
-		BigDecimal dy = new BigDecimal( getWorldXLengthByPixel( delta ) );
+		BigDecimal dx = new BigDecimal( canvas.getWorldXLengthByPixel( delta ) );
+		BigDecimal dy = new BigDecimal( canvas.getWorldXLengthByPixel( delta ) );
 		
 		BigDecimal minDX = new BigDecimal( Double.MAX_VALUE );
 		BigDecimal minDY = new BigDecimal( Double.MAX_VALUE );
 		Arrange arrange = new Arrange();
 		
+		 SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
+		 
 		//--------------------------------------------------------
 		//
 		// Ha engedelyezett az oldal kiterjeszteshez valo igazitas
 		//
 		//--------------------------------------------------------
-		if( getNeededSideExtentionSnap() ){
+		if( canvas.getNeededSideExtentionSnap() ){
 
-			for( DrawnBlock db : drawnBlockList ){
+			@SuppressWarnings("unchecked")
+			Iterator<DrawnBlock> it = (Iterator<DrawnBlock>) canvas.iterator();
+			DrawnBlock db;
+			while( it.hasNext() ){
+				db = it.next();
 			
 			//Ha megfelelo kozelsegben vagyok az egyik lehelyezett DrawnBlock-hoz. 
 			//if( db.intersects( new Block( x-dx, y-dy, x+dx, y+dy) ) ){
@@ -399,10 +402,10 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		//
 		//------------------------------------------
 		
-		if( getNeededGridSnap() ){
+		if( canvas.getNeededGridSnap() ){
 			
-			BigDecimal xStart = new BigDecimal( String.valueOf(Math.round( ( x.doubleValue() ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX() ) );
-			BigDecimal yStart = new BigDecimal( String.valueOf(Math.round( ( y.doubleValue() ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY() ) );
+			BigDecimal xStart = new BigDecimal( String.valueOf(Math.round( ( x.doubleValue() ) / canvas.getGrid().getDeltaGridX() ) * canvas.getGrid().getDeltaGridX() ) );
+			BigDecimal yStart = new BigDecimal( String.valueOf(Math.round( ( y.doubleValue() ) / canvas.getGrid().getDeltaGridY() ) * canvas.getGrid().getDeltaGridY() ) );
 //			double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
 //			double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
 
@@ -411,13 +414,13 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 			
 			if( xStart.subtract( x ).abs().compareTo( dx ) < 0 && xStart.subtract( x ).compareTo( minDX ) < 0 ){
 				minDX = xStart.subtract( x ).abs(); 
-				arrange.addDrawnBlockToArrangeX( null, getRoundedBigDecimalWithPrecisionFormBigDecimal( xStart ) );				
+				arrange.addDrawnBlockToArrangeX( null, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( xStart ) );				
 				//arrange.addDrawnBlockToArrangeX( null, xStart );
 			}
 			
 			if( yStart.subtract( y ).abs().compareTo( dy ) < 0 && yStart.subtract( y ).compareTo( minDY ) < 0 ){
 				minDY = yStart.subtract( y ).abs(); 
-				arrange.addDrawnBlockToArrangeY( null, getRoundedBigDecimalWithPrecisionFormBigDecimal( yStart ) );
+				arrange.addDrawnBlockToArrangeY( null, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( yStart ) );
 				//arrange.addDrawnBlockToArrangeY( null, yStart );
 			}	
 			
@@ -450,9 +453,9 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		// Ha engedelyezett az oldal osztasra valo igazitas
 		//
 		//-------------------------------------------------
-		if( getNeededSideDivisionSnap() ){
+		if( canvas.getNeededSideDivisionSnap() ){
 		
-			BigDecimal sideDivision = new BigDecimal( String.valueOf( getSnapSideDivision() ) );
+			BigDecimal sideDivision = new BigDecimal( String.valueOf( canvas.getSnapSideDivision() ) );
 			
 			int cycle = ( new BigDecimal("1").divide( sideDivision, 10, RoundingMode.HALF_UP ) ).intValue();
 	
@@ -513,11 +516,15 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		// Ha meg nem kezdodott el a rajzolas, szabadon mozgo kurzor
 		//
 //TODO itt meg kellene oldani, hogy ha ket egymast erinto blokk koze kerulne, az nem OK				
-		if( !drawnStarted && IsEnabledDrawn() ){
-
+		if( !drawnStarted && canvas.isEnabledDrawn() ){
+			 
 			//Megnezi, hogy az aktualis kurzor egy lehelyezett DrawnBlock-ra esik-e
-			for( DrawnBlock db: drawnBlockList ){
-			
+			@SuppressWarnings("unchecked")
+			Iterator<DrawnBlock> it = (Iterator<DrawnBlock>) canvas.iterator();
+			DrawnBlock db;
+			while( it.hasNext() ){
+				db = it.next();
+				
 				//Beleesik a kurzor egy lehelyezett DrawnBlock belsejeben
 				if( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 && y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ){
 //				if( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
@@ -545,7 +552,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		//
 		// Ha mar elkezdte a rajzolast
 		//
-		}else if( IsEnabledDrawn() ){
+		}else if( canvas.isEnabledDrawn() ){
 			
 			//
 			// A feltetelezett uj DrawnBlock koordinatainak nagysag szerinti rendezese
@@ -586,7 +593,11 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 
 			
 			// Vegig a lehelyezett DrawnBlock-okon
-			for( DrawnBlock db: drawnBlockList ){
+			@SuppressWarnings("unchecked")
+			Iterator<DrawnBlock> it = (Iterator<DrawnBlock>) canvas.iterator();
+			DrawnBlock db;
+			while( it.hasNext() ){
+				db = it.next();
 				
 				//Ha a most szerkesztett DrawnBlock fedesbe kerulne egy mar lehelyezett DrawnBlock-kal
 				Block block = new Block(tmpX1, tmpY1);
@@ -608,8 +619,6 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		// A szerkesztendo elem megengedi-e az uj poziciot
 		//
 		//-------------------------------------------------
-//System.err.println(drawnBlockToDraw);
-//System.err.println(secondaryCursor);	
 		if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){
 			
 			return;				
@@ -622,7 +631,7 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		//
 		//-------------------------------
 //TODO figyelem double atadas			
-		for( CursorPositionChangeListener listener : secondaryCursorPositionChangeListenerList) {
+		for( CursorPositionChangeListener listener : canvas.getSecondaryCursorPositionChangeListenerList() ) {
 			listener.getWorldPosition( x.doubleValue(), y.doubleValue() );
 		}	
 		
@@ -667,6 +676,8 @@ DrawnBlockCanvas.this.requestFocusInWindow();
 		if( null != drawnBlockToDraw ){
 			canvas.addTemporaryDrawnBlock( drawnBlockToDraw );
 		}
+		
+		SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
 		
 		if( null != secondaryCursor ){
 			canvas.addTemporarySecondaryCursor( secondaryCursor );

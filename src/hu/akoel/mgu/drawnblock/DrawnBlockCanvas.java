@@ -63,15 +63,16 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 	private DecimalFormatSymbols decimalSymbol = new DecimalFormatSymbols();			
 	
-	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
 	
 	private DrawnBlockFactory drawnBlockFactory;
 	
 	private ArrayList<DrawnBlock> drawnBlockList = new ArrayList<DrawnBlock>();
 	private ArrayList<DrawnBlock> temporaryDrawnBlockList = new ArrayList<DrawnBlock>();
 	
-	private MyDrawnBlockDrawListener drawnBlockDrawListener = new MyDrawnBlockDrawListener();
+	private DrawnBlockDrawnListener drawnBlockDrawListener;
+	
 	private DrawnBlockPainterListener drawnBlockPainterListener = new DrawnBlockPainterListener();
+	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
 	
 	private SecondaryCursor secondaryCursor = new DefaultSecondaryCursor( this );
 	
@@ -102,6 +103,8 @@ public class DrawnBlockCanvas extends MCanvas{
 		
 		this.decimalSymbol.setDecimalSeparator('.');		
 		this.precision = precision;
+		
+		drawnBlockDrawListener = new DrawnBlockDrawnListener( this );
 		
 		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
 //		this.addMouseMotionListener( drawnBlockInFocusListener );
@@ -134,6 +137,10 @@ public class DrawnBlockCanvas extends MCanvas{
 		});
 	}
 
+	public ArrayList<CursorPositionChangeListener> getSecondaryCursorPositionChangeListenerList(){
+		return secondaryCursorPositionChangeListenerList;
+	}
+	
 	/**
 	 * Beallit egy masik Masodlakos kurzort
 	 * 
@@ -144,6 +151,10 @@ public class DrawnBlockCanvas extends MCanvas{
 		revalidateAndRepaintCoreCanvas();
 	}
 	
+	public SecondaryCursor getSecondaryCursor(){
+		return this.secondaryCursor;
+	}
+	
 	public Precision getPrecision(){
 		return precision;
 	}
@@ -152,7 +163,7 @@ public class DrawnBlockCanvas extends MCanvas{
 		this.enabledDrawn = enabled;
 	}
 	
-	public boolean IsEnabledDrawn(){
+	public boolean isEnabledDrawn(){
 		return this.enabledDrawn;
 	}
 	
@@ -170,6 +181,10 @@ public class DrawnBlockCanvas extends MCanvas{
 		return neededSideExtentionSnap;
 	}
 
+	public Grid getGrid(){
+		return myGrid;
+	}
+	
 	/**
 	 * Engedelyezi a masodlagos kurzor legkozelebbi Grid ponthoz valo igazitasat
 	 * 
@@ -238,10 +253,13 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * Egy DrawnBlock rajzolasat elvegzo factory megadasa
 	 * @param drawnBlockFactory
 	 */
-/*	public void setDrawnBlockFactory( DrawnBlockFactory drawnBlockFactory ){
+	public void setDrawnBlockFactory( DrawnBlockFactory drawnBlockFactory ){
 		this.drawnBlockFactory = drawnBlockFactory;
+		if( null != drawnBlockDrawListener ){
+			drawnBlockDrawListener.setDrawnBlockFactory(drawnBlockFactory);
+		}
 	}
-*/	
+	
 	/**
 	 * Visszaadja a kirajzolando elemek listajat
 	 * @return
@@ -294,9 +312,12 @@ public class DrawnBlockCanvas extends MCanvas{
 			temporaryDrawnBlockList.add(drawnBlock);
 		}	
 	}
+
+	
+//TODO mi a fene ez????????????????????????	
 	
 	public void addTemporarySecondaryCursor( SecondaryCursor secondaryCursor ){
-		
+System.err.println("nost");		
 		//Minden megjelenites utan torlodik a listener, ezert kell mindig hozzaadni
 		this.addPainterListenerToTemporary( new TemporarySecondaryCursorPainterListener(), Level.ABOVE );
 		
@@ -325,26 +346,7 @@ public class DrawnBlockCanvas extends MCanvas{
 	
 
 	
-	/**
-	 * 
-	 * DrawnBlock rajzolasaert felelos osztaly
-	 * 
-	 * move, exited
-	 * exited, dragged
-	 * pressed, released clicked
-	 * 
-	 * @author akoel
-	 *
-	 */
-	class MyDrawnBlockDrawListener implements MouseInputListener{
-		
-		
-		
-	}
-	
 
-	
-	
 	/**
 	 * Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
 	 * 
