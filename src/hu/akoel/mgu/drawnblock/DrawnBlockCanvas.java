@@ -1,12 +1,9 @@
 package hu.akoel.mgu.drawnblock;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -15,14 +12,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.border.Border;
-import javax.swing.event.MouseInputListener;
-
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.CursorPositionChangeListener;
 import hu.akoel.mgu.PossiblePixelPerUnits;
-import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
@@ -69,7 +63,7 @@ public class DrawnBlockCanvas extends MCanvas{
 	private ArrayList<DrawnBlock> drawnBlockList = new ArrayList<DrawnBlock>();
 	private ArrayList<DrawnBlock> temporaryDrawnBlockList = new ArrayList<DrawnBlock>();
 	
-	private DrawnBlockDrawnListener drawnBlockDrawListener;
+	private DrawnBlockMouseListener drawnBlockDrawListener;
 	
 	private DrawnBlockPainterListener drawnBlockPainterListener = new DrawnBlockPainterListener();
 	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
@@ -104,7 +98,7 @@ public class DrawnBlockCanvas extends MCanvas{
 		this.decimalSymbol.setDecimalSeparator('.');		
 		this.precision = precision;
 		
-		drawnBlockDrawListener = new DrawnBlockDrawnListener( this );
+		drawnBlockDrawListener = new DrawnBlockMouseListener( this );
 		
 		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
 //		this.addMouseMotionListener( drawnBlockInFocusListener );
@@ -151,18 +145,38 @@ public class DrawnBlockCanvas extends MCanvas{
 		revalidateAndRepaintCoreCanvas();
 	}
 	
+	/**
+	 * Visszaadja a masodlagos kurzort
+	 * 
+	 * @return
+	 */
 	public SecondaryCursor getSecondaryCursor(){
 		return this.secondaryCursor;
 	}
 	
+	/**
+	 * Visszaadja a rajzfelulet pontossagat
+	 * 
+	 * @return
+	 */
 	public Precision getPrecision(){
 		return precision;
 	}
 	
+	/**
+	 * Engedelyezi vagy tiltja a rajzolast
+	 * 
+	 * @param enabled
+	 */
 	public void setEnabledDrawn( boolean enabled ){
 		this.enabledDrawn = enabled;
 	}
 	
+	/**
+	 * Megmondja, hogy engedelyezett-e a rajzolas
+	 * 
+	 * @return
+	 */
 	public boolean isEnabledDrawn(){
 		return this.enabledDrawn;
 	}
@@ -317,7 +331,7 @@ public class DrawnBlockCanvas extends MCanvas{
 //TODO mi a fene ez????????????????????????	
 	
 	public void addTemporarySecondaryCursor( SecondaryCursor secondaryCursor ){
-System.err.println("nost");		
+System.err.println("ez meg mi");		
 		//Minden megjelenites utan torlodik a listener, ezert kell mindig hozzaadni
 		this.addPainterListenerToTemporary( new TemporarySecondaryCursorPainterListener(), Level.ABOVE );
 		
