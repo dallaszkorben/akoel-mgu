@@ -6,26 +6,23 @@ import hu.akoel.mgu.drawnblock.DrawnBlock.Status;
 import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.event.MouseInputListener;
 
-public class DrawnBlockDrawnListener implements MouseInputListener{
+public class DrawnBlockMouseListener implements MouseInputListener{
 	
 	private boolean drawnStarted = false;
 	private DrawnBlock drawnBlockToDraw = null;
 	private DrawnBlockCanvas canvas;
 	private DrawnBlockFactory drawnBlockFactory;
 	
-	
-	public DrawnBlockDrawnListener( DrawnBlockCanvas canvas ){
+	public DrawnBlockMouseListener( DrawnBlockCanvas canvas ){
 		this.canvas = canvas;
 	}
 	
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		
+	public void mouseClicked(MouseEvent e) {		
 	}
 
 	@Override
@@ -56,8 +53,7 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 			
 			//Ujrarajzoltatom a Canvas-t az elkezdett DrawnBlock nelkul
 			canvas.revalidateAndRepaintCoreCanvas();
-		}
-		
+		}		
 	}
 
 	@Override
@@ -90,8 +86,6 @@ public class DrawnBlockDrawnListener implements MouseInputListener{
 							
 		}
 		
-//System.err.println("release");
-		
 	}
 
 	@Override
@@ -112,10 +106,8 @@ canvas.requestFocusInWindow();
 	}
 
 	@Override
-	public void mouseExited(MouseEvent e) {
-		
-		canvas.revalidateAndRepaintCoreCanvas();
-		
+	public void mouseExited(MouseEvent e) {		
+		canvas.revalidateAndRepaintCoreCanvas();		
 	}
 
 	@Override
@@ -227,7 +219,7 @@ canvas.requestFocusInWindow();
 		BigDecimal minDY = new BigDecimal( Double.MAX_VALUE );
 		Arrange arrange = new Arrange();
 		
-		 SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
+		SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
 		 
 		//--------------------------------------------------------
 		//
@@ -409,7 +401,6 @@ canvas.requestFocusInWindow();
 //			double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
 //			double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
 
-			
 			//Ha ez kozelebb van, mint az eddigi legkozelebbi
 			
 			if( xStart.subtract( x ).abs().compareTo( dx ) < 0 && xStart.subtract( x ).compareTo( minDX ) < 0 ){
@@ -612,15 +603,12 @@ canvas.requestFocusInWindow();
 			}				
 		}
 		
-
-		
 		//------------------------------------------------
 		//
 		// A szerkesztendo elem megengedi-e az uj poziciot
 		//
 		//-------------------------------------------------
-		if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){
-			
+		if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){			
 			return;				
 		}
 
@@ -633,8 +621,7 @@ canvas.requestFocusInWindow();
 //TODO figyelem double atadas			
 		for( CursorPositionChangeListener listener : canvas.getSecondaryCursorPositionChangeListenerList() ) {
 			listener.getWorldPosition( x.doubleValue(), y.doubleValue() );
-		}	
-		
+		}		
 		
 		//A Masodlagos kurzor poziciojanak beallitasa
 		secondaryCursor.setPosition( x, y );
