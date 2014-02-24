@@ -28,8 +28,8 @@ public class DrawnBlockMouseListener implements MouseInputListener{
 	@Override
 	public void mousePressed(MouseEvent e) {
 		
-		//Ha a baloldali egergombot nyomtam es meg nem kezdtem el rajzolni
-		if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted && null != drawnBlockFactory ){
+		//Ha a baloldali egergombot nyomtam es meg nem kezdtem el rajzolni, akkor elkezdi a rajzolast
+		if( e.getButton() == MouseEvent.BUTTON1 && !drawnStarted && null != drawnBlockFactory && canvas.isEnabledDrawn() ){
 			
 			//A kurzor pozicioja
 //			secondaryStartCursorPosition.setX( secondaryCursor.getX() );
@@ -148,10 +148,9 @@ canvas.requestFocusInWindow();
 		//Kirajzolja a masodlagos kurzort
 		canvas.repaintCoreCanvas();
 
-	}
+	}	
 	
-	
-	class Arrange{
+	private class Arrange{
 		DrawnBlock drawnBlockToArrangeX = null;
 		DrawnBlock drawnBlockToArrangeY = null;
 		
@@ -425,7 +424,97 @@ canvas.requestFocusInWindow();
 //			}	
 		
 		}
+		
+		
+		//-------------------------------------------------
+		//
+		// Ha engedelyezett az oldal osztasra valo igazitas
+		//
+		//-------------------------------------------------
+		if( canvas.getNeededSideDivisionSnap() ){
+		
+			Block cursorBlock = new Block( x.subtract( dx ), y.subtract( dy ) );
+			cursorBlock.setWidth( dx.add(dx) );
+			cursorBlock.setHeight( dy.add(dx) );
 				
+			BigDecimal sideDivision = new BigDecimal( String.valueOf( canvas.getSnapSideDivision() ) );
+			
+			int cycle = ( new BigDecimal("1").divide( sideDivision, 10, RoundingMode.HALF_UP ) ).intValue();
+			
+			@SuppressWarnings("unchecked")
+			Iterator<DrawnBlock> it = (Iterator<DrawnBlock>) canvas.iterator();
+			DrawnBlock db;
+			while( it.hasNext() ){
+				db = it.next();
+			
+				//Ha megfelelo kozelsegben van
+				if( db.intersects( cursorBlock ) ){
+					
+					//
+					//Akkor pontosabban is megvizsgalom
+					//
+					
+					//A kurzor vizszintesen megfeleloen kozel van a jobboldali fuggoleges-hez, de meg semmit nem tudunk a fuggoleges elhelyezkedeserol
+					if( db.getStopX().compareTo( cursorBlock.getStartX() ) > 0 && db.getStopX().compareTo( cursorBlock.getStopX() ) < 0  ){
+						
+						for( int i = 1; i < cycle; i++ ){						
+							
+							BigDecimal possibleNewPosition = db.getY1().add( sideDivision.multiply(db.getHeight() ).multiply( new BigDecimal(i) ) );
+							if( possibleNewPosition.subtract(y).abs().compareTo(dy) < 0){
+								
+								arrange.addDrawnBlockToArrangeX( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( db.getStopX() ) );
+								arrange.addDrawnBlockToArrangeY( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( possibleNewPosition ) );
+								
+								break;
+							}						
+						}	
+					//A kurzor vizszintesen megfeleloen kozel van a baloldali fuggoleges-hez, de meg semmit nem tudunk a fuggoleges elhelyezkedeserol
+					}else if( db.getStartX().compareTo( cursorBlock.getStartX() ) > 0 && db.getStartX().compareTo( cursorBlock.getStopX() ) < 0  ){
+						
+						for( int i = 1; i < cycle; i++ ){						
+							
+							BigDecimal possibleNewPosition = db.getY1().add( sideDivision.multiply(db.getHeight() ).multiply( new BigDecimal(i) ) );
+							if( possibleNewPosition.subtract(y).abs().compareTo(dy) < 0){
+								
+								arrange.addDrawnBlockToArrangeX( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( db.getStartX() ) );
+								arrange.addDrawnBlockToArrangeY( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( possibleNewPosition ) );
+								
+								break;
+							}						
+						}						
+
+					//A kurzor fuggolegesen megfeleloen kozel van az also vizszinteshez-hez
+					}else if( db.getStartY().compareTo( cursorBlock.getStartY() ) > 0 && db.getStartY().compareTo( cursorBlock.getStopY() ) < 0  ){
+						
+						for( int i = 1; i < cycle; i++ ){
+							
+							BigDecimal possibleNewPosition = db.getX1().add( sideDivision.multiply(db.getWidth() ).multiply( new BigDecimal(i) ) );
+							if( possibleNewPosition.subtract(x).abs().compareTo(dx) < 0){
+								
+								arrange.addDrawnBlockToArrangeY( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( db.getStartY() ) );
+								arrange.addDrawnBlockToArrangeX( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( possibleNewPosition ) );
+								break;
+							}
+						}
+					
+					//A kurzor fuggolegesen megfeleloen kozel van az felso vizszinteshez-hez	
+					}else if( db.getStopY().compareTo( cursorBlock.getStartY() ) > 0 && db.getStopY().compareTo( cursorBlock.getStopY() ) < 0  ){
+						
+						for( int i = 1; i < cycle; i++ ){
+							
+							BigDecimal possibleNewPosition = db.getX1().add( sideDivision.multiply(db.getWidth() ).multiply( new BigDecimal(i) ) );
+							if( possibleNewPosition.subtract(x).abs().compareTo(dx) < 0){
+								
+								arrange.addDrawnBlockToArrangeY( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( db.getStopY() ) );
+								arrange.addDrawnBlockToArrangeX( db, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( possibleNewPosition ) );
+								break;
+							}
+						}
+					}			
+				}
+			}		
+		}
+	
 		//
 		// Most vegzi el a masodlagos kurzor leendo uj koordinatainak modositasat. 
 		// A valodi kurzorhoz legkozelebb illesztheto pontot veszi
@@ -438,64 +527,6 @@ canvas.requestFocusInWindow();
 		if( null != arrange.getPositionY() ){
 			y = arrange.getPositionY();
 		}
-		
-		//-------------------------------------------------
-		//
-		// Ha engedelyezett az oldal osztasra valo igazitas
-		//
-		//-------------------------------------------------
-		if( canvas.getNeededSideDivisionSnap() ){
-		
-			BigDecimal sideDivision = new BigDecimal( String.valueOf( canvas.getSnapSideDivision() ) );
-			
-			int cycle = ( new BigDecimal("1").divide( sideDivision, 10, RoundingMode.HALF_UP ) ).intValue();
-	
-			//Fuggoleges oldalak meghosszabitasara tortent illesztes DE
-			//nem tortent a vizszintes oldalak meghosszabitasara illesztes
-			if( null != arrange.getDrawnBlockX() && null == arrange.getDrawnBlockY() ){
-		
-				//Az Y erteket valtoztathatjuk
-				DrawnBlock db = arrange.getDrawnBlockX();
-	
-				for( int i = 1; i < cycle; i++ ){						
-					
-					BigDecimal possibleNewPosition = db.getY1().add( sideDivision.multiply(db.getHeight() ).multiply( new BigDecimal(i) ) );
-					if( possibleNewPosition.subtract(y).abs().compareTo(dy) < 0){
-						y = possibleNewPosition;
-						break;
-					}
-				
-					//double possibleNewPosition = db.getY1() + i * sideDivision * db.getHeight();
-					//if( Math.abs( possibleNewPosition - y ) < dy ){
-//						y = possibleNewPosition;
-//						break;
-//					}
-				}
-		
-			//Vizszintes oldalak meghosszabitasara tortent illeszted DE
-			//Nem tortent a fuggoleges oldalak meghosszabbitasara illesztes
-			}else if( null != arrange.getDrawnBlockY() && null == arrange.getDrawnBlockX() ){
-			
-				//Az X erteket valtoztathatjuk
-				DrawnBlock db = arrange.getDrawnBlockY();
-			
-				for( int i = 1; i < cycle; i++ ){
-					
-					BigDecimal possibleNewPosition = db.getX1().add( sideDivision.multiply(db.getWidth() ).multiply( new BigDecimal(i) ) );
-					if( possibleNewPosition.subtract(x).abs().compareTo(dx) < 0){
-						x = possibleNewPosition;
-						break;
-					}
-					
-//					double possibleNewPosition = db.getX1() + i * sideDivision * db.getWidth();
-//					if( Math.abs( possibleNewPosition - x ) < dx ){
-//						x = possibleNewPosition;
-//						break;
-//					}
-				}
-			}
-		}
-		
 		
 		//-----------------------------------
 		//

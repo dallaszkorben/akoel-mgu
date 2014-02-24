@@ -83,6 +83,14 @@ public class Block {
 		return y2.subtract( y1 );
 	}
 	
+	public void setWidth( BigDecimal width ){
+		this.x2 = this.x1.add( width );
+	}
+	
+	public void setHeight( BigDecimal height ){
+		this.y2 = this.y1.add( height );
+	}
+	
 	public void changeSize( BigDecimal x, BigDecimal y ){
 		
 		int comp = x.compareTo( this.startX );
