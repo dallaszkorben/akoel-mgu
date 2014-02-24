@@ -13,7 +13,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -52,6 +51,8 @@ public class MCanvas extends JPanel {
 	
 	//TEMPORARY lista
 	ArrayList<PainterListener> temporaryList = new ArrayList<PainterListener>();
+	
+	private MouseInputListener mouseInputListener = null;
 
 	public CoreCanvas coreCanvas;
 	
@@ -227,11 +228,37 @@ public class MCanvas extends JPanel {
 	 * addMouseMotionListener(listener)
 	 * @param listener
 	 */
-	public void addMouseInputListener( MouseInputListener listener ){
+	public void setMouseInputListener( MouseInputListener listener ){
+		if( null != this.mouseInputListener ){
+			removeMouseInputListener( this.mouseInputListener );
+		}
+		
+		this.mouseInputListener = listener;
 		coreCanvas.addMouseListener(listener);
 		coreCanvas.addMouseMotionListener(listener);
 	}
 
+	public void removeMouseInputListener( MouseInputListener listener ){
+		coreCanvas.removeMouseListener( listener );
+		coreCanvas.removeMouseMotionListener( listener );
+	}
+
+/*	private void removeMouseInputListeners(){
+		
+		for( MouseListener listener : coreCanvas.getMouseListeners() ){
+			if( listener instanceof MouseInputListener ){
+				coreCanvas.removeMouseListener( listener );
+			}
+		}
+		
+		for( MouseMotionListener listener : coreCanvas.getMouseMotionListeners() ){
+			if( listener instanceof MouseInputListener ){
+				coreCanvas.removeMouseMotionListener( listener );
+			}
+		}		
+	}
+*/	
+	
 //	public void addKeyListener( KeyListener listener ){
 //		System.err.println("HELLO");
 //		coreCanvas.addKeyListener( listener );

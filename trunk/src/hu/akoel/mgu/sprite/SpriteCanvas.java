@@ -50,7 +50,7 @@ public class SpriteCanvas extends MCanvas{
 		addPainterListenerToMiddle(new SpritePainterListener(), Level.ABOVE );
 		
 		//Egy SPrite mozgatasat figyeli
-		this.addMouseInputListener( spriteDragListener );
+		this.setMouseInputListener( spriteDragListener );
 		
 	}
 	
