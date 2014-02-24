@@ -672,26 +672,6 @@ public abstract class DrawnBlock extends Block{
 		
 		return false;
 		
-		
-		
-//		if( 
-//				( 
-//						( rx1 >= tx1 && rx2 <= tx2 && ( ( rx1 != tx1 || rx2 != tx1 || tx1 == tx2 ) && ( rx1 != tx2 || rx2 != tx2 || tx1 == tx2 ) ) ) || 
-//						( rx1 < tx1 && rx2 > tx1 ) || 
-//						( rx1 < tx2 && rx2 > tx2 ) || 
-//						( rx1 < tx1 && rx2 > tx2 ) 
-//				) &&
-//				( 
-//						( ry1 >= ty1 && ry2 <= ty2 && ( ( ry1 != ty1 || ry2 != ty1 || ty1 == ty2 ) && ( ry1 != ty2 || ry2 != ty2 || ty1 == ty2 ) ) ) || 
-//						( ry1 < ty1 && ry2 > ty1 ) || 
-//						( ry1 < ty2 && ry2 > ty2 ) || 
-//						( ry1 < ty1 && ry2 > ty2 ) 
-//				)	
-//		){
-//			return true;
-//		}
-//		return false;
-		
 	}
 	
 	public boolean intersects( Block block2 ) {
@@ -719,7 +699,7 @@ public abstract class DrawnBlock extends Block{
 		ty2 = ty2.subtract( ty1 );
 		
 		//Biztos, hogy keresztezi vagy tartalmazza az egyik a masikat
-		if( ty2.compareTo(new BigDecimal("0")) >= 0 ){
+		if( ty2.compareTo(new BigDecimal("0")) >= 0 && tx2.compareTo( new BigDecimal("0")) >= 0 ){
 			tx2 = tx2.add( tx1 );
 			ty2 = ty2.add( ty1 );
 			
@@ -737,40 +717,8 @@ public abstract class DrawnBlock extends Block{
 		}else{
 			return false;
 		}
-		
-//		if (tx1 < rx1) tx1 = rx1;
-//		if (ty1 < ry1) ty1 = ry1;
-//		if (tx2 > rx2) tx2 = rx2;
-//		if (ty2 > ry2) ty2 = ry2;
-//		tx2 -= tx1;
-//		ty2 -= ty1;
-
-		//Biztos, hogy keresztezi vagy tartalmazza az egyik a masikat
-//		if( ty2 >= 0 && tx2 >= 0 ){
-//			tx2 += tx1;
-//			ty2 += ty1;
-
-			//Valamelyik tartalmazza a masikat
-//			if( 
-//					( ( ( tx2 - tx1 ) == ( getX2() - getX1() ) ) || ( ( tx2 - tx1 ) == ( block2.getWidth() ) ) ) &&
-//					( ( ( ty2 - ty1 ) == ( getY2() - getY1() ) ) || ( ( ty2 - ty1 ) == ( block2.getHeight() ) ) ) 
-//
-//			){
-//				return false;
-//			//Csak keresztezesrol van szo
-//			}else{
-//				return true;
-//			}			
-//		}else{
-//			return false;
-//		}
 					
 	}
-	
-//	@Override
-//	public Object clone() {
-//		return super.clone();
-//	}
 	
 	public String toString(){
 		return new String( "(" + this.getX1() + ", " + this.getY1() + ") (" + this.getX2() + ", " + this.getY2() +")" );

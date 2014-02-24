@@ -662,7 +662,9 @@ canvas.requestFocusInWindow();
 	
 	
 	
-	
+	public boolean isDrawnStarted(){
+		return drawnStarted;
+	}
 	
 	
 	
