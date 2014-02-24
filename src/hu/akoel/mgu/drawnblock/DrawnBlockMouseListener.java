@@ -121,7 +121,7 @@ canvas.requestFocusInWindow();
 		//Ha mar elkezdtem rajzolni
 		if( drawnStarted ){
 
-			// DrawnBlock meretet megvaltoztatja - automatikusan sorba rendezi a koordinatakat x1 <= x2, y1 <= y2
+			// DrawnBlock meretet megvaltoztatja - automatikusan sorba rendezi a koordinatakat x1 <= x2, y1 <= y2			
 			drawnBlockToDraw.changeSize( secondaryCursor.getX(), secondaryCursor.getY() );
 		
 			//Elhelyezni a temporary listaban a most szerkesztendo DrawnBlock-ot
@@ -150,7 +150,7 @@ canvas.requestFocusInWindow();
 
 	}	
 	
-	private class Arrange{
+	public class Arrange{
 		DrawnBlock drawnBlockToArrangeX = null;
 		DrawnBlock drawnBlockToArrangeY = null;
 		
@@ -190,7 +190,7 @@ canvas.requestFocusInWindow();
 	 * 
 	 * @param e
 	 */
-	private void findOutCursorPosition( MouseEvent e ){			
+	public void findOutCursorPosition( MouseEvent e ){			
 		
 		BigDecimal tmpX1, tmpX2, tmpY1, tmpY2;
 		
@@ -639,7 +639,7 @@ canvas.requestFocusInWindow();
 		// A szerkesztendo elem megengedi-e az uj poziciot
 		//
 		//-------------------------------------------------
-		if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){			
+		if( drawnStarted && null != drawnBlockToDraw && !drawnBlockToDraw.enabledToChange( x, y ) ){
 			return;				
 		}
 

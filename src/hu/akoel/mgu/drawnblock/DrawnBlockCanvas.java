@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -98,7 +100,12 @@ public class DrawnBlockCanvas extends MCanvas{
 		this.decimalSymbol.setDecimalSeparator('.');		
 		this.precision = precision;
 		
-		drawnBlockMouseListener = new DrawnBlockMouseListener( this );
+		//A kurzor mozgasat vizsgalolo listener
+		this.setDrawnBlockMouseListener( new DrawnBlockMouseListener( this ) );
+//		drawnBlockMouseListener = new DrawnBlockMouseListener( this );
+		
+		//A kurzor mozgasat vizsgalolo listener
+		//this.addMouseInputListener( drawnBlockMouseListener );
 		
 		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
 //		this.addMouseMotionListener( drawnBlockInFocusListener );
@@ -106,8 +113,7 @@ public class DrawnBlockCanvas extends MCanvas{
 		//A kozepso reteg also felet hasznaljuk a DrawnBlock-ok megjelenitesere
 		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.UNDER );
 		
-		//A kurzor mozgasat vizsgalolo listener
-		this.addMouseInputListener( drawnBlockMouseListener );
+
 			
 		//Ctrl-Z figyelese
 		this.addKeyListener( new KeyAdapter(){
@@ -131,6 +137,16 @@ public class DrawnBlockCanvas extends MCanvas{
 		});
 	}
 
+	public void setDrawnBlockMouseListener( DrawnBlockMouseListener drawnBlockMouseListener ){
+		this.drawnBlockMouseListener = drawnBlockMouseListener;
+		this.setMouseInputListener( drawnBlockMouseListener );
+	}
+	
+/*	public void clearDrawnBlockMouseListener(){
+		this.drawnBlockMouseListener = null;
+		this.removeMouseInputListener();
+	}
+*/	
 	public ArrayList<CursorPositionChangeListener> getSecondaryCursorPositionChangeListenerList(){
 		return secondaryCursorPositionChangeListenerList;
 	}
@@ -303,9 +319,9 @@ public class DrawnBlockCanvas extends MCanvas{
 	 * 
 	 * @param drawnBlock
 	 */
-//	public void removeDrawnBlock( DrawnBlock drawnBlock ){
-//		this.drawnBlockList.remove( drawnBlock );
-//	}
+	public void removeDrawnBlock( DrawnBlock drawnBlock ){
+		this.drawnBlockList.remove( drawnBlock );
+	}
 		
 	public void removeDrawnBlock( int drawnBlock ){
 		this.drawnBlockList.remove( drawnBlock );
@@ -356,58 +372,6 @@ public class DrawnBlockCanvas extends MCanvas{
 
 	}
 	
-
-	
-
-	/**
-	 * Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
-	 * 
-	 * @author akoel
-	 *
-	 */
-/*	class DrawnBlockInFocusListener implements MouseMotionListener{
-		
-		@Override
-		public void mouseMoved(MouseEvent e) {
-	
-			if( needFocus() ){
-			
-				double xValue = getWorldXByPixel(e.getX() );			
-				double yValue = getWorldYByPixel(e.getY());
-				boolean needToPrint = false;
-
-				for( DrawnBlock sprite: drawnBlockList){
-				
-					SizeValue boundBox = sprite.getBoundBoxAbsolute();						
-			
-					if( 
-						xValue >= boundBox.getXMin() &&
-						xValue <= boundBox.getXMax() &&
-						yValue >= boundBox.getYMin() &&
-						yValue <= boundBox.getYMax()
-					){
-											
-						addTemporarySprite(sprite);						
-						needToPrint = true;
-						sprite.setInFocus(true);
-
-					}else{
-						if( sprite.isInFocus() ){
-							needToPrint = true;						
-							sprite.setInFocus(false);
-						}
-					}					
-				}
-				if( needToPrint ){
-					repaintCoreCanvas();
-				}
-			}				
-		}
-			
-		@Override
-		public void mouseDragged(MouseEvent e) {}					
-	}
-*/	
 
 	/**
 	 * A megadott pontossagra kerekiti a parametert
