@@ -63,7 +63,7 @@ public class DrawnBlockCanvas extends MCanvas{
 	private ArrayList<DrawnBlock> drawnBlockList = new ArrayList<DrawnBlock>();
 	private ArrayList<DrawnBlock> temporaryDrawnBlockList = new ArrayList<DrawnBlock>();
 	
-	private DrawnBlockMouseListener drawnBlockDrawListener;
+	private DrawnBlockMouseListener drawnBlockMouseListener;
 	
 	private DrawnBlockPainterListener drawnBlockPainterListener = new DrawnBlockPainterListener();
 	private ArrayList<CursorPositionChangeListener> secondaryCursorPositionChangeListenerList = new ArrayList<CursorPositionChangeListener>();
@@ -98,7 +98,7 @@ public class DrawnBlockCanvas extends MCanvas{
 		this.decimalSymbol.setDecimalSeparator('.');		
 		this.precision = precision;
 		
-		drawnBlockDrawListener = new DrawnBlockMouseListener( this );
+		drawnBlockMouseListener = new DrawnBlockMouseListener( this );
 		
 		//Azt figyeli, hogy egy DrawnBlock fokuszba kerult-e
 //		this.addMouseMotionListener( drawnBlockInFocusListener );
@@ -107,7 +107,7 @@ public class DrawnBlockCanvas extends MCanvas{
 		this.addPainterListenerToMiddle( drawnBlockPainterListener, Level.UNDER );
 		
 		//A kurzor mozgasat vizsgalolo listener
-		this.addMouseInputListener( drawnBlockDrawListener );
+		this.addMouseInputListener( drawnBlockMouseListener );
 			
 		//Ctrl-Z figyelese
 		this.addKeyListener( new KeyAdapter(){
@@ -269,8 +269,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	public void setDrawnBlockFactory( DrawnBlockFactory drawnBlockFactory ){
 		this.drawnBlockFactory = drawnBlockFactory;
-		if( null != drawnBlockDrawListener ){
-			drawnBlockDrawListener.setDrawnBlockFactory(drawnBlockFactory);
+		if( null != drawnBlockMouseListener ){
+			drawnBlockMouseListener.setDrawnBlockFactory(drawnBlockFactory);
 		}
 	}
 	
@@ -328,10 +328,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	}
 
 	
-//TODO mi a fene ez????????????????????????	
-	
 	public void addTemporarySecondaryCursor( SecondaryCursor secondaryCursor ){
-System.err.println("ez meg mi");		
+	
 		//Minden megjelenites utan torlodik a listener, ezert kell mindig hozzaadni
 		this.addPainterListenerToTemporary( new TemporarySecondaryCursorPainterListener(), Level.ABOVE );
 		
@@ -345,7 +343,7 @@ System.err.println("ez meg mi");
 		//Mozgast szimulal, mintha megmozdult volna a kurzor, ami azt eredmenyezi, hogy kirajzolodik a kurzor
 		//fireMouseMoved();
 
-		drawnBlockDrawListener.repaintSecondaryCursorAndDrawnBlockToDraw();
+		drawnBlockMouseListener.repaintSecondaryCursorAndDrawnBlockToDraw();
 	}
 	
 	public void zoomOut(double xCenter, double yCenter, int xPoint, int yPoint){
@@ -354,7 +352,7 @@ System.err.println("ez meg mi");
 		//Azert kell, hogy a zoom utan kovetkezo ujrarajzolas miatt eltuno fokuszban levo DrawnBlock ujra bekeruljon a temporary listaba
 //		fireMouseMoved();
 		
-		drawnBlockDrawListener.repaintSecondaryCursorAndDrawnBlockToDraw();
+		drawnBlockMouseListener.repaintSecondaryCursorAndDrawnBlockToDraw();
 
 	}
 	
