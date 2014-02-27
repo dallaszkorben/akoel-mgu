@@ -253,8 +253,7 @@ public abstract class DrawnBlock extends Block{
 						}
 					}					
 				}
-			}
-			
+			}			
 		}
 		
 		refreshStatus();
@@ -311,10 +310,13 @@ public abstract class DrawnBlock extends Block{
 			h = y.subtract( this.getStartY() );
 		}
 		
+		//
+		// MAX
+		//
 		// Ketiranyu korlatozas van megadva
 		if( null != maxWidth && null != maxLength ){
 
-			if( !( ( h.compareTo(maxWidth) <= 0 && w.compareTo(maxLength) <= 0 ) || ( w.compareTo(maxWidth) <=0 && h.compareTo(maxLength) <= 0) ) ){
+			if( !( ( h.compareTo(maxWidth) <= 0 && w.compareTo(maxLength) <= 0 ) || ( w.compareTo(maxWidth) <= 0 && h.compareTo(maxLength) <= 0) ) ){
 			
 				return false;
 			}
@@ -335,37 +337,37 @@ public abstract class DrawnBlock extends Block{
 				return false;
 			}
 		}
-		return true;
+		
+		//
+		// MIN
+		//
+		// Ketiranyu korlatozas van megadva
+		if( null != minWidth && null != minLength ){
+
+			if( ( ( h.compareTo(minWidth) < 0 || w.compareTo(minLength) < 0 ) && ( w.compareTo(minWidth) < 0 || h.compareTo(minLength) < 0) ) ){
+		
+				return false;
+			}
 				
-//		if( x < this.startX ){
-//			w =  this.startX - x;
-//		}else{
-//			w = x - this.startX;
-//		}
+		// Csak az egyik oldalnak van megadva korlatozas
+		} else if( null != minWidth ){
+
+			if( h.compareTo(minWidth) < 0 && w.compareTo( minWidth) < 0){
+			
+				return false;			
+			}
+					
+		// Csak az egyik oldalnak van megadva korlatozas
+		} else if( null != minLength ){
+
+			if( h.compareTo(minLength) < 0 && w.compareTo(minLength) < 0 ){
+			
+				return false;
+			}
+		}
 		
-//		if( y < this.startY ){
-//			h = this.startY - y;
-//		}else{
-//			h = y - this.startY;
-//		}
 		
-//		// Ketiranyu korlatozas van megadva
-//		if( null != maxWidth && null != maxLength ){
-//			if( !( ( h <= maxWidth && w <= maxLength ) || (  w <= maxWidth && h <= maxLength ) ) ){
-//				return false;
-//			}
-//		// Csak az egyik oldalnak van megadva korlatozas
-//		} else if( null != maxWidth ){
-//			if( h > maxWidth && w > maxWidth ){
-//				return false;			
-//			}
-//		// Csak az egyik oldalnak van megadva korlatozas
-//		} else if( null != maxLength ){
-//			if( h > maxLength && w > maxLength ){
-//				return false;
-//			}
-//		}
-//		return true;
+		return true;
 		
 	}
 

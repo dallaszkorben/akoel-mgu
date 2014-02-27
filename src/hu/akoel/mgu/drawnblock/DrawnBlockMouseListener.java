@@ -516,7 +516,7 @@ canvas.requestFocusInWindow();
 		}
 	
 		//
-		// Most vegzi el a masodlagos kurzor leendo uj koordinatainak modositasat. 
+		// Most vegzi el a masodlagos kurzor leendo uj koordinatainak modositasat az igazitasok alapjan. 
 		// A valodi kurzorhoz legkozelebb illesztheto pontot veszi
 		// Meg nem tolti be a Masodlagos Kurzorba
 		//
@@ -552,19 +552,18 @@ canvas.requestFocusInWindow();
 //				if( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
 
 					//Ha az elobbi X poziciot hasznalom, akkor kivul kerulok
-					if( ( secondaryCursor.getX().compareTo( db.getX1() ) <= 0 || secondaryCursor.getX().compareTo( db.getX2() ) >= 0 ) && ( y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ) ){
-//					if( ( secondaryCursor.getX() <= db.getX1() || secondaryCursor.getX() >= db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
+					if( ( secondaryCursor.getX().compareTo( db.getX1() ) <= 0 || secondaryCursor.getX().compareTo( db.getX2() ) >= 0 ) ){   //&& ( y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ) ){
+					
 						x = secondaryCursor.getX();
 					
 					//Ha az elobbi Y poziciot hasznalom, akkor kivul kerulok
-					}else if( ( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 ) && ( secondaryCursor.getY().compareTo( db.getY1() ) <= 0 || secondaryCursor.getY().compareTo( db.getY2() ) >= 0 ) ){
-//					}else if( ( x > db.getX1() && x < db.getX2() ) && ( secondaryCursor.getY() <= db.getY1() || secondaryCursor.getY() >= db.getY2() ) ){
-						
+					} else if( ( secondaryCursor.getY().compareTo( db.getY1() ) <= 0 || secondaryCursor.getY().compareTo( db.getY2() ) >= 0 ) ){  //&& ( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 )  ){
+					
 						y = secondaryCursor.getY();
 					
-					//Kulonben
+					//Kulonben/ennek nem kellene bekovetkeznie
 					}else{
-					
+				
 						//Akkor a masodlagos kurzor marad a regi pozicioban
 						return;
 					}
