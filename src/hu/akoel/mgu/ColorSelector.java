@@ -29,6 +29,7 @@ public class ColorSelector extends JComboBox<Integer>{
 	
 	private static enum DefaultColor implements ColorForSelectorInterface{
 		BLACK( Color.black, "Black"),
+		WHITE( Color.white, "White"),
 		
 		
 		
