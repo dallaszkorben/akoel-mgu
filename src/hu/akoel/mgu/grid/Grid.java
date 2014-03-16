@@ -1,5 +1,6 @@
 package hu.akoel.mgu.grid;
 
+import hu.akoel.mgu.ColorSelector;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
@@ -209,7 +210,23 @@ public class Grid {
 		
 		final JComboBox<String> gridTypeCombo;
 		final JComboBox<String> gridWidthCombo;
-		JComboBox<String> crossLineWidthCombo;
+//		JComboBox<String> crossLineWidthCombo;
+		
+		ColorSelector colorSelector = new ColorSelector();
+		colorSelector.setSelectedItem( color );
+		colorSelector.addActionListener( new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				ColorSelector cs = (ColorSelector) e.getSource();
+				//ElementSettingTab.this.mainPanel.setElementLineColor( cs.getSelectedColor() );
+				color = cs.getSelectedColor();
+				Grid.this.canvas.revalidateAndRepaintCoreCanvas();
+			}
+			
+		});
+
 		
 		gridXDeltaField = new JTextField();
 		gridXDeltaField.setColumns( 8 );
@@ -331,7 +348,24 @@ public class Grid {
 		gridPanelConstraints.weightx = 1;
 		gridPanel.add(turnOnGrid, gridPanelConstraints);
 		
-		//2. sor - Type
+		//2. sor - Color
+		gridPanelConstraints.gridx = 0;
+		gridPanelConstraints.gridy++;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add(new JLabel("     "),gridPanelConstraints );
+
+		gridPanelConstraints.gridx = 1;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 0;
+		gridPanel.add( new JLabel("Color: "), gridPanelConstraints);
+
+		gridPanelConstraints.gridx = 2;
+		gridPanelConstraints.gridwidth = 1;
+		gridPanelConstraints.weightx = 1;
+		gridPanel.add( colorSelector, gridPanelConstraints);
+		
+		//3. sor - Type
 		gridPanelConstraints.gridx = 0;
 		gridPanelConstraints.gridy++;
 		gridPanelConstraints.gridwidth = 1;
@@ -348,7 +382,7 @@ public class Grid {
 		gridPanelConstraints.weightx = 1;
 		gridPanel.add(gridTypeCombo, gridPanelConstraints);
 		 
-		//3. sor - Width
+		//4. sor - Width
 		gridPanelConstraints.gridx = 1;
 		gridPanelConstraints.gridy++;
 		gridPanelConstraints.gridwidth = 1;
@@ -365,7 +399,7 @@ public class Grid {
 		gridPanelConstraints.weightx = 0;
 		gridPanel.add(new JLabel(" px"),gridPanelConstraints );
 		
-		//4. sor - Grid delta x
+		//5. sor - Grid delta x
 		gridPanelConstraints.gridx = 1;
 		gridPanelConstraints.gridy++;
 		gridPanelConstraints.gridwidth = 1;
@@ -382,7 +416,7 @@ public class Grid {
 		gridPanelConstraints.weightx = 0;
 		gridPanel.add( new JLabel(" " + scale.getUnitX().getSign() ), gridPanelConstraints );	
 		
-		//5. sor - Grid delta y
+		//6. sor - Grid delta y
 		gridPanelConstraints.gridx = 1;
 		gridPanelConstraints.gridy++;
 		gridPanelConstraints.gridwidth = 1;
