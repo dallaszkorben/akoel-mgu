@@ -1,9 +1,11 @@
 package hu.akoel.mgu.crossline;
 
+import hu.akoel.mgu.ColorSelector;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.PainterListener;
 import hu.akoel.mgu.MCanvas.Level;
+import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.values.Value;
 
@@ -147,6 +149,21 @@ public class CrossLine {
 		
 		final JComboBox<String> crossLineWidthCombo;
 		
+		ColorSelector colorSelector = new ColorSelector();
+		colorSelector.setSelectedItem( color );
+		colorSelector.addActionListener( new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				ColorSelector cs = (ColorSelector) e.getSource();
+				//ElementSettingTab.this.mainPanel.setElementLineColor( cs.getSelectedColor() );
+				color = cs.getSelectedColor();
+				CrossLine.this.canvas.revalidateAndRepaintCoreCanvas();
+			}
+			
+		});
+		
 		crossLineXPosField = new JTextField();
 		crossLineXPosField.setColumns( 8 );
 		crossLineXPosField.setText( String.valueOf( this.getPositionX() ) );
@@ -242,7 +259,7 @@ public class CrossLine {
 
 		String[] crossLineWidthElements = { "1", "3", "5" };
 		crossLineWidthCombo = new JComboBox<String>(crossLineWidthElements);
-		crossLineWidthCombo.setSelectedIndex(2);
+		crossLineWidthCombo.setSelectedIndex(0);
 		crossLineWidthCombo.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -285,8 +302,6 @@ public class CrossLine {
 			}
 		});
 		
-		JColorChooser crossLineColor = new JColorChooser();
-		
 		JPanel crossLinePanel = new JPanel();
 		crossLinePanel.setLayout(new GridBagLayout());
 		crossLinePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Cross line", TitledBorder.LEFT, TitledBorder.TOP));
@@ -302,7 +317,19 @@ public class CrossLine {
 		crossLinePanelConstraints.anchor = GridBagConstraints.WEST;
 		crossLinePanel.add(turnOnCrossLine, crossLinePanelConstraints);
 		
-		//2. sor - Position X
+		//2. sor - Color
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Color: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add( colorSelector, crossLinePanelConstraints);	
+
+		//3. sor - Position X
 		crossLinePanelConstraints.gridx = 1;
 		crossLinePanelConstraints.gridy++;
 		crossLinePanelConstraints.gridwidth = 1;

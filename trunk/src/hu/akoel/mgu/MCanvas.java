@@ -11,8 +11,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
@@ -20,8 +24,11 @@ import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.MouseInputListener;
 
 
@@ -99,12 +106,23 @@ public class MCanvas extends JPanel {
 	}
 	
 	private void commonConstructor(Border borderType, Color background, PossiblePixelPerUnits possiblePixelPerUnits, SizeValue boundSize ){
+		
 		this.setBorder(borderType);
 		this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 
 		this.possiblePixelPerUnits = possiblePixelPerUnits;
 		this.setBoundSize( boundSize );
-		this.add( getCoreCanvas( this, background ) );
+		//this.add( getCoreCanvas( this, background ) );
+		this.coreCanvas = new CoreCanvas( this, background );
+		this.add( coreCanvas );
+	}
+	
+	public void setColor( Color background ){
+		getCoreCanvas().setBackground(background);
+	}
+	
+	public Color getColor(){
+		return getCoreCanvas().getBackground();
 	}
 	
 	public ArrayList<PainterListener> getHighestList(){
@@ -203,13 +221,17 @@ public class MCanvas extends JPanel {
 		return coreCanvas.getLocationOnScreen();
 	}
 	
-	protected CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
+	private CoreCanvas getCoreCanvas(){
+		return coreCanvas;
+	}
+	
+/*	protected CoreCanvas getCoreCanvas(MCanvas canvas, Color background ){
 		if( null == coreCanvas ){
 			coreCanvas = new CoreCanvas( this, background );
 		}
 		return coreCanvas;
 	}
-	
+*/	
 	//
 	// Figyelok kivulrol
 	//
@@ -937,15 +959,15 @@ public class MCanvas extends JPanel {
 //		    paint(g);
 //		  }
 
-		  /**
-		   * Az canvas ervenytelenitesekor torolni kell a hatter kepet is
-		   */
-		  public void invalidate() {		  
-		    super.invalidate();
+		/**
+		 * Az canvas ervenytelenitesekor torolni kell a hatter kepet is
+		 */
+		public void invalidate() {		  
+			super.invalidate();
 		    offImage = null;	    
-		  }
-		  
-		  public void paintComponent(Graphics g) {
+		}
+		
+		public void paintComponent(Graphics g) {
 
 			if( !getWasTransferedToMiddle() ){
 				setWasTransferedToMiddle( true );
@@ -1036,5 +1058,44 @@ public class MCanvas extends JPanel {
 
 		}	
 
+	}
+	
+	
+	
+	public JPanel getControl( ){
+		
+		ColorSelector colorSelector = new ColorSelector();
+		colorSelector.setSelectedItem( getColor() );
+		colorSelector.addActionListener( new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				ColorSelector cs = (ColorSelector) e.getSource();
+				//ElementSettingTab.this.mainPanel.setElementLineColor( cs.getSelectedColor() );
+				setColor( cs.getSelectedColor() );
+				MCanvas.this.revalidateAndRepaintCoreCanvas();
+			}
+			
+		});
+		
+		JPanel crossLinePanel = new JPanel();
+		crossLinePanel.setLayout(new GridBagLayout());
+		crossLinePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Canvas", TitledBorder.LEFT, TitledBorder.TOP));
+		GridBagConstraints crossLinePanelConstraints = new GridBagConstraints();
+		
+		//1. sor - Color
+		crossLinePanelConstraints.gridx = 1;
+		crossLinePanelConstraints.gridy++;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 0;
+		crossLinePanel.add( new JLabel("Background color: "), crossLinePanelConstraints);
+
+		crossLinePanelConstraints.gridx = 2;
+		crossLinePanelConstraints.gridwidth = 1;
+		crossLinePanelConstraints.weightx = 1;
+		crossLinePanel.add( colorSelector, crossLinePanelConstraints);	
+
+		return crossLinePanel;
 	}
 }
