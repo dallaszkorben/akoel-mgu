@@ -26,11 +26,11 @@ public class DrawnBlockCanvas extends MCanvas{
 	private static final long serialVersionUID = -8308688255617119442L;
 	
 	public static enum Precision{
-		per_10( "#.#", 1, 10 ),				//1/10		dm
-		per_100( "#.##", 2, 100 ),			//1/100		cm
-		per_1000( "#.###", 3, 1000 ),		//1/1000	mm
-		per_10000( "#.####", 4, 10000 ),	//1/10000	1/10 mm		
-		per_100000( "#.#####", 5, 100000 );	//1/100000	1/100 mm
+		per_10( "0.0", 1, 10 ),				//1/10		dm
+		per_100( "0.00", 2, 100 ),			//1/100		cm
+		per_1000( "0.000", 3, 1000 ),		//1/1000	mm
+		per_10000( "0.0000", 4, 10000 ),	//1/10000	1/10 mm		
+		per_100000( "0.00000", 5, 100000 );	//1/100000	1/100 mm
 		
 		private String decimalFormat;
 		private int scale;
@@ -388,6 +388,8 @@ public class DrawnBlockCanvas extends MCanvas{
 	public Double getRoundedDoubleWitPrecision( double val ){
 		return Double.valueOf(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
 	}
+	
+	
 	
 	
 	/**
