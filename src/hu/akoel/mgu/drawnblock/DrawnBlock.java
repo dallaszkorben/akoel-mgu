@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Stroke;
 import java.awt.TexturePaint;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -750,6 +752,10 @@ public abstract class DrawnBlock extends Block{
 		attr = document.createAttribute("y2");
 		attr.setValue( getY2().toPlainString());
 		positionElement.setAttributeNode(attr);
+//System.err.println(getX1() + ", " + getY1() + " | " + getX2() + ", " + getY2());		
+		
+		DecimalFormatSymbols decimalSymbol = new DecimalFormatSymbols();
+		decimalSymbol.setDecimalSeparator('.');		
 
 		//Descriptor
 		Element descriptorElement = document.createElement( "descriptor" );
