@@ -187,6 +187,8 @@ canvas.requestFocusInWindow();
 
 	/**
 	 * Meghatarozza a masodlagos kurzor aktualis erteket
+	 * Azt vizsgalja, hogy a pont pozicionalhato-e egyaltalan
+	 * az adott helyre
 	 * 
 	 * @param e
 	 */
@@ -245,13 +247,9 @@ canvas.requestFocusInWindow();
 					if(
 							( db.getX1().subtract( x ).compareTo( minDX ) < 0 ) ||
 							( db.getX1().subtract( x ).compareTo( minDX ) == 0 && y.compareTo(db.getY1()) >= 0 && y.compareTo( db.getY2()) <= 0 )
-//							( ( db.getX1() - x ) < minDX ) || 
-//							( ( db.getX1() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() ) 
 					){
 						minDX = db.getX1().subtract( x );
 						arrange.addDrawnBlockToArrangeX( db, db.getX1() );
-//						minDX = db.getX1() - x;
-//						arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
 					}
 					
 				//!!! Bal oldalrol kozeliti a DrawnBlock jobboldalat !!!
@@ -263,109 +261,81 @@ canvas.requestFocusInWindow();
 					if( 
 							( db.getX2().subtract( x ).compareTo( minDX ) < 0 ) ||
 							( db.getX2().subtract( x ).compareTo( minDX ) == 0 &&  y.compareTo( db.getY1()) >= 0 && y.compareTo( db.getY2() ) <= 0 )
-//							( ( db.getX2() - x ) < minDX ) ||
-//							( ( db.getX2() - x ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
 					){
 						minDX = db.getX2().subtract( x );
 						arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
-//						minDX = db.getX2() - x;
-//						arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
 					}
 					
 				//Jobb oldalrol kozeliti a DrawnBlock jobb oldalat
 				}else if( x.subtract( db.getX2() ).compareTo( new BigDecimal("0" )) > 0 && x.subtract( db.getX2() ).compareTo( dx ) < 0 ){
-//				}else if( ( x - db.getX2() ) > 0 && ( x - db.getX2() ) < dx ){
 
 					//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 					//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
 					if(
 							( x.subtract( db.getX2() ).compareTo( minDX ) < 0 ) ||
 							( x.subtract( db.getX2() ).compareTo( minDX ) == 0 &&  y.compareTo( db.getY1() ) >= 0 && y.compareTo( db.getY2() ) <= 0 )
-//							( ( x - db.getX2() ) < minDX ) ||
-//							( ( x - db.getX2() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
 					){
 						minDX = x.subtract( db.getX2() );
 						arrange.addDrawnBlockToArrangeX( db, db.getX2() );			
-//						minDX = x - db.getX2();
-//						arrange.addDrawnBlockToArrangeX( db, db.getX2() );							
 					}
 				
 				//!!! Jobb oldalrol kozeliti a DrawnBlock bal oldalat !!!
 				}else if( x.subtract( db.getX1() ).compareTo( new BigDecimal("0")) > 0 && x.subtract( db.getX1() ).compareTo( dx ) < 0 ){
-//				}else if( ( x - db.getX1() ) > 0 && ( x - db.getX1() ) < dx ){
 
 					//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 					//pontaosan ugyan olyan tavolsagban, de a kurzor Y koordinataja a fuggoleges oldalra esik
 					if( 
 							( x.subtract( db.getX1() ).compareTo( minDX ) < 0 ) ||
 							( x.subtract( db.getX1() ).compareTo( minDX ) == 0 &&  y.compareTo( db.getY1() ) >= 0 && y.compareTo( db.getY2() ) <= 0 )
-//							( ( x - db.getX1() ) < minDX ) ||
-//							( ( x - db.getX1() ) == minDX &&  y >= db.getY1() && y <= db.getY2() )
 					){
 						minDX = x.subtract( db.getX1() );
 						arrange.addDrawnBlockToArrangeX( db, db.getX1() );
-//						minDX = x - db.getX1();
-//						arrange.addDrawnBlockToArrangeX( db, db.getX1() );							
 					}						
 				}
 				
 				//Fentrol kozeliti a DrawnBlock tetejet
 				if( y.subtract( db.getY2() ).compareTo( new BigDecimal("0")) > 0 && y.subtract( db.getY2() ).compareTo( dy ) < 0 ){
-//				if( ( y - db.getY2() ) > 0 && ( y - db.getY2() ) < dy ){						
 					
 					//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 					//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 					if(
 							( y.subtract( db.getY2() ).compareTo( minDY ) < 0 ) ||
 							( y.subtract( db.getY2() ).compareTo( minDY ) == 0 &&  x.compareTo( db.getX1() ) >= 0 && x.compareTo( db.getX2() ) <= 0 )
-//							( ( y - db.getY2() ) < minDY ) ||
-//							( ( y - db.getY2() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 					){
 						minDY = y.subtract( db.getY2() );
 						arrange.addDrawnBlockToArrangeY( db, db.getY2() );
-//						minDY = y - db.getY2();
-//						arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
+						
 					}
 				
 				//!!! Fentrol kozeliti a DrawBlock aljat !!!
 				}else if( y.subtract( db.getY1() ).compareTo( new BigDecimal("0")) > 0 && y.subtract( db.getY1() ).compareTo( dy ) < 0 ){
-//				}else if( ( y - db.getY1() ) > 0 && ( y - db.getY1() ) < dy ){						
 					
 					//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 					//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 					if( 
 							( y.subtract( db.getY1() ).compareTo( minDY ) < 0 )||
 							( y.subtract( db.getY1() ).compareTo( minDY ) == 0 &&  x.compareTo( db.getX1() ) >= 0 && x.compareTo( db.getX2() ) <= 0 )
-//							( ( y - db.getY1() ) < minDY ) ||
-//							( ( y - db.getY1() ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 					){
 						minDY = y.subtract( db.getY1() );
 						arrange.addDrawnBlockToArrangeY( db, db.getY1() );
-//						minDY = y - db.getY1();
-//						arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
+						
 					}						
 				
 				//Alulrol kozeliti a DrawnBlock aljat
-				}else if( db.getY1().subtract( y ).compareTo(new BigDecimal("0")) > 0 && db.getY1().subtract( y ).compareTo(dy) < 0 ){
-//				}else if( ( db.getY1() - y ) > 0 && ( db.getY1() - y ) < dy ){						
+				}else if( db.getY1().subtract( y ).compareTo(new BigDecimal("0")) > 0 && db.getY1().subtract( y ).compareTo(dy) < 0 ){				
 
 					//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 					//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
 					if( 
 							( db.getY1().subtract( y ).compareTo( minDY ) < 0 ) ||
 							( db.getY1().subtract( y ).compareTo( minDY ) == 0 &&  x.compareTo( db.getX1() ) >= 0 && x.compareTo( db.getX2() ) <= 0 )
-//							( ( db.getY1() - y ) < minDY ) ||
-//							( ( db.getY1() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 					){
 						minDY = db.getY1().subtract( y );
 						arrange.addDrawnBlockToArrangeY( db, db.getY1() );			
-//						minDY = db.getY1() - y;
-//						arrange.addDrawnBlockToArrangeY( db, db.getY1() );							
 					}						
 				
 				//!!! Alulrol kozeliti a DrawnBlock tetejet !!!
 				}else if( db.getY2().subtract( y ).compareTo(new BigDecimal("0")) > 0 && db.getY2().subtract(y).compareTo(dy) < 0 ){
-//				}else if( ( db.getY2() - y ) > 0 && ( db.getY2() - y ) < dy ){						
 
 					//Ha ez kozelebb van, mint az eddigi legkozelebbi VAGY
 					//pontaosan ugyan olyan tavolsagban, de a kurzor X koordinataja a vizszintes oldalra esik
@@ -373,17 +343,12 @@ canvas.requestFocusInWindow();
 							( db.getY2().subtract( y ).compareTo( minDY ) < 0 ) ||
 							( db.getY2().subtract( y ).compareTo( minDY ) == 0 &&  x.compareTo(db.getX1()) >= 0 && x.compareTo( db.getX2() ) <= 0 )
 							
-//							( ( db.getY2() - y ) < minDY ) ||
-//							( ( db.getY2() - y ) == minDY &&  x >= db.getX1() && x <= db.getX2() )
 					){
 						minDY = db.getY2().subtract( y );
-						arrange.addDrawnBlockToArrangeY( db, db.getY2() );
-//						minDY = db.getY2() - y;
-//						arrange.addDrawnBlockToArrangeY( db, db.getY2() );							
+						arrange.addDrawnBlockToArrangeY( db, db.getY2() );					
 
 					}
-				}	
-			//}				
+				}			
 			}			
 		}
 		
@@ -397,8 +362,6 @@ canvas.requestFocusInWindow();
 			
 			BigDecimal xStart = new BigDecimal( String.valueOf(Math.round( ( x.doubleValue() ) / canvas.getGrid().getDeltaGridX() ) * canvas.getGrid().getDeltaGridX() ) );
 			BigDecimal yStart = new BigDecimal( String.valueOf(Math.round( ( y.doubleValue() ) / canvas.getGrid().getDeltaGridY() ) * canvas.getGrid().getDeltaGridY() ) );
-//			double xStart = Math.round( ( x ) / myGrid.getDeltaGridX() ) * myGrid.getDeltaGridX();
-//			double yStart = Math.round( ( y ) / myGrid.getDeltaGridY() ) * myGrid.getDeltaGridY();
 
 			//Ha ez kozelebb van, mint az eddigi legkozelebbi
 			
@@ -413,16 +376,7 @@ canvas.requestFocusInWindow();
 				arrange.addDrawnBlockToArrangeY( null, canvas.getRoundedBigDecimalWithPrecisionFormBigDecimal( yStart ) );
 				//arrange.addDrawnBlockToArrangeY( null, yStart );
 			}	
-			
-//			if( Math.abs( xStart - x ) < dx && Math.abs( xStart - x ) < minDX ){
-//				minDX = Math.abs( xStart - x );
-//				arrange.addDrawnBlockToArrangeX( null, xStart );				
-//			}
-//			if( Math.abs( yStart - y ) < dy && Math.abs( yStart - y ) < minDY ){
-//				minDY = Math.abs( yStart - y );
-//				arrange.addDrawnBlockToArrangeY( null, yStart );
-//			}	
-		
+					
 		}
 		
 		
@@ -537,9 +491,13 @@ canvas.requestFocusInWindow();
 		//
 		// Ha meg nem kezdodott el a rajzolas, szabadon mozgo kurzor
 		//
-//TODO itt meg kellene oldani, hogy ha ket egymast erinto blokk koze kerulne, az nem OK				
+//TODO itt meg kellene oldani, hogy ha ket egymast erinto blokk koze kerulne, az nem OK	
+		
+		int verticalNeighbours = 0;
+		int horizontalNeightbours = 0;
+		int corners = 0;
 		if( !drawnStarted && canvas.isEnabledDrawn() ){
-			 
+			
 			//Megnezi, hogy az aktualis kurzor egy lehelyezett DrawnBlock-ra esik-e
 			@SuppressWarnings("unchecked")
 			Iterator<DrawnBlock> it = (Iterator<DrawnBlock>) canvas.iterator();
@@ -549,7 +507,6 @@ canvas.requestFocusInWindow();
 				
 				//Beleesik a kurzor egy lehelyezett DrawnBlock belsejeben
 				if( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 && y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ){
-//				if( ( x > db.getX1() && x < db.getX2() ) && ( y > db.getY1() && y < db.getY2() ) ){
 
 					//Ha az elobbi X poziciot hasznalom, akkor kivul kerulok
 					if( ( secondaryCursor.getX().compareTo( db.getX1() ) <= 0 || secondaryCursor.getX().compareTo( db.getX2() ) >= 0 ) ){   //&& ( y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ) ){
@@ -568,13 +525,44 @@ canvas.requestFocusInWindow();
 						return;
 					}
 				}
+				
+				//Van horizontalis szomszedja
+				if( x.compareTo( db.getX1() ) > 0 && x.compareTo( db.getX2() ) < 0 && (y.compareTo( db.getY1() ) == 0 || y.compareTo( db.getY2() ) == 0 ) ){
+					horizontalNeightbours++;
+				}
+				
+				//Van vertikalis szomszedja
+				if( ( x.compareTo( db.getX1() ) == 0 || x.compareTo( db.getX2() ) == 0 ) && y.compareTo( db.getY1() ) > 0 && y.compareTo( db.getY2() ) < 0 ){
+					verticalNeighbours++;
+				}
+				
+				//Egy sarokra esik
+				if( 
+						(x.compareTo( db.getX1() ) == 0 && y.compareTo( db.getY1() ) == 0 ) ||
+						(x.compareTo( db.getX2() ) == 0 && y.compareTo( db.getY1() ) == 0 ) ||
+						(x.compareTo( db.getX1() ) == 0 && y.compareTo( db.getY2() ) == 0 ) ||
+						(x.compareTo( db.getX2() ) == 0 && y.compareTo( db.getY2() ) == 0 ) 
+						
+						){
+					corners++;
+				}
+					
+					
 			}
 		
+			//Ha valamelyik iranyba tobb mint 1 szomszedja volt, 
+			//vagy negy sarok veszi korbe, 
+			//vagy ket sarok es egy szomszed,
+			//akkor marad a regi kurzorpozicio
+			if( horizontalNeightbours >= 2 || verticalNeighbours >= 2 || corners >= 4 || (corners == 2 && (horizontalNeightbours == 1 || verticalNeighbours == 1) )){
+				return;				
+			}				
+			
 		//
 		// Ha mar elkezdte a rajzolast
 		//
 		}else if( canvas.isEnabledDrawn() ){
-			
+		
 			//
 			// A feltetelezett uj DrawnBlock koordinatainak nagysag szerinti rendezese
 			//
@@ -595,24 +583,6 @@ canvas.requestFocusInWindow();
 			}
 			
 			
-			
-//			if( x.compareTo( secondaryStartCursorPosition.getX() ) <= 0 ){
-//				tmpX1 = x;
-//				tmpX2 = secondaryStartCursorPosition.getX();
-//			}else{					
-//				tmpX1 = secondaryStartCursorPosition.getX();
-//				tmpX2 = x;
-//			}
-//			
-//			if( y <= secondaryStartCursorPosition.getY() ){
-//				tmpY1 = y;
-//				tmpY2 = secondaryStartCursorPosition.getY();
-//			}else{					
-//				tmpY1 = secondaryStartCursorPosition.getY();
-//				tmpY2 = y;
-//			}
-
-			
 			// Vegig a lehelyezett DrawnBlock-okon
 			@SuppressWarnings("unchecked")
 			Iterator<DrawnBlock> it = (Iterator<DrawnBlock>) canvas.iterator();
@@ -625,12 +595,13 @@ canvas.requestFocusInWindow();
 				block.changeSize( tmpX2, tmpY2 );
 				
 				if( db.intersectsOrContains( block )){
-//				if( db.intersectsOrContains( new Rectangle.Double( tmpX1, tmpY1, tmpX2-tmpX1, tmpY2-tmpY1 ) )){
 				
 					//Akkor marad a regi kurzorpozicio
 					return;
-				}			
-			}				
+				}					
+
+			}
+					
 		}
 		
 		//------------------------------------------------
