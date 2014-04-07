@@ -15,6 +15,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import hu.akoel.mgu.MGraphics;
+import hu.akoel.mgu.drawnblock.DrawnBlockCanvas.Precision;
 
 
 //public abstract class DrawnBlock extends java.awt.geom.Rectangle2D.Double implements Cloneable{
@@ -112,7 +113,7 @@ public abstract class DrawnBlock extends Block{
 		refreshStatus();
 	}
 	
-	public DrawnBlock( Element xmlElement ){
+	public DrawnBlock( Precision precision, Element xmlElement ){
 		super( new BigDecimal("0"), new BigDecimal("0") );
 		this.status = Status.NORMAL;
 		
@@ -132,7 +133,9 @@ public abstract class DrawnBlock extends Block{
 					
 					//X2, Y2
 					this.changeSize( new BigDecimal( drawnBlockElement.getAttribute("x2") ), new BigDecimal( drawnBlockElement.getAttribute("y2") ) );					
-					
+
+this.setScale( precision.getScale());
+//System.err.println(precision.getScale() + " - " + this.getX1().scale());
 				//Ha egy DESCRIPTOR elemrol van szo
 				}else if( drawnBlockElement.getNodeName().equals( "descriptor" ) ){
 					
