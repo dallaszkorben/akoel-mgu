@@ -492,6 +492,10 @@ canvas.requestFocusInWindow();
 		// Ha meg nem kezdodott el a rajzolas, szabadon mozgo kurzor
 		//
 //TODO itt meg kellene oldani, hogy ha ket egymast erinto blokk koze kerulne, az nem OK	
+
+		
+		
+		
 		
 		int verticalNeighbours = 0;
 		int horizontalNeightbours = 0;
@@ -549,14 +553,18 @@ canvas.requestFocusInWindow();
 					
 					
 			}
-		
+
+			
+//TODO atmenetileg kiszedve mert nem jo a szomszed szamanak szamolasa, mert ha pld
+//egy normal elemen van egy zaroelem, es hozza szeretnel illeszteni egy masik zaroelem
+//veget, akkor azt nem engedi meg, hiszen harom szomszedja lesz			
 			//Ha valamelyik iranyba tobb mint 1 szomszedja volt, 
 			//vagy negy sarok veszi korbe, 
 			//vagy ket sarok es egy szomszed,
 			//akkor marad a regi kurzorpozicio
-			if( horizontalNeightbours >= 2 || verticalNeighbours >= 2 || corners >= 4 || (corners == 2 && (horizontalNeightbours == 1 || verticalNeighbours == 1) )){
-				return;				
-			}				
+//			if( horizontalNeightbours >= 2 || verticalNeighbours >= 2 || corners >= 4 || (corners == 2 && (horizontalNeightbours == 1 || verticalNeighbours == 1) )){
+//				return;				
+//			}				
 			
 		//
 		// Ha mar elkezdte a rajzolast
@@ -603,6 +611,10 @@ canvas.requestFocusInWindow();
 			}
 					
 		}
+
+		
+		
+		
 		
 		//------------------------------------------------
 		//

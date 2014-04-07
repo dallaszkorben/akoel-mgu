@@ -31,6 +31,14 @@ public class Block {
 		this.y2 = y1;
 	}
 	
+	public void setScale( int scale ){
+		this.x1 = this.x1.setScale(scale);
+		this.x2 = this.x2.setScale(scale);
+		this.y1 = this.y1.setScale(scale);
+		this.y2 = this.y2.setScale(scale);
+	
+	}
+	
 	public BigDecimal getStartX(){
 		return this.startX;
 	}
