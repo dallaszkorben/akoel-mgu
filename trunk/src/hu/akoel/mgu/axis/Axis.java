@@ -45,23 +45,34 @@ public class Axis {
 		HIGHEST
 	}
 	
-	int mainStickSizeInPixel = 8;
-	int mainStickNumberSize = 14;
-	int secondaryStickSizeInPixel = 6;
-    double[] mainStickBaseNumbers = new double[]{0.25, 0.5, 1};//{0.25, 0.5, 1};
-    int minimalDistanceInPixel = 40;
+	private int mainStickSizeInPixel = 8;
+	private int mainStickNumberSize = 14;
+	private int secondaryStickSizeInPixel = 6;
+	private double[] mainStickBaseNumbers = new double[]{0.25, 0.5, 1};//{0.25, 0.5, 1};
+	private int minimalDistanceInPixel = 40;
     
-	MCanvas canvas;
-	AxisPosition axisPosition;
-	Color axisColor;
-	Color stickColor;
-	Color numberColor;
-	int axisWidthInPixel;
+	private MCanvas canvas;
+	private AxisPosition axisPosition;
+	private Color axisColor;
+	private Color stickColor;
+	private Color numberColor;
+	private int axisWidthInPixel;
 	
-	PainterListener painterListener;
-	PainterPosition painterPosition;
+	private PainterListener painterListener;
+	private PainterPosition painterPosition;
+	
+	private boolean defaultOn = true;
 	 
 	public Axis( MCanvas canvas, AxisPosition axisPosition, Color axisColor, int axisWidthInPixel, PainterPosition painterPosition ){
+		common( canvas, axisPosition, axisColor, axisWidthInPixel, painterPosition );
+	};
+
+	public Axis( MCanvas canvas, AxisPosition axisPosition, Color axisColor, int axisWidthInPixel, PainterPosition painterPosition, boolean defaultOn ){
+		common( canvas, axisPosition, axisColor, axisWidthInPixel, painterPosition );
+		this.defaultOn = defaultOn;
+	}
+	
+	private void common( MCanvas canvas, AxisPosition axisPosition, Color axisColor, int axisWidthInPixel, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.axisPosition = axisPosition;
 		this.axisColor = axisColor;
@@ -72,15 +83,7 @@ public class Axis {
 		
 		painterListener = new AxisPainterListener( );
 			  
-		if( painterPosition.equals(PainterPosition.DEEPEST ) ){
-			canvas.addPainterListenerToDeepest(painterListener, Level.ABOVE);
-		}else if( painterPosition.equals( PainterPosition.MIDDLE)){
-			canvas.addPainterListenerToMiddle(painterListener, Level.ABOVE);
-		}else if( painterPosition.equals(PainterPosition.HIGHEST)){
-			canvas.addPainterListenerToHighest(painterListener, Level.ABOVE);
-		}	
-			  
-	};
+	}
 	
 	public void refresh(){
 		canvas.revalidateAndRepaintCoreCanvas();
@@ -417,7 +420,13 @@ public class Axis {
 		//Axis ki/be kapcsolo
 		//
 		JCheckBox turnOnAxis = new JCheckBox("Turn On Axis");
-		turnOnAxis.setSelected(true);
+		turnOnAxis.setSelected( defaultOn );
+		if( defaultOn ){
+			turnOn();
+		}else{
+			turnOff();
+		}
+		
 		turnOnAxis.addItemListener(new ItemListener() {
 			
 			@Override
