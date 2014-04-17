@@ -51,10 +51,22 @@ public class Grid {
 	private int widthInPixel;
 	private PainterPosition painterPosition;
 	private Value deltaGrid;
-	int crossLengthInPixel = 3;
-	PainterListener painterListener;
+	private int crossLengthInPixel = 3;
+	private PainterListener painterListener;
+	
+	private boolean defaultOn = true;
 
 	public Grid( MCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value deltaGrid ){
+		common( canvas, type, color, widthInPixel, painterPosition, deltaGrid );
+		
+	}
+	
+	public Grid( MCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value deltaGrid, boolean defaultOn ){
+		common( canvas, type, color, widthInPixel, painterPosition, deltaGrid );
+		this.defaultOn = defaultOn; 
+	}
+	
+	private void common( MCanvas canvas, Type type, Color color, int widthInPixel, PainterPosition painterPosition, Value deltaGrid ){
 		this.canvas = canvas;
 		this.type = type;
 		this.color = color;
@@ -63,14 +75,6 @@ public class Grid {
 		this.deltaGrid = deltaGrid;
 		
 		painterListener = new GridPainterListener( );
-		
-		if( painterPosition.equals(PainterPosition.DEEPEST ) ){
-			canvas.addPainterListenerToDeepest(painterListener, Level.ABOVE);
-		}else if( painterPosition.equals( PainterPosition.MIDDLE)){
-			canvas.addPainterListenerToMiddle(painterListener, Level.ABOVE);
-		}else if( painterPosition.equals(PainterPosition.HIGHEST)){
-			canvas.addPainterListenerToHighest(painterListener, Level.ABOVE);
-		}
 		
 	}
 	
@@ -315,7 +319,13 @@ public class Grid {
 		});
 		
 		JCheckBox turnOnGrid = new JCheckBox("Turn On Grid");
-		turnOnGrid.setSelected(true);
+		turnOnGrid.setSelected( defaultOn );
+		if( defaultOn ){
+			turnOn();
+		}else{
+			turnOff();
+		}
+		
 		turnOnGrid.addItemListener(new ItemListener() {
 			
 			@Override

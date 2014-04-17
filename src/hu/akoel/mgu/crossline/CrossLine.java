@@ -46,8 +46,19 @@ public class CrossLine {
 	private Value length;
 	private PainterPosition painterPosition;
 	private PainterListener painterListener;
+	
+	private boolean defaultOn = true;
 
 	public CrossLine( MCanvas canvas, Value position, Color color, int widthInPixel, Value length, PainterPosition painterPosition ){
+		common( canvas, position, color, widthInPixel, length, painterPosition );		
+	}
+
+	public CrossLine( MCanvas canvas, Value position, Color color, int widthInPixel, Value length, PainterPosition painterPosition, boolean defaultOn ){
+		common( canvas, position, color, widthInPixel, length, painterPosition );
+		this.defaultOn = defaultOn;
+	}
+
+	private void common( MCanvas canvas, Value position, Color color, int widthInPixel, Value length, PainterPosition painterPosition ){
 		this.canvas = canvas;
 		this.position = position;
 		this.color = color;
@@ -56,16 +67,8 @@ public class CrossLine {
 		this.painterPosition = painterPosition;
 		
 		painterListener = new CrossLinePainterListener( );
-		
-		if( painterPosition.equals(PainterPosition.DEEPEST ) ){
-			canvas.addPainterListenerToDeepest(painterListener, Level.ABOVE);
-		}else if( painterPosition.equals( PainterPosition.MIDDLE)){
-			canvas.addPainterListenerToMiddle(painterListener, Level.ABOVE);
-		}else if( painterPosition.equals(PainterPosition.HIGHEST)){
-			canvas.addPainterListenerToHighest(painterListener, Level.ABOVE);
-		}
 	}
-	
+		
 	public void turnOff(){
 		if( painterPosition.equals(PainterPosition.DEEPEST ) ){
 			canvas.removePainterListenerFromDeepest(painterListener);
@@ -277,8 +280,14 @@ public class CrossLine {
 			}
 		});		
 		
-		JCheckBox turnOnCrossLine = new JCheckBox("Turn On Crossline");
-		turnOnCrossLine.setSelected(true);
+		JCheckBox turnOnCrossLine = new JCheckBox( "Turn On Crossline" );
+		turnOnCrossLine.setSelected( defaultOn );
+		if( defaultOn ){
+			turnOn();
+		}else{
+			turnOff();
+		}
+		
 		turnOnCrossLine.addItemListener(new ItemListener() {
 			
 			@Override
