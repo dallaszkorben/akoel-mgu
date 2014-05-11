@@ -9,9 +9,11 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 
 import javax.swing.border.Border;
+
 import hu.akoel.mgu.MCanvas;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.PainterListener;
@@ -385,13 +387,10 @@ public class DrawnBlockCanvas extends MCanvas{
 		return val.setScale( getPrecision().getScale(), RoundingMode.HALF_UP );
 	}
 	
-	public Double getRoundedDoubleWitPrecision( double val ){
+	public Double getRoundedDoubleWitPrecision( double val ){		
 		return Double.valueOf(  new DecimalFormat( getPrecision().getDecimalFormat(), decimalSymbol ).format(val)  );
 	}
-	
-	
-	
-	
+
 	/**
 	 * DrawnBlock-ok kirajzolasaert felelos osztaly
 	 * 			
