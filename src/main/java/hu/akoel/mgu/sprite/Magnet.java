@@ -14,7 +14,7 @@ public class Magnet {
 	private RangeValueInPixel rangeInPixel;
 	private double direction;
 	private MagnetType type;	
-	private HashSet<MagnetType> possibleMagnetTypeToConnect = new HashSet<>();
+	private HashSet<MagnetType> possibleMagnetTypeToConnect = new HashSet<MagnetType>();
 	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
 	private Magnet magnetToConnected;
 		
@@ -248,6 +248,14 @@ public class Magnet {
 			element.setPositionX(parent.getPosition().getX() + getRelativePositionToSpriteZeroPoint().getX() );
 			element.setPositionY(parent.getPosition().getY() + getRelativePositionToSpriteZeroPoint().getY() );
 			element.drawConnected(g2);
+		}
+	}
+	
+	public void drawSelected( MGraphics g2){
+		for( SpriteElement element: elements){
+			element.setPositionX(parent.getPosition().getX() + getRelativePositionToSpriteZeroPoint().getX() );
+			element.setPositionY(parent.getPosition().getY() + getRelativePositionToSpriteZeroPoint().getY() );
+			element.drawSelected(g2);
 		}
 	}
 	

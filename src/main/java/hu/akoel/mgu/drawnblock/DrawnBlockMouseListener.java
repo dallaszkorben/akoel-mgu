@@ -21,11 +21,9 @@ public class DrawnBlockMouseListener implements MouseInputListener{
 		this.canvas = canvas;
 	}
 	
-	@Override
 	public void mouseClicked(MouseEvent e) {		
 	}
 
-	@Override
 	public void mousePressed(MouseEvent e) {
 		
 		//Ha a baloldali egergombot nyomtam es meg nem kezdtem el rajzolni, akkor elkezdi a rajzolast
@@ -56,7 +54,6 @@ public class DrawnBlockMouseListener implements MouseInputListener{
 		}		
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent e) {
 		
 		//Ha elindult mar egy rajzolasi folyamat
@@ -88,7 +85,6 @@ public class DrawnBlockMouseListener implements MouseInputListener{
 		
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent e) {
 		
 //Visszakeri a fokuszt amivel a			
@@ -105,12 +101,10 @@ canvas.requestFocusInWindow();
 
 	}
 
-	@Override
 	public void mouseExited(MouseEvent e) {		
 		canvas.revalidateAndRepaintCoreCanvas();		
 	}
 
-	@Override
 	public void mouseDragged(MouseEvent e) {		
 		
 		 SecondaryCursor secondaryCursor = canvas.getSecondaryCursor();
@@ -136,7 +130,6 @@ canvas.requestFocusInWindow();
 		
 	}
 
-	@Override
 	public void mouseMoved(MouseEvent e) {
 		
 		//Meghatarozza a masodlagos kurzor aktualis erteket

@@ -119,7 +119,6 @@ public class ExampleDrawnBlock extends JFrame {
 		JButton commandButtonAddBuildingMaterial = new JButton("add Building Material");
 		commandButtonAddBuildingMaterial.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
 				DrawnBlockFactory dbf = new BuildingMaterialFactory();
@@ -131,7 +130,6 @@ public class ExampleDrawnBlock extends JFrame {
 		JButton commandButtonAddInsulation = new JButton("add Insulation");
 		commandButtonAddInsulation.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
 				DrawnBlockFactory dbf = new InsulationFactory();
@@ -162,7 +160,6 @@ public class ExampleDrawnBlock extends JFrame {
 		
 		// Kurzor pozicio figyelo
 		myCanvas.addCursorPositionChangeListener( new CursorPositionChangeListener() {
-			@Override
 			public void getWorldPosition(double xPosition, double yPosition) {
 				DecimalFormat df = new DecimalFormat("#.0000");				
 				statusPanel.setXPosition( "x: " + df.format(xPosition));
@@ -172,7 +169,6 @@ public class ExampleDrawnBlock extends JFrame {
 		
 		// Meretarany figyelo
 		myScale.addScaleChangeListener(new ScaleChangeListener() {		
-			@Override
 			public void getScale(Value scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				if( myScale.getScale().getX() < 1.0 ){
@@ -221,7 +217,6 @@ public class ExampleDrawnBlock extends JFrame {
 	 */
 	class BuildingMaterialFactory implements DrawnBlockFactory{
 
-		@Override
 		public DrawnBlock getNewDrawnBlock( Status status, BigDecimal x1, BigDecimal y1 ) {
 			
 			return new BuildingMaterialBlock( status , x1, y1 );
@@ -238,7 +233,6 @@ public class ExampleDrawnBlock extends JFrame {
 	 */
 	class InsulationFactory implements DrawnBlockFactory{
 
-		@Override
 		public DrawnBlock getNewDrawnBlock( Status status, BigDecimal x1, BigDecimal y1 ) {
 			
 			return new InsulationBlock( status , x1, y1, null, new BigDecimal("15.0"), null, new BigDecimal("0.0") );

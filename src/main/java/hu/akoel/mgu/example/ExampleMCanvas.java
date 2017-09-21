@@ -53,10 +53,8 @@ public class ExampleMCanvas extends JFrame {
 		//Eloszorre kirajzolja az origot
 		myCanvas.addPainterListenerToDeepest(new PainterListener(){
 			
-			@Override
 			public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {}
 
-			@Override
 			public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {	
 				int x0 = 0; //myCanvas.getPixelXPositionByWorld(0);
 				int y0 = 0; //myCanvas.getPixelYPositionByWorld(0);
@@ -76,7 +74,6 @@ public class ExampleMCanvas extends JFrame {
 		JButton reprintButton = new JButton("reprint");
 		reprintButton.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				myCanvas.repaint();				
 			}			
@@ -89,14 +86,13 @@ public class ExampleMCanvas extends JFrame {
 		//
 		JButton drawLineButton = new JButton("draw Line");
 		drawLineButton.addActionListener(new ActionListener(){
-			@Override
+
 			public void actionPerformed(ActionEvent arg0) {
 				
 				myCanvas.removePainterListenersFromTemporary();
 				myCanvas.removePainterListenersFromHighest();
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
-					@Override
 					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 						
 						g2.setColor(new Color(200, 100, 100));
@@ -136,7 +132,6 @@ public class ExampleMCanvas extends JFrame {
 										
 					}
 
-					@Override
 					public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {
 					}			 
 				});	
@@ -151,13 +146,12 @@ public class ExampleMCanvas extends JFrame {
 		//
 		JButton drawTempButton = new JButton("draw x^2");
 		drawTempButton.addActionListener(new ActionListener(){
-			@Override
+
 			public void actionPerformed(ActionEvent arg0) {
 				
 				//myCanvas.removePainterListenersFromTemporary();
 				myCanvas.addPainterListenerToTemporary(new PainterListener(){
 					
-					@Override
 					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
@@ -180,7 +174,6 @@ public class ExampleMCanvas extends JFrame {
 
 					}
 
-					@Override
 					public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}	
 					
 				}, MCanvas.Level.UNDER);		
@@ -192,7 +185,6 @@ public class ExampleMCanvas extends JFrame {
 		JButton upButton = new JButton("up");
 		upButton.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0 ){			
 				myCanvas.moveY(-1);
 			}
@@ -201,7 +193,6 @@ public class ExampleMCanvas extends JFrame {
 		JButton downButton = new JButton("down");
 		downButton.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0 ){
 				myCanvas.moveY(1);
 			}
@@ -210,7 +201,6 @@ public class ExampleMCanvas extends JFrame {
 		JButton rightButton = new JButton("right");
 		rightButton.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0 ){
 				myCanvas.moveX(1);
 			}
@@ -219,7 +209,6 @@ public class ExampleMCanvas extends JFrame {
 		JButton leftButton = new JButton("left");
 		leftButton.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0 ){
 				myCanvas.moveX(-1);
 			}

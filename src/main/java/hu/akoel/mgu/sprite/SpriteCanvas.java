@@ -27,6 +27,7 @@ public class SpriteCanvas extends MCanvas{
 	private ArrayList<Sprite> temporarySpriteList = new ArrayList<Sprite>();
 	
 	private SpriteInFocusListener spriteInFocusListener = new SpriteInFocusListener();
+	//private SpriteIsSelectedListener spriteIsSelectedListener = new SpriteIsSelectedListener();
 	private SpriteDragListener spriteDragListener = new SpriteDragListener();
 	
 	private boolean needFocus = true;
@@ -45,6 +46,9 @@ public class SpriteCanvas extends MCanvas{
 		
 		//Azt figyeli, hogy egy Sprite fokuszba kerult-e
 		this.addMouseMotionListener(spriteInFocusListener);
+		
+		//Azt figyeli, hogy egy sprite-ot kivalasztottunk-e
+		//this.addMouseMotionListener( spriteIsSelectedListener );
 		
 		//A kozepso reteget hasznaljuk a sprite-ok megjelenitesere
 		addPainterListenerToMiddle(new SpritePainterListener(), Level.ABOVE );
@@ -158,8 +162,6 @@ public class SpriteCanvas extends MCanvas{
 		}
 		
 
-		
-		@Override
 		public void mousePressed(MouseEvent e) {
 			
 			//Mar egy elindult Drag-Replace folyamatot nem indithatok ujra el
@@ -274,7 +276,6 @@ public class SpriteCanvas extends MCanvas{
 			
 		}
 		
-		@Override
 		public void mouseReleased(MouseEvent e) {	
 
 			if( dragAllSpriteStarted ){
@@ -329,7 +330,6 @@ public class SpriteCanvas extends MCanvas{
 			
 		}
 		
-		@Override
 		public void mouseExited(MouseEvent e) {	
 						
 			//Ha elindult mar a drag es igy hagyom el a Canvas-t
@@ -366,7 +366,6 @@ public class SpriteCanvas extends MCanvas{
 			}						
 		}
 		
-		@Override
 		public void mouseDragged(MouseEvent e) {
 			
 			//
@@ -517,14 +516,39 @@ public class SpriteCanvas extends MCanvas{
 			}			
 		}
 		
-		@Override
 		public void mouseMoved(MouseEvent e) {}
 		
-		@Override
 		public void mouseEntered(MouseEvent e) {}
 		
-		@Override
-		public void mouseClicked(MouseEvent e) {}
+		public void mouseClicked(MouseEvent e) {
+			double xValue = getWorldXByPixel(e.getX() );			
+			double yValue = getWorldYByPixel(e.getY());
+			boolean needToPrint = false;
+
+			for( Sprite sprite: spriteList){
+				
+				SizeValue boundBox = sprite.getBoundBoxAbsolute();						
+			
+				if( 
+						xValue >= boundBox.getXMin() &&
+						xValue <= boundBox.getXMax() &&
+						yValue >= boundBox.getYMin() &&
+						yValue <= boundBox.getYMax()
+				){
+											
+					//addTemporarySprite(sprite);						
+					needToPrint = true;
+					if( sprite.isSelected() ){
+						sprite.setIsSelected(false);
+					}else{
+						sprite.setIsSelected(true);
+					}
+				}					
+			}
+			if( needToPrint ){
+				repaintCoreCanvas();
+			}				
+		}
 		
 	}
 	
@@ -861,7 +885,6 @@ public class SpriteCanvas extends MCanvas{
 	 */
 	class SpriteInFocusListener implements MouseMotionListener{
 		
-		@Override
 		public void mouseMoved(MouseEvent e) {
 	
 			if( needFocus() ){
@@ -897,10 +920,61 @@ public class SpriteCanvas extends MCanvas{
 				}
 			}				
 		}
-			
-		@Override
+
 		public void mouseDragged(MouseEvent e) {}					
 	}
+	
+	/**
+	 * Azt figyeli, hogy egy Sprite-ot kivalasztottunk-e
+	 * @author akoel
+	 *
+	 */
+/*	class SpriteIsSelectedListener implements MouseInputListener{
+		
+		public void mouseMoved(MouseEvent e) {}
+
+		public void mouseClicked(MouseEvent e) {
+			double xValue = getWorldXByPixel(e.getX() );			
+			double yValue = getWorldYByPixel(e.getY());
+			boolean needToPrint = false;
+
+			for( Sprite sprite: spriteList){
+				
+				SizeValue boundBox = sprite.getBoundBoxAbsolute();						
+			
+				if( 
+						xValue >= boundBox.getXMin() &&
+						xValue <= boundBox.getXMax() &&
+						yValue >= boundBox.getYMin() &&
+						yValue <= boundBox.getYMax()
+				){
+											
+					addTemporarySprite(sprite);						
+					needToPrint = true;
+					if( sprite.isSelected() ){
+						sprite.setIsSelected(false);
+					}else{
+						sprite.setIsSelected(true);
+					}
+				}					
+			}
+			if( needToPrint ){
+				repaintCoreCanvas();
+			}			
+		}
+
+		public void mousePressed(MouseEvent e) {}
+
+		public void mouseReleased(MouseEvent e) {}
+
+		public void mouseEntered(MouseEvent e) {}
+
+		public void mouseExited(MouseEvent e) {}
+
+		public void mouseDragged(MouseEvent e) {}
+				
+	}
+*/
 	
 	/**
 	 * Sprite-ok kirajzolasaert felelos osztaly
@@ -910,7 +984,6 @@ public class SpriteCanvas extends MCanvas{
 	 */
 	class SpritePainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			for( Sprite sprite: spriteList){
 				//if( sprite.isConnected() )
@@ -919,7 +992,7 @@ public class SpriteCanvas extends MCanvas{
 					sprite.draw(g2);
 			}			
 		}
-		@Override
+
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 	}
@@ -932,7 +1005,6 @@ public class SpriteCanvas extends MCanvas{
 	 */
 	class TemporarySpritePainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			for( Sprite sprite: temporarySpriteList){
 				sprite.drawFocus(g2);
@@ -940,8 +1012,6 @@ public class SpriteCanvas extends MCanvas{
 			temporarySpriteList.clear();
 		}
 		
-
-		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 	}

@@ -131,7 +131,6 @@ public class CrossLine {
 	
 	class CrossLinePainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			g2.setColor( color );
 			g2.setStroke(new BasicStroke(widthInPixel));
@@ -140,7 +139,6 @@ public class CrossLine {
 			g2.drawLine( position.getX(), (position.getY() - length.getY()/2.0), position.getX(), (position.getY() + length.getY()/2.0) );
 		}
 
-		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 	}
 	
@@ -156,7 +154,6 @@ public class CrossLine {
 		colorSelector.setSelectedItem( color );
 		colorSelector.addActionListener( new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				ColorSelector cs = (ColorSelector) e.getSource();
@@ -290,7 +287,6 @@ public class CrossLine {
 		
 		turnOnCrossLine.addItemListener(new ItemListener() {
 			
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					CrossLine.this.turnOff();

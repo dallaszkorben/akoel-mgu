@@ -10,6 +10,7 @@ import hu.akoel.mgu.values.SizeValue;
 public class Sprite {
 	private boolean enableToPlaceWithoutConnection = true;
 	private boolean inFocus = false;
+	private boolean isSelected = false;
 	private SizeValue boundBox;
 	private PositionValue position = new PositionValue(0,0);
 	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
@@ -109,7 +110,22 @@ public class Sprite {
 	
 	public void draw( MGraphics g2 ){
 		
-		if( isConnected() ){
+		if( isSelected() ){
+			
+			for( SpriteElement element: elements){
+				element.setPosition(position);
+				element.drawSelected(g2);
+			}
+			
+			for( Magnet magnet: magnetList){
+				if( null == magnet.getConnectedTo() ){
+					magnet.draw(g2);
+				}else{
+					magnet.drawSelected(g2);
+				}
+			}			
+			
+		}else if( isConnected() ){
 			
 			for( SpriteElement element: elements){
 				element.setPosition(position);
@@ -161,6 +177,15 @@ public class Sprite {
 		}
 	}
 */	
+	
+	public boolean isSelected(){
+		return isSelected;
+	}
+	
+	public void setIsSelected( boolean isSelected ){
+		this.isSelected = isSelected;
+	}
+	
 	public boolean isInFocus(){
 		return inFocus;
 	}

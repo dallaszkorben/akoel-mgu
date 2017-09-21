@@ -689,10 +689,8 @@ public class MCanvas extends JPanel {
 			this.canvas = canvas;
 		}
 		
-		@Override
 		public void mouseDragged(MouseEvent e) {}
 
-		@Override
 		public void mouseMoved(MouseEvent e) {
 			
 			for( CursorPositionChangeListener listener : positionChangeListenerList){
@@ -712,11 +710,9 @@ public class MCanvas extends JPanel {
 		private int startY;
 		private boolean canBeDragged = false;
 		
-		@Override
 		public void mouseClicked(MouseEvent e) {
 			
 		}
-		@Override
 		public void mousePressed(MouseEvent e) {
 			if( e.getButton() == MouseEvent.BUTTON2){
 				canBeDragged = true;
@@ -727,16 +723,12 @@ public class MCanvas extends JPanel {
 			}
 			
 		}
-		@Override
 		public void mouseReleased(MouseEvent e) {			
 		}
-		@Override
 		public void mouseEntered(MouseEvent e) {			
 		}
-		@Override
 		public void mouseExited(MouseEvent e) {
 		}
-		@Override
 		public void mouseDragged(MouseEvent e) {
 		
 			if( canBeDragged ){
@@ -748,7 +740,6 @@ public class MCanvas extends JPanel {
 			}
 			
 		}
-		@Override
 		public void mouseMoved(MouseEvent e) {
 		}
 		
@@ -1020,7 +1011,7 @@ public class MCanvas extends JPanel {
 						painter.paintByCanvasAfterTransfer(parent, offg2);
 					}
 				}
-				
+//offg2.translate( ( getPixelXLengthByWorld(parent.getWorldTranslateX()) ), ( getPixelYLengthByWorld( parent.getWorldTranslateY()) - getHeight() ) );				
 			}
 			if (offImage != null) {
 				
@@ -1068,7 +1059,6 @@ public class MCanvas extends JPanel {
 		colorSelector.setSelectedItem( getColor() );
 		colorSelector.addActionListener( new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				ColorSelector cs = (ColorSelector) e.getSource();

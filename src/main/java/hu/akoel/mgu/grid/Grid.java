@@ -137,7 +137,6 @@ public class Grid {
 	
 	class GridPainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			int n, m;
 			double xStart, yStart;
@@ -203,7 +202,6 @@ public class Grid {
 			
 		}
 
-		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {	}
 		
 	}
@@ -220,7 +218,6 @@ public class Grid {
 		colorSelector.setSelectedItem( color );
 		colorSelector.addActionListener( new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				
 				ColorSelector cs = (ColorSelector) e.getSource();
@@ -328,7 +325,6 @@ public class Grid {
 		
 		turnOnGrid.addItemListener(new ItemListener() {
 			
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					Grid.this.turnOff();

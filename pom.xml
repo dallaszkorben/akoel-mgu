@@ -4,14 +4,22 @@
   <groupId>hu.akoel.mgu</groupId>
   <artifactId>mgu</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.0</version>
+  <version>3.0.0</version>
   <name>mgu</name>
   <url>http://maven.apache.org</url>
+  <build>
+  	<resources>
+  		<resource>
+  			<directory>src/main/java</directory>
+  			<filtering>false</filtering>
+  		</resource>
+  	</resources>
+  </build>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

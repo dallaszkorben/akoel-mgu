@@ -211,7 +211,6 @@ public class Scale {
 			this.unit = new UnitValue( unit.getUnitX(), unit.getUnitY() );
 		}
 		
-		@Override
 		public void getPixelPerUnit( Value pixelPerUnit ) {
 			
 			double scaleX = getScaleByPixelPerUnit(pixelPerCm.getX(), unit.getUnitX(), pixelPerUnit.getX());

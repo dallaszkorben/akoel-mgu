@@ -38,12 +38,10 @@ public class DefaultSecondaryCursor implements SecondaryCursor {
 		return positionY;
 	}
 
-	@Override
 	public int getPixelXPositionByWorldBeforeTranslate(BigDecimal x) {
 		return canvas.getPixelXPositionByWorldBeforeTranslate( x.doubleValue() );
 	}
 
-	@Override
 	public int getPixelYPositionByWorldBeforeTranslate(BigDecimal y) {
 		return canvas.getPixelYPositionByWorldBeforeTranslate( y.doubleValue() );
 	}

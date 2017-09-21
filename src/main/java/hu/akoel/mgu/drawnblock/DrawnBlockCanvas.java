@@ -399,7 +399,6 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	class DrawnBlockPainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 
 			for( DrawnBlock drawnBlock: drawnBlockList){
@@ -408,7 +407,6 @@ public class DrawnBlockCanvas extends MCanvas{
 			
 		}
 		
-		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 	}
@@ -421,7 +419,6 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	class TemporaryDrawnBlockPainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			
 			// Kirajzolja a Temporary listaban levo elemeket
@@ -433,7 +430,6 @@ public class DrawnBlockCanvas extends MCanvas{
 			temporaryDrawnBlockList.clear();
 		}		
 
-		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 	}
@@ -446,13 +442,11 @@ public class DrawnBlockCanvas extends MCanvas{
 	 */
 	class TemporarySecondaryCursorPainterListener implements PainterListener{
 
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			// TODO Auto-generated method stub
 			
 		}
 
-		@Override
 		public void paintByCanvasAfterTransfer( MCanvas canvas, Graphics2D g2 ) {
 		
 			secondaryCursor.draw(g2);

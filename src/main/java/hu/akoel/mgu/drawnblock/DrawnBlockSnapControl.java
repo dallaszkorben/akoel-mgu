@@ -80,7 +80,6 @@ public class DrawnBlockSnapControl extends JPanel{
 		turnOnGridSnap.setSelected( DEFAULT_GRIDSNAP );
 		turnOnGridSnap.addItemListener(new ItemListener() {
 			
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					DrawnBlockSnapControl.this.canvas.setNeededGridSnap( false, null );
@@ -95,7 +94,6 @@ public class DrawnBlockSnapControl extends JPanel{
 		turnOnSideExtentionSnap.setSelected( DEFAULT_SIDEEXTENTIONSNAP );
 		turnOnSideExtentionSnap.addItemListener(new ItemListener() {
 			
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					DrawnBlockSnapControl.this.canvas.setNeededSideExtentionSnap( false );
@@ -109,7 +107,6 @@ public class DrawnBlockSnapControl extends JPanel{
 		turnOnSideDivisionSnap.setSelected( DEFAULT_SIDEDIVISIONSNAP );
 		turnOnSideDivisionSnap.addItemListener(new ItemListener() {
 			
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					DrawnBlockSnapControl.this.canvas.setNeededSideDivisionSnap( false );

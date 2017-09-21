@@ -133,7 +133,6 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		JButton reprintButton = new JButton("reprint");
 		reprintButton.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				myCanvas.repaint();				
 			}			
@@ -143,13 +142,11 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		JButton commandButtonDrawFunction = new JButton("draw Function");
 		commandButtonDrawFunction.addActionListener(new ActionListener(){
 
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
 				//myCanvas.removePainterListenersFromHighest();
 				myCanvas.addPainterListenerToHighest(new PainterListener(){
 					
-					@Override
 					public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {					
 						g2.setColor(new Color(250, 200, 0));
 						g2.setStroke(new BasicStroke(3));
@@ -172,7 +169,6 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 
 					}
 
-					@Override
 					public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}	
 					
 				}, MCanvas.Level.UNDER);		
@@ -203,7 +199,7 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		
 		// Kurzor pozicio figyelo
 		myCanvas.addCursorPositionChangeListener( new CursorPositionChangeListener() {
-			@Override
+
 			public void getWorldPosition(double xPosition, double yPosition) {
 				DecimalFormat df = new DecimalFormat("#.0000");				
 				statusPanel.setXPosition( "x: " + df.format(xPosition));
@@ -213,7 +209,7 @@ public class ExampleMCanvas_Scale_SameUnits_DiscretZoom extends JFrame {
 		
 		// Meretarany figyelo
 		myScale.addScaleChangeListener(new ScaleChangeListener() {		
-			@Override
+
 			public void getScale(Value scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				if( myScale.getScale().getX() < 1.0 ){

@@ -7,9 +7,12 @@ import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
 import hu.akoel.mgu.drawnblock.DrawnBlockStatusPanel;
+import hu.akoel.mgu.drawnblock.FillOvalElement;
+import hu.akoel.mgu.drawnblock.FillRectangleElement;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
+import hu.akoel.mgu.sprite.Appearance;
 import hu.akoel.mgu.sprite.ChangeSizeListener;
 import hu.akoel.mgu.sprite.Magnet;
 import hu.akoel.mgu.sprite.MagnetType;
@@ -130,18 +133,24 @@ public class ExampleSprite extends JFrame {
 		JButton commandButtonAddBase = new JButton("add Base");
 		commandButtonAddBase.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 	
 				baseSprite = new Sprite(new SizeValue(-1, -1.5, 1, 1.5));
 			
 				//A kozponti Sprite leirasa
-				RectangleElement gElementBaseSprite = new RectangleElement(-1,-1.5,2,3,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.cyan, new BasicStroke(3));
-				RectangleElement gMagnetEastOfBaseSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-RectangleElement gMagnetEastOfBaseSprite2 = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));				
-				RectangleElement gMagnetNorthOfBaseSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement gMagnetSouthOfBaseSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement gMagnetWestOfBaseSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.blue, new BasicStroke(1), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				FillRectangleElement gElementBaseSprite = new FillRectangleElement(	-1, -1.5, 2, 3, new Appearance( Color.blue, new BasicStroke( 1f ) ) ); 
+				gElementBaseSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
+				gElementBaseSprite.seConnectedAppearance( new Appearance( Color.cyan, new BasicStroke( 3 ) ) );
+				gElementBaseSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+
+				FillOvalElement gElementOvalSprite = new FillOvalElement( -0.0, -0.0, 0.5, new Appearance( Color.yellow, new BasicStroke( 1f ) ) ); 
+				
+				//A kozponti Sprite Magnet-jei
+				FillRectangleElement gMagnetEastOfBaseSprite = new FillRectangleElement(-0.05,-0.05,0.05,0.1, new Appearance( Color.blue, new BasicStroke(1) ) );
+				FillRectangleElement gMagnetEastOfBaseSprite2 = new FillRectangleElement(-0.05,-0.05,0.05,0.1, new Appearance( Color.blue, new BasicStroke(1) ) );				
+				FillRectangleElement gMagnetNorthOfBaseSprite = new FillRectangleElement(-0.05,-0.05,0.1,0.05, new Appearance( Color.blue, new BasicStroke(1) ) );
+				FillRectangleElement gMagnetSouthOfBaseSprite = new FillRectangleElement(-0.05,0,0.1,0.05, new Appearance( Color.blue, new BasicStroke(1) ) );
+				FillRectangleElement gMagnetWestOfBaseSprite = new FillRectangleElement(0,-0.05,0.05,0.1, new Appearance( Color.blue, new BasicStroke(1) ) );
 				
 				Magnet baseSpriteMagnetEast = new Magnet(baseSprite, outMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
 				
@@ -167,6 +176,7 @@ baseSpriteMagnetEast2.addElement( gMagnetEastOfBaseSprite2 );
 
 				
 				baseSprite.addElement(gElementBaseSprite);
+				baseSprite.addElement( gElementOvalSprite );
 				baseSprite.addMagnet( baseSpriteMagnetEast );
 baseSprite.addMagnet( baseSpriteMagnetEast2 );				
 				baseSprite.addMagnet( baseSpriteMagnetNorth );
@@ -186,7 +196,6 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		JButton commandButtonAddVertical = new JButton("add Vertical");
 		commandButtonAddVertical.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
 				//Normal Vertikalis cso
@@ -194,9 +203,14 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeVerticalSprite = new Sprite(new SizeValue(-0.25, -2, 0.25, 2 ), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipeVerticalSprite = new RectangleElement(-0.125,-2,0.25,4,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.orange, new BasicStroke(3));
-				RectangleElement gMagnetNorthOfPipeVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement gMagnetSouthOfPipeVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gElementPipeVerticalSprite = new RectangleElement(
+						-0.125, -2, 0.25, 4, new Appearance( Color.green, new BasicStroke(1f) ) );
+				gElementPipeVerticalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
+				gElementPipeVerticalSprite.seConnectedAppearance( new Appearance( Color.cyan, new BasicStroke( 3 ) ) );
+				gElementPipeVerticalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+
+				RectangleElement gMagnetNorthOfPipeVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
+				RectangleElement gMagnetSouthOfPipeVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
 
 				Magnet pipeSpriteMagnetNorth = new Magnet(pipeVerticalSprite, pipeMagnet, 0.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, 2) );
 				pipeSpriteMagnetNorth.addPossibleMagnetTypeToConnect( pipeMagnet  );
@@ -225,7 +239,6 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		JButton commandButtonAddDirectVertical = new JButton("add D Vertical");
 		commandButtonAddDirectVertical.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {
 	
 				//Direct kapcsolatu Vertikalis cso
@@ -233,9 +246,13 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectVerticalSprite = new Sprite(new SizeValue(-0.25, -1, 0.25, 1 ), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipeDirectVerticalSprite = new RectangleElement(-0.125,-1,0.25,2,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.magenta, new BasicStroke(3));
-				RectangleElement gMagnetNorthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement gMagnetSouthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gElementPipeDirectVerticalSprite = new RectangleElement(-0.125,-1,0.25,2, new Appearance( Color.blue, new BasicStroke(1f) ) );
+				gElementPipeDirectVerticalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
+				gElementPipeDirectVerticalSprite.seConnectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
+				gElementPipeDirectVerticalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				
+				RectangleElement gMagnetNorthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
+				RectangleElement gMagnetSouthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
 
 				Magnet pipeDirectVerticalSpriteMagnetNorth = new Magnet(pipeDirectVerticalSprite, pipeMagnet, 0.0, new RangeValueInPixel(10, 20 ), new PositionValue(0, 1) );
 				pipeDirectVerticalSpriteMagnetNorth.addPossibleMagnetTypeToConnect( pipeMagnet  );
@@ -265,16 +282,19 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		JButton commandButtonAddHorizontal = new JButton("add Horizontal");
 		commandButtonAddHorizontal.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {	
 				//Normal horizontalis cso
 				//Nem helyezheto le onmagaban
 				pipeHorizontalSprite = new Sprite(new SizeValue(-2, -0.25, 2, 0.25), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipeHorizontalSprite = new RectangleElement(-2,-0.125,4,0.25,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.orange, new BasicStroke(3));
-				RectangleElement gMagnetWestOfPipeHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement gMagnetEastOfPipeHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gElementPipeHorizontalSprite = new RectangleElement(-2,-0.125,4,0.25, new Appearance( Color.green, new BasicStroke(1f) ) );
+				gElementPipeHorizontalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
+				gElementPipeHorizontalSprite.seConnectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				gElementPipeHorizontalSprite.setSelectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
+				
+				RectangleElement gMagnetWestOfPipeHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
+				RectangleElement gMagnetEastOfPipeHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
 
 				Magnet pipeSpriteMagnetEast = new Magnet(pipeHorizontalSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(2, 0) );
 				pipeSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
@@ -304,7 +324,6 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		JButton commandButtonAddDirectHorizontal = new JButton("add D Horizontal");
 		commandButtonAddDirectHorizontal.addActionListener(new ActionListener(){
 			
-			@Override
 			public void actionPerformed(ActionEvent arg0) {	
 				
 
@@ -313,9 +332,13 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectHorizontalSprite = new Sprite(new SizeValue(-1, -0.25, 1, 0.25), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipedirectHorizontalSprite = new RectangleElement(-1,-0.125,2,0.25,Color.blue, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.magenta, new BasicStroke(3));
-				RectangleElement gMagnetWestOfPipeDirectHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
-				RectangleElement gMagnetEastOfPipeDirectHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1,Color.green, new BasicStroke(1f), Color.red, new BasicStroke(3), Color.yellow, new BasicStroke(3));
+				RectangleElement gElementPipedirectHorizontalSprite = new RectangleElement(-1,-0.125,2,0.25, new Appearance( Color.blue, new BasicStroke(1f) ) );
+				gElementPipedirectHorizontalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
+				gElementPipedirectHorizontalSprite.seConnectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
+				gElementPipedirectHorizontalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				
+				RectangleElement gMagnetWestOfPipeDirectHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
+				RectangleElement gMagnetEastOfPipeDirectHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
 
 				Magnet pipeToBaseSpriteMagnetEast = new Magnet(pipeDirectHorizontalSprite, pipeMagnet, 90.0, new RangeValueInPixel(20, 10 ), new PositionValue(1, 0) );
 				pipeToBaseSpriteMagnetEast.addPossibleMagnetTypeToConnect( pipeMagnet  );
@@ -334,7 +357,6 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectHorizontalSprite.setPosition( 0, 0 );
 				pipeDirectHorizontalSprite.addChangeWidthListener(new ChangeSizeListener() {
 					
-					@Override
 					public void changed(double xMin, double xMax) {
 				
 					}
@@ -354,7 +376,6 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		JButton commandButtonReport = new JButton("Report");
 		commandButtonReport.addActionListener(new ActionListener(){
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 			
 				
@@ -407,7 +428,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		
 		// Kurzor pozicio figyelo
 		myCanvas.addCursorPositionChangeListener( new CursorPositionChangeListener() {
-			@Override
+
 			public void getWorldPosition(double xPosition, double yPosition) {
 				DecimalFormat df = new DecimalFormat("#.0000");				
 				statusPanel.setXPosition( "x: " + df.format(xPosition));
@@ -417,7 +438,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 		
 		// Meretarany figyelo
 		myScale.addScaleChangeListener(new ScaleChangeListener() {		
-			@Override
+
 			public void getScale(Value scale) {
 				DecimalFormat df = new DecimalFormat("#.00");
 				if( myScale.getScale().getX() < 1.0 ){

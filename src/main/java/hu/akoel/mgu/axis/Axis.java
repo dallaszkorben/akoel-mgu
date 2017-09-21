@@ -36,7 +36,9 @@ public class Axis {
 		AT_LEFT_BOTTOM,
 		AT_LEFT_TOP,
 		AT_RIGHT_BOTTOM,
-		AT_RIGHT_TOP,		
+		AT_RIGHT_TOP,
+		AT_BOTTOM,
+		AT_LEFT
 	}
 	
 	public static enum PainterPosition{
@@ -159,7 +161,6 @@ public class Axis {
     		
     	}
     	
-		@Override
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			double positionXVerticalAxis = 0;
 			double positionYHorizontalAxis = 0;
@@ -181,7 +182,7 @@ public class Axis {
 				positionXVerticalNumber = positionXVerticalAxis + canvas.getWorldXLengthByPixel( mainStickSizeInPixel );
 				positionYHorizontalNumber = positionYHorizontalAxis + canvas.getWorldYLengthByPixel( mainStickSizeInPixel );					
 
-			}else if( axisPosition.equals( AxisPosition.AT_LEFT_BOTTOM )){
+			}else if( axisPosition.equals( AxisPosition.AT_LEFT_BOTTOM ) || axisPosition.equals( AxisPosition.AT_LEFT ) || axisPosition.equals( AxisPosition.AT_BOTTOM ) ){
 				positionXVerticalAxis = canvas.getWorldXByPixel( 0 );
 				positionYHorizontalAxis = canvas.getWorldSize().getYMin();
 								
@@ -216,86 +217,95 @@ public class Axis {
 			g2.setStroke(new BasicStroke(axisWidthInPixel));
 
 			SizeValue worldSize = canvas.getWorldSize();
-			
+
 			//Vizszintes axis rajzolasa
-			g2.drawLine(worldSize.getXMin(), positionYHorizontalAxis, worldSize.getXMax(), positionYHorizontalAxis);
+			if( !axisPosition.equals( AxisPosition.AT_LEFT ) ){
+				g2.drawLine(worldSize.getXMin(), positionYHorizontalAxis, worldSize.getXMax(), positionYHorizontalAxis);
 			
+				//Vizszintes fobeosztasok es feliratok
+				mainXStick = ((new BigDecimal(canvas.getWorldSize().getXMin())).divide(xSteps, 0, BigDecimal.ROUND_CEILING)).multiply(xSteps);
+				mainXStick = mainXStick.subtract(xSteps);
+			
+				g2.setStroke(new BasicStroke(1));
+				while(mainXStick.doubleValue() <= worldSize.getXMax()){
+			
+					//Alathato reszen kivuli elemeket ne rajzolja ki
+					if( mainXStick.doubleValue() >= worldSize.getXMin() ){
+				
+						//Vizszintes fobeosztas
+						g2.setColor(stickColor);
+						g2.drawLine(
+								mainXStick.doubleValue(), 
+								positionYHorizontalAxis - canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2, 
+								mainXStick.doubleValue(), 
+								positionYHorizontalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2 
+								);
+				
+						//Vizszintes ertekek
+						frc = g2.getFontRenderContext();
+						//textLayout = new TextLayout(String.valueOf(mainXStick), fontNumber, frc);
+
+//TODO parameter says the format: exponential/normal decimal						
+textLayout = new TextLayout(String.valueOf(mainXStick.doubleValue()), fontNumber, frc);
+
+						g2.setColor(numberColor);
+						g2.drawFont(
+								textLayout, 
+								mainXStick.doubleValue() - canvas.getWorldXLengthByPixel((int)(textLayout.getBounds().getWidth()/2)), 
+								positionYHorizontalNumber
+								);
+					} 
+				
+					//Kovetkezo fobeosztas
+					mainXStick = mainXStick.add(xSteps);
+				}
+				
+			}
+
 			//Fuggoleges axis rajzolasa
-			g2.drawLine(positionXVerticalAxis, worldSize.getYMin(), positionXVerticalAxis, worldSize.getYMax());
-			
-			//Vizszintes fobeosztasok es feliratok
-			mainXStick = ((new BigDecimal(canvas.getWorldSize().getXMin())).divide(xSteps, 0, BigDecimal.ROUND_CEILING)).multiply(xSteps);
-			mainXStick = mainXStick.subtract(xSteps);
-			
-			g2.setStroke(new BasicStroke(1));
-			while(mainXStick.doubleValue() <= worldSize.getXMax()){
-			
-				//Alathato reszen kivuli elemeket ne rajzolja ki
-				if( mainXStick.doubleValue() >= worldSize.getXMin() ){
-				
-					//Vizszintes fobeosztas
-					g2.setColor(stickColor);
-					g2.drawLine(
-						mainXStick.doubleValue(), 
-						positionYHorizontalAxis - canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2, 
-						mainXStick.doubleValue(), 
-						positionYHorizontalAxis + canvas.getWorldYLengthByPixel(mainStickSizeInPixel)/2 
-					);
-				
-					//Vizszintes ertekek
-					frc = g2.getFontRenderContext();
-					textLayout = new TextLayout(String.valueOf(mainXStick), fontNumber, frc);					
-					g2.setColor(numberColor);
-					g2.drawFont(
-							textLayout, 
-							mainXStick.doubleValue() - canvas.getWorldXLengthByPixel((int)(textLayout.getBounds().getWidth()/2)), 
-							positionYHorizontalNumber
-					);
-				} 
-				
-				//Kovetkezo fobeosztas
-				mainXStick = mainXStick.add(xSteps);
-			}
+			if( !axisPosition.equals( AxisPosition.AT_BOTTOM ) ){
+				g2.drawLine(positionXVerticalAxis, worldSize.getYMin(), positionXVerticalAxis, worldSize.getYMax());
 
-			//Fuggoleges fobeosztasok es feliratok
-			mainYStick = ((new BigDecimal(worldSize.getYMin())).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
-			mainYStick = mainYStick.subtract(ySteps);
+				//Fuggoleges fobeosztasok es feliratok
+				mainYStick = ((new BigDecimal(worldSize.getYMin())).divide(ySteps, 0, BigDecimal.ROUND_CEILING)).multiply(ySteps);
+				mainYStick = mainYStick.subtract(ySteps);
 
-			g2.setStroke(new BasicStroke(1));
-			while(mainYStick.doubleValue() <= worldSize.getYMax()){
+				g2.setStroke(new BasicStroke(1));
+				while(mainYStick.doubleValue() <= worldSize.getYMax()){
 			
-				//Alathato reszen kivuli elemeket ne rajzolja ki
-				if( mainYStick.doubleValue() >= worldSize.getYMin() ){
+					//Alathato reszen kivuli elemeket ne rajzolja ki
+					if( mainYStick.doubleValue() >= worldSize.getYMin() ){
 				
-					//Fuggoleges fobeosztas
-					g2.setColor(stickColor);
-					g2.drawLine(
-						positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel)/2,
-						mainYStick.doubleValue(),
-						positionXVerticalAxis + canvas.getWorldXLengthByPixel(mainStickSizeInPixel)/2,
-						mainYStick.doubleValue()
-					);
+						//Fuggoleges fobeosztas
+						g2.setColor(stickColor);
+						g2.drawLine(
+								positionXVerticalAxis - canvas.getWorldXLengthByPixel(mainStickSizeInPixel)/2,
+								mainYStick.doubleValue(),
+								positionXVerticalAxis + canvas.getWorldXLengthByPixel(mainStickSizeInPixel)/2,
+								mainYStick.doubleValue()
+								);
 				
-					//Fuggoleges ertekek
-					frc = g2.getFontRenderContext();
-					textLayout = new TextLayout(String.valueOf(mainYStick), fontNumber, frc);						
-					g2.setColor(numberColor);
-					g2.drawFont(
-							textLayout, 
-							positionXVerticalNumber,							 
-							mainYStick.doubleValue() - canvas.getWorldYLengthByPixel( (int)(textLayout.getAscent()/2) )
-					);
-					
-					
-				}					        
+						//Fuggoleges ertekek
+						frc = g2.getFontRenderContext();
+						//textLayout = new TextLayout(String.valueOf(mainYStick), fontNumber, frc);		
+
+//TODO parameter says the format: exponential/normal decimal						
+textLayout = new TextLayout(String.valueOf(mainYStick.doubleValue()), fontNumber, frc);						
+						
+						g2.setColor(numberColor);
+						g2.drawFont(
+								textLayout, 
+								positionXVerticalNumber,							 
+								mainYStick.doubleValue() - canvas.getWorldYLengthByPixel( (int)(textLayout.getAscent()/2) )
+								);
+					}					        
 				
-				//Kovetkezo fobeosztas
-				mainYStick = mainYStick.add(ySteps);
-			}
-			
+					//Kovetkezo fobeosztas
+					mainYStick = mainYStick.add(ySteps);
+				}
+			}			
 		}
 
-		@Override
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
 		/**
@@ -382,7 +392,6 @@ public class Axis {
     	
     	ActionListener axisSelectorActionListener = new ActionListener() {
 			
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if( e.getSource() == lbAxisSelector){
 					Axis.this.setAxisPosition( AxisPosition.AT_LEFT_BOTTOM );				
@@ -429,7 +438,6 @@ public class Axis {
 		
 		turnOnAxis.addItemListener(new ItemListener() {
 			
-			@Override
 			public void itemStateChanged(ItemEvent e) {
 				if( e.getStateChange() == ItemEvent.DESELECTED){
 					Axis.this.turnOff();
