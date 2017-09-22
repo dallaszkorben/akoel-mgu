@@ -36,4 +36,6 @@ public abstract class SpriteElement {
 	public abstract void drawConnected( MGraphics g2);
 	
 	public abstract void drawSelected( MGraphics g2);
+	
+	public abstract void drawShadow( MGraphics g2);
 }

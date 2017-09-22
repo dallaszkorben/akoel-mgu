@@ -142,6 +142,7 @@ public class ExampleSprite extends JFrame {
 				gElementBaseSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
 				gElementBaseSprite.seConnectedAppearance( new Appearance( Color.cyan, new BasicStroke( 3 ) ) );
 				gElementBaseSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				gElementBaseSprite.setShadowAppearance( new Appearance( new Color(100, 100, 100 ), new BasicStroke(1) ));
 
 				FillOvalElement gElementOvalSprite = new FillOvalElement( -0.0, -0.0, 0.5, new Appearance( Color.yellow, new BasicStroke( 1f ) ) ); 
 				

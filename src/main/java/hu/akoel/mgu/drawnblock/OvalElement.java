@@ -13,6 +13,7 @@ public class OvalElement  extends SpriteElement{
 	private Appearance focusAppearance;
 	private Appearance connectedAppearance;
 	private Appearance selectedAppearance;
+	private Appearance shadowAppearance;
 	
 	public OvalElement( double x, double y, double radius, Appearance normalAppearance ){
 
@@ -39,6 +40,9 @@ public class OvalElement  extends SpriteElement{
 		this.selectedAppearance = selectedAppearance;
 	}
 
+	public void setShadowAppearance( Appearance shadowAppearance ){
+		this.shadowAppearance = shadowAppearance;
+	}
 
 	@Override
 	public void draw(MGraphics g2) {
@@ -66,5 +70,14 @@ public class OvalElement  extends SpriteElement{
 		g2.setColor( selectedAppearance.getColor() );
 		g2.setStroke( selectedAppearance.getStroke() );
 		g2.drawOval( x + getPositionX(), y + getPositionY(), radius );		
+	}
+	
+	@Override
+	public void drawShadow(MGraphics g2) {
+		if( null != shadowAppearance ){
+			g2.setColor( shadowAppearance.getColor() );
+			g2.setStroke( shadowAppearance.getStroke() );
+			g2.drawOval( x + getPositionX(), y + getPositionY(), radius );	
+		}		
 	}	
 }

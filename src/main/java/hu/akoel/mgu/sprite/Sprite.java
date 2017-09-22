@@ -11,6 +11,7 @@ public class Sprite {
 	private boolean enableToPlaceWithoutConnection = true;
 	private boolean inFocus = false;
 	private boolean isSelected = false;
+	private boolean isShadow = false;
 	private SizeValue boundBox;
 	private PositionValue position = new PositionValue(0,0);
 	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
@@ -110,7 +111,12 @@ public class Sprite {
 	
 	public void draw( MGraphics g2 ){
 		
-		if( isSelected() ){
+		if( isShadow() ){
+			for( SpriteElement element: elements){
+				element.setPosition(position);
+				element.drawShadow(g2);
+			}			
+		}else if( isSelected() ){
 			
 			for( SpriteElement element: elements){
 				element.setPosition(position);
@@ -177,6 +183,14 @@ public class Sprite {
 		}
 	}
 */	
+	
+	public boolean isShadow(){
+		return isShadow;
+	}
+	
+	public void setIsShadow( boolean isShadow ){
+		this.isShadow = isShadow;
+	}
 	
 	public boolean isSelected(){
 		return isSelected;

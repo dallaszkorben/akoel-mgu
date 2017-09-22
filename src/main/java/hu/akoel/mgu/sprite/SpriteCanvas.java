@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
@@ -100,6 +101,21 @@ public class SpriteCanvas extends MCanvas{
 		this.spriteList.removeAll( spriteList );
 	}
 	
+	private void setSpritesIntoShadowState( HashSet<Sprite> spriteList ){
+		Iterator<Sprite> it = spriteList.iterator();
+		while( it.hasNext() ){
+			it.next().setIsShadow( true );
+		}
+	}
+
+	private void removeSpritesFromShadowState( HashSet<Sprite> spriteList ){
+		Iterator<Sprite> it = spriteList.iterator();
+		while( it.hasNext() ){
+			it.next().setIsShadow( false );
+		}
+	}
+
+	
 	public void addTemporarySprite( Sprite sprite ){
 		
 		//Temporary reteget hasznaljuk a fokus megjelenitesre
@@ -178,6 +194,11 @@ public class SpriteCanvas extends MCanvas{
 				double yValue = getWorldYByPixel(e.getY());
 				
 				//Akkor meg kell nezni, hogy van-e alatta sprite
+				
+				//Sprite sprite;
+				//for( int i = spriteList.size() - 1; i >= 0; i-- ){
+				//	sprite = spriteList.get( i );
+				
 				for( Sprite sprite: spriteList){
 					
 					SizeValue boundBox = sprite.getBoundBoxAbsolute();
@@ -207,7 +228,9 @@ public class SpriteCanvas extends MCanvas{
 						dragAllSpriteStarted = true;
 					
 						//Eltavolitom a permanens listabol
-						removeSprites(moveableSpriteList);
+						//removeSprites(moveableSpriteList);
+						//Set Sprite into Shadow state
+						setSpritesIntoShadowState( moveableSpriteList );
 						
 						//El kell helyezni az atmeneti taroloba az uj pozicioval						
 						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
@@ -230,7 +253,10 @@ public class SpriteCanvas extends MCanvas{
 				double yValue = getWorldYByPixel(e.getY());
 				
 				//Akkor meg kell nezni, hogy van-e alatta sprite
-				for( Sprite sprite: spriteList){
+				Sprite sprite;
+				for( int i = spriteList.size() - 1; i >= 0; i-- ){
+					sprite = spriteList.get( i );
+				//for( Sprite sprite: spriteList){
 					
 					SizeValue boundBox = sprite.getBoundBoxAbsolute();
 						
@@ -255,7 +281,10 @@ public class SpriteCanvas extends MCanvas{
 						initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
 						
 						//Eltavolitom a permanens listabol
-						removeSprite(sprite);
+//						removeSprite(sprite);
+
+						//Set the Sprite into Shadow State
+						sprite.setIsShadow(true);						
 						
 						//El kell helyezni az atmeneti taroloba az uj pozicioval						
 						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
@@ -281,7 +310,10 @@ public class SpriteCanvas extends MCanvas{
 			if( dragAllSpriteStarted ){
 				
 				//visszahelyezni a Sprite-okat a vegleges taroloba
-				addSprites( moveableSpriteList );
+				//addSprites( moveableSpriteList );
+				
+				//Remove Sprites from Shadow state
+				removeSpritesFromShadowState( moveableSpriteList );
 				
 				//Engedelyezem a fokusz mukodeset
 				setNeedFocus(true);
@@ -311,8 +343,11 @@ public class SpriteCanvas extends MCanvas{
 				}
 					
 				//El kell helyezni a vegleges taroloba az uj pozicioval			
-				addSprite(sprite);
-			
+//				addSprite(sprite);
+
+				//remove Sprite from Shadow State
+				sprite.setIsShadow(false);						
+				
 				//Engedelyezem a fokusz mukodeset
 				setNeedFocus(true);
 				
@@ -887,6 +922,8 @@ public class SpriteCanvas extends MCanvas{
 		
 		public void mouseMoved(MouseEvent e) {
 	
+			SizeValue biggestBoundBox = new SizeValue( 0, 0, 0, 0 );
+			
 			if( needFocus() ){
 			
 				double xValue = getWorldXByPixel(e.getX() );			
@@ -896,17 +933,41 @@ public class SpriteCanvas extends MCanvas{
 				for( Sprite sprite: spriteList){
 				
 					SizeValue boundBox = sprite.getBoundBoxAbsolute();						
-			
+					
 					if( 
+						//Megnezi, hogy a cursor alatt van-e a Sprite
 						xValue >= boundBox.getXMin() &&
 						xValue <= boundBox.getXMax() &&
 						yValue >= boundBox.getYMin() &&
-						yValue <= boundBox.getYMax()
+						yValue <= boundBox.getYMax() ||
+						
+						//Megnezi, hogy az eddig megtalalt legnagyobb Sprite folott van-e a Sprite (ekkor nem lesz fokuszban)
+						(
+						boundBox.getXMin() >= biggestBoundBox.getXMin() &&
+						boundBox.getYMin() >= biggestBoundBox.getYMin() &&
+						boundBox.getXMax() <= biggestBoundBox.getXMax() &&
+						boundBox.getYMax() <= biggestBoundBox.getYMax()						
+						)
 					){
 											
+						biggestBoundBox.setXMin( Math.min( biggestBoundBox.getXMin(), boundBox.getXMin() ) );
+						biggestBoundBox.setYMin( Math.min( biggestBoundBox.getYMin(), boundBox.getYMin() ) );
+						biggestBoundBox.setXMax( Math.max( biggestBoundBox.getXMax(), boundBox.getXMax() ) );
+						biggestBoundBox.setYMax( Math.max( biggestBoundBox.getYMax(), boundBox.getYMax() ) );						
+						
 						addTemporarySprite(sprite);						
 						needToPrint = true;
-						sprite.setInFocus(true);
+						
+						if( 
+								xValue >= boundBox.getXMin() &&
+								xValue <= boundBox.getXMax() &&
+								yValue >= boundBox.getYMin() &&
+								yValue <= boundBox.getYMax() 
+						){
+							sprite.setInFocus(true);
+						}else{
+							sprite.setInFocus( false );
+						}
 
 					}else{
 						if( sprite.isInFocus() ){
@@ -1007,7 +1068,11 @@ public class SpriteCanvas extends MCanvas{
 
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
 			for( Sprite sprite: temporarySpriteList){
-				sprite.drawFocus(g2);
+				if( sprite.isInFocus() ){
+					sprite.drawFocus(g2);
+				}else{
+					sprite.draw(g2);
+				}
 			}
 			temporarySpriteList.clear();
 		}
