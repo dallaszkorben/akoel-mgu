@@ -229,15 +229,31 @@ public class Sprite {
 				}
 			}
 		}else{
-			for( ASpriteElement element: elements){
-				element.setPosition(position);
-				element.draw(g2);
-			}
-			for( Magnet magnet: magnetList){
-				if( null == magnet.getConnectedTo() ){
-					magnet.draw(g2);
-				}else{
-					magnet.drawConnected(g2);
+			if( isSelected() ){
+			
+				for( ASpriteElement element: elements){
+					element.setPosition(position);
+					element.drawSelected(g2);
+				}
+				
+				for( Magnet magnet: magnetList){
+					if( null == magnet.getConnectedTo() ){
+						magnet.draw(g2);
+					}else{
+						magnet.drawSelected(g2);
+					}
+				}	
+			}else{
+				for( ASpriteElement element: elements){
+					element.setPosition(position);
+					element.draw(g2);
+				}
+				for( Magnet magnet: magnetList){
+					if( null == magnet.getConnectedTo() ){
+						magnet.draw(g2);
+					}else{
+						magnet.drawConnected(g2);
+					}
 				}
 			}
 		}		

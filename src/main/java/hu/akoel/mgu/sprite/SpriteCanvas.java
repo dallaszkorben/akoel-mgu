@@ -947,7 +947,6 @@ sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCurso
 	class PermanentSpritePainterListener implements PainterListener{
 
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
-			//spriteSet.drawPermanent( g2 );
 			spriteSet.draw( g2 );
 		}
 
@@ -964,7 +963,6 @@ sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCurso
 	class TemporarySpritePainterListener implements PainterListener{
 
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
-			//temporarySpriteSet.drawTemporary( g2 );
 			temporarySpriteSet.drawTemporary( g2 );
 			temporarySpriteSet.clear();
 		}
