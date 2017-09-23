@@ -1,12 +1,12 @@
-package hu.akoel.mgu.sprite;
+package hu.akoel.mgu.sprite.elements;
 
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.values.PositionValue;
 
 
-public abstract class SpriteElement {
-	private PositionValue position = new PositionValue(0,0);
-	
+public abstract class ASpriteElement {
+	private PositionValue position = new PositionValue(0,0);	
+
 	public void setPositionX( double x ){
 		this.position.setX(x);
 	}

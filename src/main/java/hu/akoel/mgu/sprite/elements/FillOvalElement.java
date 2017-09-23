@@ -1,23 +1,20 @@
-package hu.akoel.mgu.drawnblock;
+package hu.akoel.mgu.sprite.elements;
 
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.sprite.Appearance;
-import hu.akoel.mgu.sprite.SpriteElement;
 
-public class FillRectangleElement extends SpriteElement{
+public class FillOvalElement  extends ASpriteElement{
 	
 	private double x;
 	double y;
-	double width;
-	double height;
+	double radius;
 	private Appearance normalAppearance;
 	private Appearance focusAppearance;
 	private Appearance connectedAppearance;
 	private Appearance selectedAppearance;
 	private Appearance shadowAppearance;
 	
-	public FillRectangleElement( double x, double y, double width, double height, Appearance normalAppearance ){
-
+	public FillOvalElement( double x, double y, double radius, Appearance normalAppearance ){
 		this.normalAppearance = normalAppearance;
 		this.focusAppearance = normalAppearance;
 		this.connectedAppearance = normalAppearance;
@@ -25,8 +22,7 @@ public class FillRectangleElement extends SpriteElement{
 		
 		this.x = x;
 		this.y = y;
-		this.width = width;
-		this.height = height;
+		this.radius = radius;
 		
 	}
 
@@ -45,41 +41,41 @@ public class FillRectangleElement extends SpriteElement{
 	public void setShadowAppearance( Appearance shadowAppearance ){
 		this.shadowAppearance = shadowAppearance;
 	}
-
+	
 	@Override
 	public void draw(MGraphics g2) {
 		g2.setColor(normalAppearance.getColor());
 		g2.setStroke(normalAppearance.getStroke());
-		g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);		
+		g2.fillOval( x + getPositionX(), y + getPositionY(), radius );		
 	}
 
 	@Override
 	public void drawFocus(MGraphics g2) {
 		g2.setColor( focusAppearance.getColor() );
 		g2.setStroke( focusAppearance.getStroke() );
-		g2.fillRectangle( x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height );		
+		g2.fillOval( x + getPositionX(), y + getPositionY(), radius );		
 	}
 
 	@Override
 	public void drawConnected(MGraphics g2) {
 		g2.setColor( connectedAppearance.getColor() );
 		g2.setStroke( connectedAppearance.getStroke() );
-		g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);				
+		g2.fillOval( x + getPositionX(), y + getPositionY(), radius );				
 	}
 
 	@Override
 	public void drawSelected(MGraphics g2) {
 		g2.setColor( selectedAppearance.getColor() );
 		g2.setStroke( selectedAppearance.getStroke() );
-		g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);		
-	}
-
+		g2.fillOval( x + getPositionX(), y + getPositionY(), radius );		
+	}	
+	
 	@Override
 	public void drawShadow(MGraphics g2) {
 		if( null != shadowAppearance ){
 			g2.setColor( shadowAppearance.getColor() );
 			g2.setStroke( shadowAppearance.getStroke() );
-			g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);	
+			g2.fillOval( x + getPositionX(), y + getPositionY(), radius );	
 		}		
-	}	
+	}
 }

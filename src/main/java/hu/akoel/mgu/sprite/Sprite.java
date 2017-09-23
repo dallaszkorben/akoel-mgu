@@ -4,30 +4,42 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import hu.akoel.mgu.MGraphics;
+import hu.akoel.mgu.sprite.elements.ASpriteElement;
 import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
 
 public class Sprite {
+	private Integer level;
 	private boolean enableToPlaceWithoutConnection = true;
 	private boolean inFocus = false;
 	private boolean isSelected = false;
 	private boolean isShadow = false;
 	private SizeValue boundBox;
-	private PositionValue position = new PositionValue(0,0);
-	private ArrayList<SpriteElement> elements = new ArrayList<SpriteElement>();
+	private PositionValue permanentPosition = new PositionValue(0,0);
+	private PositionValue temporaryPosition = new PositionValue(0,0);
+	private ArrayList<ASpriteElement> elements = new ArrayList<ASpriteElement>();
 	private HashSet<Magnet> magnetList = new HashSet<Magnet>();
 	private HashSet<ChangeSizeListener> changeWidthListenerList = new HashSet<ChangeSizeListener>();
 	private HashSet<ChangeSizeListener> changeHeightListenerList = new HashSet<ChangeSizeListener>();
 
 	public Sprite( SizeValue boundBox ){
-		commonConstructor(boundBox, true);
+		commonConstructor( 0, boundBox, true);
+	}
+	
+	public Sprite( Integer level, SizeValue boundBox ){
+		commonConstructor( level, boundBox, true);
 	}
 	
 	public Sprite( SizeValue boundBox, boolean enableToPlaceWithoutConnection ){
-		commonConstructor(boundBox, enableToPlaceWithoutConnection);
+		commonConstructor( 0, boundBox, enableToPlaceWithoutConnection );
 	}
 	
-	private void commonConstructor( SizeValue boundBox, boolean enableToPlaceWithoutConnection ){
+	public Sprite( Integer level, SizeValue boundBox, boolean enableToPlaceWithoutConnection ){
+		commonConstructor( level, boundBox, enableToPlaceWithoutConnection );
+	}
+	
+	private void commonConstructor( Integer level, SizeValue boundBox, boolean enableToPlaceWithoutConnection ){
+		this.level = level;
 		this.boundBox = boundBox;
 		this.enableToPlaceWithoutConnection = enableToPlaceWithoutConnection;
 	}
@@ -65,7 +77,7 @@ public class Sprite {
 	}
 	
 	public SizeValue getBoundBoxAbsolute(){
-		return new SizeValue(this.boundBox.getXMin() + position.getX(), this.boundBox.getYMin() + position.getY(), this.boundBox.getXMax() + position.getX(), this.boundBox.getYMax() + position.getY());
+		return new SizeValue(this.boundBox.getXMin() + permanentPosition.getX(), this.boundBox.getYMin() + permanentPosition.getY(), this.boundBox.getXMax() + permanentPosition.getX(), this.boundBox.getYMax() + permanentPosition.getY());
 	}
 	
 	public void addMagnet( Magnet magnet ){
@@ -76,24 +88,48 @@ public class Sprite {
 		return magnetList;
 	}
 	
-	public void addElement( SpriteElement element ){
+	public void addElement( ASpriteElement element ){
 		elements.add(element);
 	}
 	
-	public void setPosition( PositionValue position ){
-		this.position.setX(position.getX());
-		this.position.setY(position.getY());
+	public void setPermanentPosition( PositionValue position ){
+		this.permanentPosition.setX( position.getX() );
+		this.permanentPosition.setY( position.getY() );
 	}
 	
-	public void setPosition( double positionX, double positionY ){
-		this.position.setX( positionX );
-		this.position.setY( positionY );
+	public void setPermanentPosition( double positionX, double positionY ){
+		this.permanentPosition.setX( positionX );
+		this.permanentPosition.setY( positionY );
 	}
 	
-	public PositionValue getPosition(){
-		return new PositionValue(position.getX(), position.getY());
+	public PositionValue getPermanentPosition(){
+		return new PositionValue( permanentPosition.getX(), permanentPosition.getY() );
 	}
 	
+	public void setTemporaryPosition( PositionValue position ){
+		this.temporaryPosition.setX( position.getX() );
+		this.temporaryPosition.setY( position.getY() );
+	}
+	
+	/*public void setTemporaryPosition( double positionX, double positionY ){
+		this.temporaryPosition.setX( positionX );
+		this.temporaryPosition.setY( positionY );
+	}*/
+	
+	public PositionValue getTemporaryPosition(){
+		return new PositionValue( temporaryPosition.getX(), temporaryPosition.getY() );
+	}
+	
+	public void copyPermanentPositionToTemporary(){
+		this.temporaryPosition.setX( permanentPosition.getX() );
+		this.temporaryPosition.setY( permanentPosition.getY() );
+	}
+
+	public void copyTemporaryPositionToPermanent(){
+		this.permanentPosition.setX( temporaryPosition.getX() );
+		this.permanentPosition.setY( temporaryPosition.getY() );
+	}
+
 	public void changeWidthTo( double xMin, double xMax ){
 		
 		this.setBoundBoxXMin(xMin);
@@ -109,17 +145,17 @@ public class Sprite {
 		}		
 	}
 	
-	public void draw( MGraphics g2 ){
+	public void drawPermanent( MGraphics g2 ){
 		
 		if( isShadow() ){
-			for( SpriteElement element: elements){
-				element.setPosition(position);
+			for( ASpriteElement element: elements){
+				element.setPosition(permanentPosition);
 				element.drawShadow(g2);
 			}			
 		}else if( isSelected() ){
 			
-			for( SpriteElement element: elements){
-				element.setPosition(position);
+			for( ASpriteElement element: elements){
+				element.setPosition(permanentPosition);
 				element.drawSelected(g2);
 			}
 			
@@ -130,11 +166,10 @@ public class Sprite {
 					magnet.drawSelected(g2);
 				}
 			}			
-			
 		}else if( isConnected() ){
 			
-			for( SpriteElement element: elements){
-				element.setPosition(position);
+			for( ASpriteElement element: elements){
+				element.setPosition(permanentPosition);
 				element.drawConnected(g2);
 			}
 			
@@ -144,35 +179,44 @@ public class Sprite {
 				}else{
 					magnet.drawConnected(g2);
 				}
-			}
-			
+			}			
 		}else{
-			for( SpriteElement element: elements){
-				element.setPosition(position);
+			for( ASpriteElement element: elements){
+				element.setPosition(permanentPosition);
 				element.draw(g2);
-			}
-			
+			}			
 			for( Magnet magnet: magnetList){		
 					magnet.draw(g2);				
 			}
 		}
 	}
 	
-	public void drawFocus( MGraphics g2){
-		for( SpriteElement element: elements){
-			element.setPosition(position);
-			element.drawFocus(g2);
-		}
-
-		for( Magnet magnet: magnetList){
-			if( null == magnet.getConnectedTo() ){
-				magnet.drawFocus(g2);
-			}else{
-				magnet.drawConnected(g2);
+	public void drawTemporary( MGraphics g2){
+		if( isInFocus() ){		
+			for( ASpriteElement element: elements){
+				element.setPosition(temporaryPosition);
+				element.drawFocus(g2);
 			}
-		}
-		
-		
+			for( Magnet magnet: magnetList){
+				if( null == magnet.getConnectedTo() ){
+					magnet.drawFocus(g2);
+				}else{
+					magnet.drawConnected(g2);
+				}
+			}
+		}else{
+			for( ASpriteElement element: elements){
+				element.setPosition(temporaryPosition);
+				element.draw(g2);
+			}
+			for( Magnet magnet: magnetList){
+				if( null == magnet.getConnectedTo() ){
+					magnet.draw(g2);
+				}else{
+					magnet.drawConnected(g2);
+				}
+			}
+		}		
 	}
 	
 
@@ -217,5 +261,9 @@ public class Sprite {
 			}
 		}
 		return isConnected;
+	}
+	
+	public Integer getLevel(){
+		return level;
 	}
 }

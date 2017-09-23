@@ -7,8 +7,6 @@ import hu.akoel.mgu.PossiblePixelPerUnits;
 import hu.akoel.mgu.axis.Axis;
 import hu.akoel.mgu.crossline.CrossLine;
 import hu.akoel.mgu.drawnblock.DrawnBlockStatusPanel;
-import hu.akoel.mgu.drawnblock.FillOvalElement;
-import hu.akoel.mgu.drawnblock.FillRectangleElement;
 import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
@@ -16,9 +14,11 @@ import hu.akoel.mgu.sprite.Appearance;
 import hu.akoel.mgu.sprite.ChangeSizeListener;
 import hu.akoel.mgu.sprite.Magnet;
 import hu.akoel.mgu.sprite.MagnetType;
-import hu.akoel.mgu.sprite.RectangleElement;
 import hu.akoel.mgu.sprite.Sprite;
 import hu.akoel.mgu.sprite.SpriteCanvas;
+import hu.akoel.mgu.sprite.elements.FillOvalElement;
+import hu.akoel.mgu.sprite.elements.FillRectangleElement;
+import hu.akoel.mgu.sprite.elements.RectangleElement;
 import hu.akoel.mgu.values.DeltaValue;
 import hu.akoel.mgu.values.LengthValue;
 import hu.akoel.mgu.values.PixelPerUnitValue;
@@ -35,14 +35,13 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
-
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class ExampleSprite extends JFrame {
+public class ExampleSimpleSprite extends JFrame {
 
 	private static final long serialVersionUID = 5810956401235486862L;
 
@@ -89,11 +88,12 @@ public class ExampleSprite extends JFrame {
 	private MagnetType pipeMagnet = new MagnetType("Pipe");
 	private MagnetType outMagnet = new MagnetType("Out");
 	
-	public static void main(String[] args) {		
-		new ExampleSprite();
+	public static void main(String[] args) {
+
+		new ExampleSimpleSprite();
 	}
 
-	public ExampleSprite() {
+	public ExampleSimpleSprite() {
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Example :: Sprite");
@@ -183,7 +183,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				baseSprite.addMagnet( baseSpriteMagnetNorth );
 				baseSprite.addMagnet( baseSpriteMagnetSouth );
 				baseSprite.addMagnet( baseSpriteMagnetWest );
-				baseSprite.setPosition( 0, 0 );
+				baseSprite.setPermanentPosition( 0, 0 );
 				
 				//A Sprite-ok elhelyezese a Canvas-on	
 				myCanvas.addSprite(baseSprite);	
@@ -204,11 +204,11 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeVerticalSprite = new Sprite(new SizeValue(-0.25, -2, 0.25, 2 ), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipeVerticalSprite = new RectangleElement(
-						-0.125, -2, 0.25, 4, new Appearance( Color.green, new BasicStroke(1f) ) );
+				FillRectangleElement gElementPipeVerticalSprite = new FillRectangleElement(	-0.125, -2, 0.25, 4, new Appearance( Color.green, new BasicStroke(1f) ) );
 				gElementPipeVerticalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
 				gElementPipeVerticalSprite.seConnectedAppearance( new Appearance( Color.cyan, new BasicStroke( 3 ) ) );
 				gElementPipeVerticalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				gElementPipeVerticalSprite.setShadowAppearance( new Appearance( new Color(100, 100, 100 ), new BasicStroke(1) ));
 
 				RectangleElement gMagnetNorthOfPipeVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
 				RectangleElement gMagnetSouthOfPipeVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
@@ -226,7 +226,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeVerticalSprite.addMagnet( pipeSpriteMagnetSouth );
 				
 				pipeVerticalSprite.addElement(gElementPipeVerticalSprite);
-				pipeVerticalSprite.setPosition( 0, 0 );
+				pipeVerticalSprite.setPermanentPosition( 0, 0 );
 				
 				//A Sprite-ok elhelyezese a Canvas-on
 				myCanvas.addSprite(pipeVerticalSprite);
@@ -247,10 +247,11 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectVerticalSprite = new Sprite(new SizeValue(-0.25, -1, 0.25, 1 ), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipeDirectVerticalSprite = new RectangleElement(-0.125,-1,0.25,2, new Appearance( Color.blue, new BasicStroke(1f) ) );
+				FillRectangleElement gElementPipeDirectVerticalSprite = new FillRectangleElement(-0.125,-1,0.25,2, new Appearance( Color.blue, new BasicStroke(1f) ) );
 				gElementPipeDirectVerticalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
 				gElementPipeDirectVerticalSprite.seConnectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
 				gElementPipeDirectVerticalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				gElementPipeDirectVerticalSprite.setShadowAppearance( new Appearance( new Color(100, 100, 100 ), new BasicStroke(1) ));
 				
 				RectangleElement gMagnetNorthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,-0.05,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
 				RectangleElement gMagnetSouthOfPipeDirectVerticalSprite = new RectangleElement(-0.05,0,0.1,0.05, new Appearance( Color.green, new BasicStroke(1f) ) );
@@ -270,7 +271,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectVerticalSprite.addMagnet( pipeDirectVerticalSpriteMagnetSouth );
 				
 				pipeDirectVerticalSprite.addElement(gElementPipeDirectVerticalSprite);
-				pipeDirectVerticalSprite.setPosition( 0, 0 );
+				pipeDirectVerticalSprite.setPermanentPosition( 0, 0 );
 				
 				//A Sprite-ok elhelyezese a Canvas-on
 				myCanvas.addSprite(pipeDirectVerticalSprite);	
@@ -289,10 +290,11 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeHorizontalSprite = new Sprite(new SizeValue(-2, -0.25, 2, 0.25), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipeHorizontalSprite = new RectangleElement(-2,-0.125,4,0.25, new Appearance( Color.green, new BasicStroke(1f) ) );
+				FillRectangleElement gElementPipeHorizontalSprite = new FillRectangleElement(-2,-0.125,4,0.25, new Appearance( Color.green, new BasicStroke(1f) ) );
 				gElementPipeHorizontalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
-				gElementPipeHorizontalSprite.seConnectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
-				gElementPipeHorizontalSprite.setSelectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
+				gElementPipeHorizontalSprite.seConnectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
+				gElementPipeHorizontalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				gElementPipeHorizontalSprite.setShadowAppearance( new Appearance( new Color(100, 100, 100 ), new BasicStroke(1) ));
 				
 				RectangleElement gMagnetWestOfPipeHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
 				RectangleElement gMagnetEastOfPipeHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
@@ -310,7 +312,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeHorizontalSprite.addMagnet( pipeSpriteMagnetWest );
 				
 				pipeHorizontalSprite.addElement(gElementPipeHorizontalSprite);
-				pipeHorizontalSprite.setPosition( 0, 0 );
+				pipeHorizontalSprite.setPermanentPosition( 0, 0 );
 				
 				//A Sprite-ok elhelyezese a Canvas-on
 				myCanvas.addSprite(pipeHorizontalSprite);	
@@ -333,10 +335,11 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectHorizontalSprite = new Sprite(new SizeValue(-1, -0.25, 1, 0.25), false);
 				
 				//A Sprite leirasa
-				RectangleElement gElementPipedirectHorizontalSprite = new RectangleElement(-1,-0.125,2,0.25, new Appearance( Color.blue, new BasicStroke(1f) ) );
+				FillRectangleElement gElementPipedirectHorizontalSprite = new FillRectangleElement(-1,-0.125,2,0.25, new Appearance( Color.blue, new BasicStroke(1f) ) );
 				gElementPipedirectHorizontalSprite.setFocusAppearance( new Appearance( Color.red, new BasicStroke( 3 ) ) );
 				gElementPipedirectHorizontalSprite.seConnectedAppearance( new Appearance( Color.magenta, new BasicStroke( 3 ) ) );
 				gElementPipedirectHorizontalSprite.setSelectedAppearance( new Appearance( Color.orange, new BasicStroke( 3 ) ) );
+				gElementPipedirectHorizontalSprite.setShadowAppearance( new Appearance( new Color(100, 100, 100 ), new BasicStroke(1) ));
 				
 				RectangleElement gMagnetWestOfPipeDirectHorizontalSprite = new RectangleElement(0,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
 				RectangleElement gMagnetEastOfPipeDirectHorizontalSprite = new RectangleElement(-0.05,-0.05,0.05,0.1, new Appearance( Color.green, new BasicStroke(1f) ) );
@@ -355,7 +358,7 @@ baseSprite.addMagnet( baseSpriteMagnetEast2 );
 				pipeDirectHorizontalSprite.addMagnet( pipeToBaseSpriteMagnetEast );
 				pipeDirectHorizontalSprite.addMagnet( pipeToBaseSpriteMagnetWest );				
 				pipeDirectHorizontalSprite.addElement(gElementPipedirectHorizontalSprite);
-				pipeDirectHorizontalSprite.setPosition( 0, 0 );
+				pipeDirectHorizontalSprite.setPermanentPosition( 0, 0 );
 				pipeDirectHorizontalSprite.addChangeWidthListener(new ChangeSizeListener() {
 					
 					public void changed(double xMin, double xMax) {

@@ -5,8 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeMap;
 
 import javax.swing.border.Border;
 import javax.swing.event.MouseInputListener;
@@ -20,15 +25,58 @@ import hu.akoel.mgu.values.PositionValue;
 import hu.akoel.mgu.values.SizeValue;
 import hu.akoel.mgu.values.TranslateValue;
 
+/**
+ * -The original problem is that Sprites could be ON-EACH other
+ * -In that case we should make different between LEVELS of Sprites
+ * -The Idea is that the Sprites are in a SpriteListOnLevel list/set. 
+ *  We suppose that the Sprites on this list do not overlap each other
+ * -Finally the SpriteListOnLevel list are in the SpriteSet.
+ * -When we draw the Sprites from the SpriteSet then we start to draw with the lowest level SpriteListOnLevel list
+ * 
+ * Focus: Check if a Sprite is under  the cursor position
+ *        Start the check on the highest SpriteListOnLevel list.
+ *        When you found the first one, then set it's isInFocus variable to true
+ *        
+ * Selection: Check if a Sprite is under  the CLICKED cursor position
+ *        Start the check on the highest SpriteListOnLevel list.
+ *        When you found the first one, then set it's isSelected variable to true
+ *        
+ *        Needed a new Appearance for Sprite "Focus+Selected" for that case
+ *        Needed a new variable for Sprite "isMultipleSelectionEnabled"
+ *        
+ * @author akoel
+ *
+ */
 public class SpriteCanvas extends MCanvas{
 
+/*	Map<Integer, String> treeMap = new TreeMap<Integer, String>();
+	
+	treeMap.put(40, "e");
+	treeMap.put(30, "c");
+	treeMap.put(40, "d");
+	treeMap.put(40, "f");
+	treeMap.put(10, "a");
+	treeMap.put(20, "b");
+	
+		Set<Map.Entry<Integer,String>> s = treeMap.entrySet();
+	    Iterator<Map.Entry<Integer,String>> it = s.iterator();
+	    while ( it.hasNext() ) {
+	       Map.Entry<Integer,String> entry = (Map.Entry<Integer,String>) it.next();
+	       Integer key = entry.getKey();
+	       String value = entry.getValue();
+	       System.out.println(key + " => " + value);
+	    }//whi
+	    
+	//}
+*/	    
+	    
 	private static final long serialVersionUID = -4187978793520279190L;
 	
-	private ArrayList<Sprite> spriteList = new ArrayList<Sprite>();
-	private ArrayList<Sprite> temporarySpriteList = new ArrayList<Sprite>();
+	//private Map<Integer, HashSet<Sprite>> spriteSet = new TreeMap<Integer, HashSet<Sprite>>(); 
+	private SpriteContainer spriteSet = new SpriteContainer();
+	private SpriteContainer temporarySpriteSet = new SpriteContainer();
 	
 	private SpriteInFocusListener spriteInFocusListener = new SpriteInFocusListener();
-	//private SpriteIsSelectedListener spriteIsSelectedListener = new SpriteIsSelectedListener();
 	private SpriteDragListener spriteDragListener = new SpriteDragListener();
 	
 	private boolean needFocus = true;
@@ -81,40 +129,36 @@ public class SpriteCanvas extends MCanvas{
 	public boolean needFocus(){
 		return needFocus;
 	}
-	
+		
+	/**
+	 * You can add a Sprite to a certain level
+	 * The smallest level value the deepest layer
+	 * 
+	 * @param sprite
+	 * @param level
+	 */
 	public void addSprite( Sprite sprite ){
-
-		if( !this.spriteList.contains( sprite ) ){
-			this.spriteList.add( sprite );
-		}		
+	    spriteSet.addSprite(sprite);
 	}
 	
 	public void addSprites( HashSet<Sprite> spriteList ){
-		this.spriteList.addAll( spriteList );
+		spriteSet.addSprites(spriteList);
+	}	
+
+	public void removeSprites( HashSet<Sprite> spriteList ){
+		spriteSet.removeSprites(spriteList);
 	}
 	
 	public void removeSprite( Sprite sprite ){
-		this.spriteList.remove( sprite );
-	}
-	
-	public void removeSprites( HashSet<Sprite> spriteList ){
-		this.spriteList.removeAll( spriteList );
-	}
-	
-	private void setSpritesIntoShadowState( HashSet<Sprite> spriteList ){
-		Iterator<Sprite> it = spriteList.iterator();
-		while( it.hasNext() ){
-			it.next().setIsShadow( true );
-		}
-	}
+		spriteSet.removeSprite(sprite);
+	}		
 
-	private void removeSpritesFromShadowState( HashSet<Sprite> spriteList ){
-		Iterator<Sprite> it = spriteList.iterator();
-		while( it.hasNext() ){
-			it.next().setIsShadow( false );
-		}
-	}
-
+//	private void removeSpritesFromShadowState( HashSet<Sprite> spriteList ){
+//		Iterator<Sprite> it = spriteList.iterator();
+//		while( it.hasNext() ){
+//			it.next().setIsShadow( false );
+//		}
+//	}
 	
 	public void addTemporarySprite( Sprite sprite ){
 		
@@ -122,9 +166,10 @@ public class SpriteCanvas extends MCanvas{
 		//Minden megjelenites utan torlodik a listener, ezert kell mindig hozzaadni
 		addPainterListenerToTemporary(new TemporarySpritePainterListener(), Level.UNDER);	
 		
-		if( !temporarySpriteList.contains(sprite)){
-			temporarySpriteList.add(sprite);
-		}	
+		//To reset the Temporary Position
+//		sprite.copyPermanentPositionToTemporary();
+		
+		temporarySpriteSet.addSprite(sprite);
 	}
 	
 	public void addTemporarySprites( HashSet<Sprite> spriteList ){
@@ -133,7 +178,29 @@ public class SpriteCanvas extends MCanvas{
 		//Minden megjelenites utan torlodik a listener, ezert kell mindig hozzaadni
 		addPainterListenerToTemporary(new TemporarySpritePainterListener(), Level.UNDER);	
 
-		temporarySpriteList.addAll( spriteList );
+		for( Sprite sprite: spriteList ){	
+			
+			//To reset the Temporary Position
+//			sprite.copyPermanentPositionToTemporary();
+			
+			temporarySpriteSet.addSprite( sprite );
+		}
+	}
+	
+	public void copyTemporaryPositionsToPermanent( HashSet<Sprite> spriteList ){
+		
+		for( Sprite sprite: spriteList ){	
+			
+			//To reset the Temporary Position
+			sprite.copyTemporaryPositionToPermanent();
+			
+		}
+	}
+	
+	private void setShadow( HashSet<Sprite> spriteList, boolean value ){
+		for( Sprite sprite: spriteList ){		
+			sprite.setIsShadow( value );
+		}		
 	}
 	
 	public void zoomIn(double xCenter, double yCenter, int xPoint, int yPoint){
@@ -169,7 +236,10 @@ public class SpriteCanvas extends MCanvas{
 		private boolean dragOneSpriteStarted = false;
 		private boolean dragAllSpriteStarted = false;
 		private Sprite sprite;
-		private HashSet<Sprite> moveableSpriteList;
+		
+		//SpriteContainer moveableSpriteSet;
+		//private Map<Integer, HashSet<Sprite>> moveableSpriteSet;
+		private HashSet<Sprite> moveableSpriteSet;
 		
 		public void loadSpriteToTemporary(){
 			if( dragOneSpriteStarted ){
@@ -193,56 +263,40 @@ public class SpriteCanvas extends MCanvas{
 				double xValue = getWorldXByPixel(e.getX() );
 				double yValue = getWorldYByPixel(e.getY());
 				
-				//Akkor meg kell nezni, hogy van-e alatta sprite
+				//Check if there is Sprite under the mouse cursor
+				Sprite sprite = spriteSet.getHighestSpriteInPosition( xValue, yValue );
 				
-				//Sprite sprite;
-				//for( int i = spriteList.size() - 1; i >= 0; i-- ){
-				//	sprite = spriteList.get( i );
-				
-				for( Sprite sprite: spriteList){
-					
-					SizeValue boundBox = sprite.getBoundBoxAbsolute();
-						
-					//Igen, van alatta sprite
-					if( 
-							xValue >= boundBox.getXMin() &&
-							xValue <= boundBox.getXMax() &&
-							yValue >= boundBox.getYMin() &&
-							yValue <= boundBox.getYMax()
-					){
+				//There was a Sprite under the mouse cursor
+				if( null != sprite ){
 									
-						//Rogton letiltom a fokusz mukodeset TODO erre azt hiszem nincs szukseg
-						setNeedFocus(false);						
+					//Rogton letiltom a fokusz mukodeset TODO erre azt hiszem nincs szukseg
+					setNeedFocus(false);						
 						
-						//Elteszem a mozgatando sprite-ot, hogy a drag muvelet tudja mivel dolgozzon
-						this.sprite = sprite;
+					//Elteszem a mozgatando sprite-ot, hogy a drag muvelet tudja mivel dolgozzon
+					this.sprite = sprite;
 												
-						//El kell menteni az eredeti poziciojat
-						originalPosition = sprite.getPosition();
+					//El kell menteni az eredeti poziciojat
+					originalPosition = sprite.getPermanentPosition();
 					
-						//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
-						initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
+					//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
+					initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
+					initialDelta = new DeltaValue( xValue - sprite.getPermanentPosition().getX(), yValue - sprite.getPermanentPosition().getY() );
 						
-						moveableSpriteList = new HashSet<Sprite>();
-						moveableSpriteList = getConnectedSprites(sprite, moveableSpriteList);					
-						dragAllSpriteStarted = true;
+					moveableSpriteSet = new HashSet<Sprite>();
+					moveableSpriteSet = getConnectedSprites( sprite, moveableSpriteSet );					
+					dragAllSpriteStarted = true;
 					
-						//Eltavolitom a permanens listabol
-						//removeSprites(moveableSpriteList);
-						//Set Sprite into Shadow state
-						setSpritesIntoShadowState( moveableSpriteList );
+					//Set Sprite into Shadow state - instead of removing
+					setShadow( moveableSpriteSet, true );
 						
-						//El kell helyezni az atmeneti taroloba az uj pozicioval						
-						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
-//						sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
+					//El kell helyezni az atmeneti taroloba az uj pozicioval						
+					//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
+//					sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
+sprite.setTemporaryPosition( new PositionValue( originalPosition.getX(), originalPosition.getY()) );	
+					
+					addTemporarySprites( moveableSpriteSet );	
 						
-						addTemporarySprites(moveableSpriteList);	
-						
-						revalidateAndRepaintCoreCanvas();
-						
-						break;
-
-					}					
+					revalidateAndRepaintCoreCanvas();						
 				}	
 			//
 			//Ha a bal-eger gombot nyomtam le - At akarom helyezni a Sprite-ot
@@ -253,152 +307,38 @@ public class SpriteCanvas extends MCanvas{
 				double yValue = getWorldYByPixel(e.getY());
 				
 				//Akkor meg kell nezni, hogy van-e alatta sprite
-				Sprite sprite;
-				for( int i = spriteList.size() - 1; i >= 0; i-- ){
-					sprite = spriteList.get( i );
-				//for( Sprite sprite: spriteList){
-					
-					SizeValue boundBox = sprite.getBoundBoxAbsolute();
+				Sprite sprite = spriteSet.getHighestSpriteInPosition( xValue, yValue );
+				
+				//There was a Sprite under the mouse cursor
+				if( null != sprite ){
+				
+					//Rogton letiltom a fokusz mukodeset TODO erre azt hiszem nincs szukseg
+					setNeedFocus(false);						
 						
-					//Igen, van alatta sprite
-					if( 
-							xValue >= boundBox.getXMin() &&
-							xValue <= boundBox.getXMax() &&
-							yValue >= boundBox.getYMin() &&
-							yValue <= boundBox.getYMax()
-					){
-									
-						//Rogton letiltom a fokusz mukodeset TODO erre azt hiszem nincs szukseg
-						setNeedFocus(false);						
-						
-						//Elteszem a mozgatando sprite-ot, hogy a drag muvelet tudja mivel dolgozzon
-						this.sprite = sprite;
+					//Elteszem a mozgatando sprite-ot, hogy a drag muvelet tudja mivel dolgozzon
+					this.sprite = sprite;
 												
-						//El kell menteni az eredeti poziciojat
-						originalPosition = sprite.getPosition();
+					//El kell menteni az eredeti poziciojat
+					originalPosition = sprite.getPermanentPosition();
 					
-						//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
-						initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
+					//Megallapitani a kulonbseget a Sprite pozicioja es a kurzor kozott
+					initialDelta = new DeltaValue( xValue - originalPosition.getX(), yValue - originalPosition.getY() );
+					
+					//Set the Sprite into Shadow State
+					sprite.setIsShadow(true);						
 						
-						//Eltavolitom a permanens listabol
-//						removeSprite(sprite);
-
-						//Set the Sprite into Shadow State
-						sprite.setIsShadow(true);						
+					//El kell helyezni az atmeneti taroloba az uj pozicioval						
+					//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
+//					sprite.setPermanentPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );						
+					sprite.setTemporaryPosition( new PositionValue( originalPosition.getX(), originalPosition.getY()) );
+					addTemporarySprite(sprite);	
 						
-						//El kell helyezni az atmeneti taroloba az uj pozicioval						
-						//sprite.setPosition(new PositionValue(xValue-initialDelta.getX(), yValue-initialDelta.getY()));
-						sprite.setPosition( new PositionValue(originalPosition.getX(), originalPosition.getY()) );
-
+					revalidateAndRepaintCoreCanvas();
 						
-						addTemporarySprite(sprite);	
-						
-						revalidateAndRepaintCoreCanvas();
-						
-						dragOneSpriteStarted = true;
-						
-						break;
-
-					}					
+					dragOneSpriteStarted = true;										
 				}				
 			}
 			
-		}
-		
-		public void mouseReleased(MouseEvent e) {	
-
-			if( dragAllSpriteStarted ){
-				
-				//visszahelyezni a Sprite-okat a vegleges taroloba
-				//addSprites( moveableSpriteList );
-				
-				//Remove Sprites from Shadow state
-				removeSpritesFromShadowState( moveableSpriteList );
-				
-				//Engedelyezem a fokusz mukodeset
-				setNeedFocus(true);
-				
-				//Es ujra kell rajzoltatni a Permanens lista elemeit
-				revalidateAndRepaintCoreCanvas();
-			
-				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
-				fireMouseMoved();
-				
-				//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
-				dragAllSpriteStarted = false;
-				
-			}else if( dragOneSpriteStarted ){
-						
-				//Ha nem csatlakozik mas elemhez de nincs engedelyezve kapcsolat nelkuli lehelyezesre
-				if( !sprite.isConnected() && !sprite.isEnableToPlaceWithoutConnection() ){
-
-					//Akkor vissza kell helyezni az elozo pozicioba
-					//Visszairom az eredeti poziciot
-//					//sprite.setPosition( originalPosition );
-					
-					//General egy Drag muveletet vissza az eredeti pozicioba
-					MouseEvent me = new MouseEvent(coreCanvas, 11, 0, 0, Math.round((float)getMouseXPositionByWorld(originalPosition.getX() + initialDelta.getX())), Math.round((float)getMouseYPositionByWorld(originalPosition.getY() + initialDelta.getY())), 1, false);									
-					spriteDragListener.mouseDragged(me);					
-									
-				}
-					
-				//El kell helyezni a vegleges taroloba az uj pozicioval			
-//				addSprite(sprite);
-
-				//remove Sprite from Shadow State
-				sprite.setIsShadow(false);						
-				
-				//Engedelyezem a fokusz mukodeset
-				setNeedFocus(true);
-				
-				//Es ujra kell rajzoltatni a Permanens lista elemeit
-				revalidateAndRepaintCoreCanvas();
-			
-				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
-				fireMouseMoved();
-				
-				//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
-				dragOneSpriteStarted = false;
-			}
-			
-			
-			
-		}
-		
-		public void mouseExited(MouseEvent e) {	
-						
-			//Ha elindult mar a drag es igy hagyom el a Canvas-t
-			if( dragOneSpriteStarted || dragAllSpriteStarted ){
-				
-				//mouseReleased( e );
-				
-			//Csak siman kisetalt a kurzor a kepernyorol, akkor minden Sprite-rol toroljuk a fokuszt
-			}else{
-				
-				boolean needToReprint = false;
-				
-				//Vegig az osszes Sprite-on
-				for( Sprite sprite: spriteList){
-					
-					//Ha az adot Sprite fokuszban volt
-					if( sprite.isInFocus() ){
-						
-						//Kiszedjuk a fokuszbol
-						sprite.setInFocus(false);
-						
-						//Es jelzem, hogy legalabb egy elem volt fokuszban
-						needToReprint = true;						
-							
-					}										
-				}
-				
-				if( needToReprint ){			
-				
-					//Azert kell, hogy az esetlegesen fokuszban levo Sprite-rol eltunjon a fokusz
-					repaintCoreCanvas();
-
-				}			
-			}						
 		}
 		
 		public void mouseDragged(MouseEvent e) {
@@ -415,41 +355,29 @@ public class SpriteCanvas extends MCanvas{
 				double xNewSpritePosition = xCursorPosition - initialDelta.getX();
 				double yNewSpritePosition = yCursorPosition - initialDelta.getY();
 				
-				double xDelta = xNewSpritePosition - sprite.getPosition().getX();
-				double yDelta = yNewSpritePosition - sprite.getPosition().getY();
+				double xDelta = xNewSpritePosition - sprite.getPermanentPosition().getX();
+				double yDelta = yNewSpritePosition - sprite.getPermanentPosition().getY();
 
-				//A mozgatando Sprite Elozetes uj pozicioba helyezese
-//				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
-/*				Magnet draggedMagnet = null;
-				for( Magnet magnet: sprite.getMagnetList() ){
-					if( null != magnet.getConnectedTo() ){
-						draggedMagnet = magnet;
-						break;
-					}
-				}
-*/								
-//				draggedMagnet.blabla( draggedMagnet, new HashSet<Sprite>(), moveableSpriteList );				
-	
-				
 				//Az osszes Sprite-ot a mozgatando listabol a megfelelo helyre pozicionalok
-				for( Sprite sprite: moveableSpriteList ){
+				for( Sprite sprite: moveableSpriteSet ){
 				
 					//A mozgatando Sprite Elozetes uj pozicioba helyezese
-					sprite.setPosition(new PositionValue(
-							sprite.getPosition().getX() + xDelta, 
-							sprite.getPosition().getY() + yDelta
+//					sprite.setPermanentPosition(new PositionValue(sprite.getPermanentPosition().getX() + xDelta,sprite.getPermanentPosition().getY() + yDelta));
+					sprite.setTemporaryPosition(new PositionValue(
+							sprite.getPermanentPosition().getX() + xDelta, 
+							sprite.getPermanentPosition().getY() + yDelta
 							)
 					);
 				}
 			
 				//Torlom a Sprite csoport minden kapcsolatat ami nem a csoporton belul kottetett
 				//Tulajdonkeppen a lehetseges kapcsolatokrol van szo
-				for( Sprite sprite: moveableSpriteList ){
+				for( Sprite sprite: moveableSpriteSet ){
 					for( Magnet magnet: sprite.getMagnetList() ){
 						Magnet pairMagnet = magnet.getConnectedTo();
 						
 						//Kivulre mutato kapcsolat
-						if( null != pairMagnet && !moveableSpriteList.contains( pairMagnet.getParent() ) ){
+						if( null != pairMagnet && !moveableSpriteSet.contains( pairMagnet.getParent() ) ){
 							
 							//Torolni kell a kapcsolatot
 							magnet.setConnectedTo(null);
@@ -458,10 +386,10 @@ public class SpriteCanvas extends MCanvas{
 				}
 				
 				//Poziciok szukseg szerinti korrigalasa a magnes alapjan
-				doArangeBlockPositionByMagnet(moveableSpriteList);
+				doArangeBlockPositionByMagnet( moveableSpriteSet );
 				
 				//A mozgatando Sprite uj pozicioval elhelyezese az atmeneti taroloban
-				addTemporarySprites(moveableSpriteList);
+				addTemporarySprites( moveableSpriteSet );
 				
 				//A Permanens es atmeneti taroloban levo Sprite-ok ujrarajzolasa szukseges
 				revalidateAndRepaintCoreCanvas();
@@ -507,18 +435,17 @@ public class SpriteCanvas extends MCanvas{
 				}
 				if( !moveable ){
 					return;
-				}
-				
+				}				
 				
 				//Uj pozicioi kiszamitasa
 				double xCursorPosition = getWorldXByPixel(e.getX() );
 				double yCursorPosition = getWorldYByPixel(e.getY());
 				
 				//A mozgatando Sprite Elozetes uj pozicioba helyezese
-				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
+//sprite.setPermanentPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
+sprite.setTemporaryPosition( new PositionValue( xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY() ) );
 				
-				boolean needToRepaintPermanent = false;
-				
+				boolean needToRepaintPermanent = false;				
 
 				//Eloszor is torlom a mozgatot Sprite minden kapcsolatat					
 				if( sprite.isConnected() ){
@@ -550,6 +477,93 @@ public class SpriteCanvas extends MCanvas{
 				}
 			}			
 		}
+
+		public void mouseReleased(MouseEvent e) {	
+
+			if( dragAllSpriteStarted ){
+				
+				//visszahelyezni a Sprite-okat a vegleges taroloba
+				//addSprites( moveableSpriteList );
+				
+				//The Sprite gets the TEMPORARY position as its new PERMANENT position
+				copyTemporaryPositionsToPermanent( moveableSpriteSet );
+				
+				//Remove Sprites from Shadow state
+				setShadow( moveableSpriteSet, false );
+				
+				//Engedelyezem a fokusz mukodeset
+				setNeedFocus(true);
+				
+				//Es ujra kell rajzoltatni a Permanens lista elemeit
+				revalidateAndRepaintCoreCanvas();
+			
+				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
+				fireMouseMoved();
+				
+				//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
+				dragAllSpriteStarted = false;
+			
+			// Only 1 Sprite was Dragged
+			}else if( dragOneSpriteStarted ){
+						
+				//Ha nem csatlakozik mas elemhez de nincs engedelyezve kapcsolat nelkuli lehelyezesre
+				if( !sprite.isConnected() && !sprite.isEnableToPlaceWithoutConnection() ){
+
+					//Akkor vissza kell helyezni az elozo pozicioba
+					//Visszairom az eredeti poziciot
+//					//sprite.setPosition( originalPosition );
+					
+					//General egy Drag muveletet vissza az eredeti pozicioba
+					MouseEvent me = new MouseEvent(coreCanvas, 11, 0, 0, Math.round((float)getMouseXPositionByWorld(originalPosition.getX() + initialDelta.getX())), Math.round((float)getMouseYPositionByWorld(originalPosition.getY() + initialDelta.getY())), 1, false);									
+					spriteDragListener.mouseDragged(me);					
+									
+				}
+					
+				//El kell helyezni a vegleges taroloba az uj pozicioval			
+//				addSprite(sprite);
+				
+				//The Sprite gets the TEMPORARY position as its new PERMANENT position
+				sprite.copyTemporaryPositionToPermanent();
+
+				//remove Sprite from Shadow State
+				sprite.setIsShadow(false);						
+				
+				//Engedelyezem a fokusz mukodeset
+				setNeedFocus(true);
+				
+				//Es ujra kell rajzoltatni a Permanens lista elemeit
+				revalidateAndRepaintCoreCanvas();
+			
+				//Es mivel fokuszbanlehet meg tovabbra is, ezert egy eger-mozgast is szimulalni kell
+				fireMouseMoved();
+				
+				//Es jelzem, hogy vege a dragg-nek. MINDENKEPPEN
+				dragOneSpriteStarted = false;
+			}			
+		}
+		
+		public void mouseExited(MouseEvent e) {	
+						
+			//Ha elindult mar a drag es igy hagyom el a Canvas-t
+			if( dragOneSpriteStarted || dragAllSpriteStarted ){
+				
+				//mouseReleased( e );
+				
+			//Csak siman kisetalt a kurzor a kepernyorol, akkor minden Sprite-rol toroljuk a fokuszt
+			}else{
+				
+				//Unfocus all Sprites
+				boolean needToReprint = spriteSet.unFocusAll();
+				
+				if( needToReprint ){			
+				
+					//Azert kell, hogy az esetlegesen fokuszban levo Sprite-rol eltunjon a fokusz
+					repaintCoreCanvas();
+				}			
+			}						
+		}
+		
+		
 		
 		public void mouseMoved(MouseEvent e) {}
 		
@@ -560,31 +574,21 @@ public class SpriteCanvas extends MCanvas{
 			double yValue = getWorldYByPixel(e.getY());
 			boolean needToPrint = false;
 
-			for( Sprite sprite: spriteList){
-				
-				SizeValue boundBox = sprite.getBoundBoxAbsolute();						
-			
-				if( 
-						xValue >= boundBox.getXMin() &&
-						xValue <= boundBox.getXMax() &&
-						yValue >= boundBox.getYMin() &&
-						yValue <= boundBox.getYMax()
-				){
-											
-					//addTemporarySprite(sprite);						
-					needToPrint = true;
-					if( sprite.isSelected() ){
-						sprite.setIsSelected(false);
-					}else{
-						sprite.setIsSelected(true);
-					}
-				}					
+			Sprite sprite = spriteSet.getHighestSpriteInPosition( xValue, yValue );
+			if( null != sprite ){
+
+				//addTemporarySprite(sprite);						
+				needToPrint = true;
+				if( sprite.isSelected() ){
+					sprite.setIsSelected(false);
+				}else{
+					sprite.setIsSelected(true);
+				}									
 			}
 			if( needToPrint ){
 				repaintCoreCanvas();
 			}				
-		}
-		
+		}		
 	}
 	
 	/**
@@ -614,13 +618,13 @@ public class SpriteCanvas extends MCanvas{
 				double magnetYRange = getWorldYLengthByPixel( draggedMagnet.getRangeInPixel().getY() );
 			
 				//Az aktualis Magnet hatotavolsaga
-				double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
-				double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
+				double xMagnetPosition = sprite.getPermanentPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
+				double yMagnetPosition = sprite.getPermanentPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
 			
 				//boolean hasMagnetConnection = false;
 			
 				//Vegig az osszes permanens Sprite-on
-				for( Sprite possibleToConnectSprite: spriteList){
+				for( Sprite possibleToConnectSprite: spriteSet.getMixedSetOfSprites() ){
 				
 					SizeValue boundBox = possibleToConnectSprite.getBoundBoxAbsolute();
 					
@@ -654,8 +658,8 @@ public class SpriteCanvas extends MCanvas{
 						for( Magnet possibleToConnectMagnet : possibleToConnectSprite.getMagnetList() ){
 						
 							MagnetType possibleToConnectType = possibleToConnectMagnet.getType();
-							double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getX();
-							double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getY();
+							double possibleToConnectXPosition = possibleToConnectSprite.getPermanentPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getX();
+							double possibleToConnectYPosition = possibleToConnectSprite.getPermanentPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getY();
 						
 							//Es megnezem, hogy a ket magnet kompatibilis-e es megfelelo pozicioban van-e valamint nincs-e racsatlakoztatva mas
 							if( 
@@ -677,7 +681,7 @@ public class SpriteCanvas extends MCanvas{
 									PositionValue possibleNewPosition = draggedMagnet.getPossibleSpritePosition(possibleToConnectMagnet);
 								
 									//Ha nem kapcsolhato ossze, akkor zarja a ciklust
-									if( !possibleNewPosition.equals(sprite.getPosition())){
+									if( !possibleNewPosition.equals(sprite.getPermanentPosition())){
 
 										//zarja a ciklust
 										continue;										
@@ -735,13 +739,13 @@ public class SpriteCanvas extends MCanvas{
 			double magnetYRange = getWorldYLengthByPixel( draggedMagnet.getRangeInPixel().getY() );
 			
 			//Megnezem, hogy az aktualis magnes hatotavolsagaban, van-e egyaltalan masik sprite
-			double xMagnetPosition = sprite.getPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
-			double yMagnetPosition = sprite.getPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
+			double xMagnetPosition = sprite.getTemporaryPosition().getX() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getX();
+			double yMagnetPosition = sprite.getTemporaryPosition().getY() + draggedMagnet.getRelativePositionToSpriteZeroPoint().getY();
 			
 			boolean hasMagnetConnection = false;
 			
 			//Vegig az osszes permanens Sprite-on
-			for( Sprite possibleToConnectSprite: spriteList){
+			for( Sprite possibleToConnectSprite: spriteSet.getMixedSetOfSprites() ){
 				
 				SizeValue boundBox = possibleToConnectSprite.getBoundBoxAbsolute();
 					
@@ -775,8 +779,8 @@ public class SpriteCanvas extends MCanvas{
 					for( Magnet possibleToConnectMagnet : possibleToConnectSprite.getMagnetList() ){
 						
 						MagnetType possibleToConnectType = possibleToConnectMagnet.getType();
-						double possibleToConnectXPosition = possibleToConnectSprite.getPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getX();
-						double possibleToConnectYPosition = possibleToConnectSprite.getPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getY();
+						double possibleToConnectXPosition = possibleToConnectSprite.getTemporaryPosition().getX() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getX();
+						double possibleToConnectYPosition = possibleToConnectSprite.getTemporaryPosition().getY() + possibleToConnectMagnet.getRelativePositionToSpriteZeroPoint().getY();
 						
 						//Es megnezem, hogy a ket magnet kompatibilis-e es megfelelo pozicioban van-e valamint nincs-e racsatlakoztatva mas
 						if( 
@@ -799,7 +803,7 @@ public class SpriteCanvas extends MCanvas{
 								PositionValue possibleNewPosition = draggedMagnet.getPossibleSpritePosition(possibleToConnectMagnet);
 								
 								//Ha nem kapcsolhato ossze, akkor zarja a ciklust
-								if( !possibleNewPosition.equals(sprite.getPosition())){
+								if( !possibleNewPosition.equals(sprite.getTemporaryPosition())){
 
 									//zarja a ciklust
 									continue;										
@@ -833,6 +837,8 @@ public class SpriteCanvas extends MCanvas{
 		return needToRepaintPermanent;
 	}
 	
+
+	
 	
 	
 	
@@ -845,7 +851,7 @@ public class SpriteCanvas extends MCanvas{
 	private HashSet<Sprite> getConnectedSprites( Sprite sprite, HashSet<Sprite> spriteList ){
 		
 		//Ha a Sprite mar volt a listaban, akkor visszater
-		if( spriteList.contains(sprite)){
+		if( spriteList.contains( sprite ) ){
 			return spriteList;
 		}
 		
@@ -924,12 +930,14 @@ public class SpriteCanvas extends MCanvas{
 	
 			SizeValue biggestBoundBox = new SizeValue( 0, 0, 0, 0 );
 			
-			if( needFocus() ){
+/*			if( needFocus() ){
 			
 				double xValue = getWorldXByPixel(e.getX() );			
 				double yValue = getWorldYByPixel(e.getY());
 				boolean needToPrint = false;
 
+				Sprite sprite = spriteSet.getHighestSpriteInPosition( xValue, yValue );
+				
 				for( Sprite sprite: spriteList){
 				
 					SizeValue boundBox = sprite.getBoundBoxAbsolute();						
@@ -979,63 +987,12 @@ public class SpriteCanvas extends MCanvas{
 				if( needToPrint ){
 					repaintCoreCanvas();
 				}
-			}				
+			}
+*/							
 		}
 
 		public void mouseDragged(MouseEvent e) {}					
 	}
-	
-	/**
-	 * Azt figyeli, hogy egy Sprite-ot kivalasztottunk-e
-	 * @author akoel
-	 *
-	 */
-/*	class SpriteIsSelectedListener implements MouseInputListener{
-		
-		public void mouseMoved(MouseEvent e) {}
-
-		public void mouseClicked(MouseEvent e) {
-			double xValue = getWorldXByPixel(e.getX() );			
-			double yValue = getWorldYByPixel(e.getY());
-			boolean needToPrint = false;
-
-			for( Sprite sprite: spriteList){
-				
-				SizeValue boundBox = sprite.getBoundBoxAbsolute();						
-			
-				if( 
-						xValue >= boundBox.getXMin() &&
-						xValue <= boundBox.getXMax() &&
-						yValue >= boundBox.getYMin() &&
-						yValue <= boundBox.getYMax()
-				){
-											
-					addTemporarySprite(sprite);						
-					needToPrint = true;
-					if( sprite.isSelected() ){
-						sprite.setIsSelected(false);
-					}else{
-						sprite.setIsSelected(true);
-					}
-				}					
-			}
-			if( needToPrint ){
-				repaintCoreCanvas();
-			}			
-		}
-
-		public void mousePressed(MouseEvent e) {}
-
-		public void mouseReleased(MouseEvent e) {}
-
-		public void mouseEntered(MouseEvent e) {}
-
-		public void mouseExited(MouseEvent e) {}
-
-		public void mouseDragged(MouseEvent e) {}
-				
-	}
-*/
 	
 	/**
 	 * Sprite-ok kirajzolasaert felelos osztaly
@@ -1046,12 +1003,7 @@ public class SpriteCanvas extends MCanvas{
 	class SpritePainterListener implements PainterListener{
 
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
-			for( Sprite sprite: spriteList){
-				//if( sprite.isConnected() )
-				//	sprite.drawConnected(g2);
-				//else
-					sprite.draw(g2);
-			}			
+			spriteSet.drawPermanent( g2 );
 		}
 
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
@@ -1067,17 +1019,193 @@ public class SpriteCanvas extends MCanvas{
 	class TemporarySpritePainterListener implements PainterListener{
 
 		public void paintByWorldPosition(MCanvas canvas, MGraphics g2) {
-			for( Sprite sprite: temporarySpriteList){
-				if( sprite.isInFocus() ){
-					sprite.drawFocus(g2);
-				}else{
-					sprite.draw(g2);
-				}
-			}
-			temporarySpriteList.clear();
+			temporarySpriteSet.drawWithTemporary( g2 );
+			temporarySpriteSet.clear();
 		}
 		
 		public void paintByCanvasAfterTransfer(MCanvas canvas, Graphics2D g2) {}
 		
+	}
+	
+	/**
+	 * 
+	 * @author akoel
+	 *
+	 */
+	class SpriteContainer extends TreeMap<Integer, HashSet<Sprite>> {
+
+		private static final long serialVersionUID = 8046574446846857868L;
+
+		public boolean isIn( Sprite sprite ){
+			HashSet<Sprite> spriteListOnLevel = this.get( sprite.getLevel() );
+		    if( null != spriteListOnLevel ){
+		    	return spriteListOnLevel.contains( sprite );
+		    }
+		    return false;
+		}
+		
+		public void addSprite( Sprite sprite ){
+			
+			//Get the actual spriteListOnLevel - if it does not exist then create it
+		    HashSet<Sprite> spriteListOnLevel = this.get( sprite.getLevel() );
+		    if( null == spriteListOnLevel ){
+		    	spriteListOnLevel = new HashSet<Sprite>();
+		    	this.put( sprite.getLevel(), spriteListOnLevel );
+		    }
+		    
+		    //Add the Sprite to the specific level
+		    spriteListOnLevel.add( sprite );
+		}
+		
+		public void addSprites( HashSet<Sprite> spriteList ){
+			
+			Iterator<Sprite> it = spriteList.iterator();
+			while( it.hasNext() ){
+				Sprite sprite = it.next();
+				this.addSprite( sprite );
+			}		
+		}	
+		
+		public void removeSprite( Sprite sprite ){
+			HashSet<Sprite> spriteListOnLevel = this.get( sprite.getLevel() );
+		    if( null != spriteListOnLevel ){
+		    	spriteListOnLevel.remove( sprite );
+		    }
+		}
+		
+		public void removeSprites( HashSet<Sprite> spriteList ){
+			Iterator<Sprite> it = spriteList.iterator();
+			while( it.hasNext() ){
+				Sprite sprite = it.next();
+				this.removeSprite( sprite );
+			}		
+		}
+		
+		/*public void setShadowStateForAll( boolean value ){
+			Set<Map.Entry<Integer,HashSet<Sprite>>> set = this.entrySet();
+
+			//Go through the all SpriteListOnLevel
+			Iterator<Map.Entry<Integer,HashSet<Sprite>>> keyIterator = set.iterator();
+		    while ( keyIterator.hasNext() ) {
+		       Map.Entry<Integer,HashSet<Sprite>> entry = (Map.Entry<Integer,HashSet<Sprite>>) keyIterator.next();
+		       //Integer key = entry.getKey();
+		       HashSet<Sprite> spriteListOnLevel = entry.getValue();
+		       
+		       Iterator<Sprite> spriteIterator = spriteListOnLevel.iterator();
+		       while( spriteIterator.hasNext() ){
+		    	   Sprite sprite = spriteIterator.next();
+		    	   sprite.setIsShadow( value );
+		       }
+		    }
+		}
+		*/
+		
+		public boolean unFocusAll(){
+			boolean wasInFocus = false;
+			Set<Map.Entry<Integer,HashSet<Sprite>>> set = this.entrySet();
+
+			//Go through the all SpriteListOnLevel
+			Iterator<Map.Entry<Integer,HashSet<Sprite>>> keyIterator = set.iterator();
+		    while ( keyIterator.hasNext() ) {
+		       Map.Entry<Integer,HashSet<Sprite>> entry = (Map.Entry<Integer,HashSet<Sprite>>) keyIterator.next();
+		       //Integer key = entry.getKey();
+		       HashSet<Sprite> spriteListOnLevel = entry.getValue();
+		       
+		       Iterator<Sprite> spriteIterator = spriteListOnLevel.iterator();
+		       while( spriteIterator.hasNext() ){
+		    	   Sprite sprite = spriteIterator.next();
+		    	   if( sprite.isInFocus() ){
+		    		   sprite.setInFocus( false );
+		    		   wasInFocus = true;
+		    	   }
+		       }
+		    }
+		    return wasInFocus;
+			
+		}
+		
+		
+		public Sprite getHighestSpriteInPosition( double mouseX, double mouseY){
+			
+			//Get the levels in opposite direction - from TOP
+			NavigableSet<Integer> set = this.descendingKeySet();
+
+		    //Go through the all SpriteListOnLevel
+			Iterator<Integer> keyIterator = set.iterator();
+		    while ( keyIterator.hasNext() ) {
+		       Integer key = keyIterator.next();
+		       HashSet<Sprite> spriteListOnLevel = this.get( key );
+		       
+		       Iterator<Sprite> spriteIterator = spriteListOnLevel.iterator();
+		       while( spriteIterator.hasNext() ){
+		    	   Sprite sprite = spriteIterator.next();
+		    	   
+		    	   SizeValue boundBox = sprite.getBoundBoxAbsolute();
+					
+		    	   //If there is a Sprite under the mouse position
+		    	   if( 
+		    			   mouseX >= boundBox.getXMin() &&
+		    			   mouseX <= boundBox.getXMax() &&
+		    			   mouseY >= boundBox.getYMin() &&
+		    			   mouseY <= boundBox.getYMax()
+		    		){
+		    		   return sprite;
+		    	   }		    	   
+		       }
+		    }
+		    return null;
+		}
+		
+		public HashSet<Sprite> getMixedSetOfSprites(){
+			HashSet<Sprite> mixedSet = new HashSet<Sprite>();
+			
+			Set<Map.Entry<Integer,HashSet<Sprite>>> set = this.entrySet();
+
+			//Go through the all SpriteListOnLevel
+			Iterator<Map.Entry<Integer,HashSet<Sprite>>> keyIterator = set.iterator();
+		    while ( keyIterator.hasNext() ) {
+		       Map.Entry<Integer,HashSet<Sprite>> entry = (Map.Entry<Integer,HashSet<Sprite>>) keyIterator.next();
+		       HashSet<Sprite> spriteListOnLevel = entry.getValue();
+		       mixedSet.addAll( spriteListOnLevel );
+		    }
+		    
+		    return mixedSet;
+		}
+		
+		public void drawWithTemporary( MGraphics g2 ){
+			Set<Map.Entry<Integer,HashSet<Sprite>>> set = this.entrySet();
+
+			//Go through the all SpriteListOnLevel
+			Iterator<Map.Entry<Integer,HashSet<Sprite>>> keyIterator = set.iterator();
+		    while ( keyIterator.hasNext() ) {
+		       Map.Entry<Integer,HashSet<Sprite>> entry = (Map.Entry<Integer,HashSet<Sprite>>) keyIterator.next();
+		       //Integer key = entry.getKey();
+		       HashSet<Sprite> spriteListOnLevel = entry.getValue();
+		       
+		       Iterator<Sprite> spriteIterator = spriteListOnLevel.iterator();
+		       while( spriteIterator.hasNext() ){
+		    	   Sprite sprite = spriteIterator.next();
+		    	   sprite.drawTemporary(g2);
+		       }
+		    }
+		}
+		
+		public void drawPermanent( MGraphics g2 ){
+			Set<Map.Entry<Integer,HashSet<Sprite>>> set = this.entrySet();
+
+			//Go through the all SpriteListOnLevel
+			Iterator<Map.Entry<Integer,HashSet<Sprite>>> keyIterator = set.iterator();
+		    while ( keyIterator.hasNext() ) {
+		       Map.Entry<Integer,HashSet<Sprite>> entry = (Map.Entry<Integer,HashSet<Sprite>>) keyIterator.next();
+		       //Integer key = entry.getKey();
+		       HashSet<Sprite> spriteListOnLevel = entry.getValue();
+		       
+		       Iterator<Sprite> spriteIterator = spriteListOnLevel.iterator();
+		       while( spriteIterator.hasNext() ){
+		    	   Sprite sprite = spriteIterator.next();
+		    	   sprite.drawPermanent(g2);
+		       }
+		    }
+		}
 	}
 }
