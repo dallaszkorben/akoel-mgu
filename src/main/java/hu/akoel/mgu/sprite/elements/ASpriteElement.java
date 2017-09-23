@@ -16,6 +16,10 @@ public abstract class ASpriteElement {
 		
 	}
 	
+	/**
+	 * Set the Center of the Element
+	 * @param translate
+	 */
 	public void setPosition( PositionValue translate ){
 		this.position.setX(translate.getX());
 		this.position.setY(translate.getY());
@@ -37,5 +41,4 @@ public abstract class ASpriteElement {
 	
 	public abstract void drawSelected( MGraphics g2);
 	
-	public abstract void drawShadow( MGraphics g2);
 }

@@ -13,7 +13,6 @@ public class FillRectangleElement extends ASpriteElement{
 	private Appearance focusAppearance;
 	private Appearance connectedAppearance;
 	private Appearance selectedAppearance;
-	private Appearance shadowAppearance;
 	
 	public FillRectangleElement( double x, double y, double width, double height, Appearance normalAppearance ){
 
@@ -39,10 +38,6 @@ public class FillRectangleElement extends ASpriteElement{
 	
 	public void setSelectedAppearance( Appearance selectedAppearance ){
 		this.selectedAppearance = selectedAppearance;
-	}
-
-	public void setShadowAppearance( Appearance shadowAppearance ){
-		this.shadowAppearance = shadowAppearance;
 	}
 
 	@Override
@@ -72,13 +67,5 @@ public class FillRectangleElement extends ASpriteElement{
 		g2.setStroke( selectedAppearance.getStroke() );
 		g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);		
 	}
-
-	@Override
-	public void drawShadow(MGraphics g2) {
-		if( null != shadowAppearance ){
-			g2.setColor( shadowAppearance.getColor() );
-			g2.setStroke( shadowAppearance.getStroke() );
-			g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);	
-		}		
-	}	
+	
 }

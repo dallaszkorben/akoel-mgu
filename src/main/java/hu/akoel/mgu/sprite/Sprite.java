@@ -15,8 +15,9 @@ public class Sprite {
 	private boolean isSelected = false;
 	private boolean isShadow = false;
 	private SizeValue boundBox;
-	private PositionValue permanentPosition = new PositionValue(0,0);
-	private PositionValue temporaryPosition = new PositionValue(0,0);
+	//private PositionValue permanentPosition = new PositionValue(0,0);
+	//private PositionValue temporaryPosition = new PositionValue(0,0);
+	private PositionValue position = new PositionValue(0,0);
 	private ArrayList<ASpriteElement> elements = new ArrayList<ASpriteElement>();
 	private HashSet<Magnet> magnetList = new HashSet<Magnet>();
 	private HashSet<ChangeSizeListener> changeWidthListenerList = new HashSet<ChangeSizeListener>();
@@ -77,7 +78,8 @@ public class Sprite {
 	}
 	
 	public SizeValue getBoundBoxAbsolute(){
-		return new SizeValue(this.boundBox.getXMin() + permanentPosition.getX(), this.boundBox.getYMin() + permanentPosition.getY(), this.boundBox.getXMax() + permanentPosition.getX(), this.boundBox.getYMax() + permanentPosition.getY());
+		//return new SizeValue(this.boundBox.getXMin() + permanentPosition.getX(), this.boundBox.getYMin() + permanentPosition.getY(), this.boundBox.getXMax() + permanentPosition.getX(), this.boundBox.getYMax() + permanentPosition.getY());
+		return new SizeValue(this.boundBox.getXMin() + position.getX(), this.boundBox.getYMin() + position.getY(), this.boundBox.getXMax() + position.getX(), this.boundBox.getYMax() + position.getY());
 	}
 	
 	public void addMagnet( Magnet magnet ){
@@ -92,7 +94,21 @@ public class Sprite {
 		elements.add(element);
 	}
 	
-	public void setPermanentPosition( PositionValue position ){
+	public void setPosition( PositionValue position ){
+		this.position.setX( position.getX() );
+		this.position.setY( position.getY() );
+	}
+	
+	public void setPosition( double positionX, double positionY ){
+		this.position.setX( positionX );
+		this.position.setY( positionY );
+	}
+	
+	public PositionValue getPosition(){
+		return new PositionValue( position.getX(), position.getY() );
+	}	
+	
+/*	public void setPermanentPosition( PositionValue position ){
 		this.permanentPosition.setX( position.getX() );
 		this.permanentPosition.setY( position.getY() );
 	}
@@ -110,12 +126,12 @@ public class Sprite {
 		this.temporaryPosition.setX( position.getX() );
 		this.temporaryPosition.setY( position.getY() );
 	}
-	
+*/	
 	/*public void setTemporaryPosition( double positionX, double positionY ){
 		this.temporaryPosition.setX( positionX );
 		this.temporaryPosition.setY( positionY );
 	}*/
-	
+/*	
 	public PositionValue getTemporaryPosition(){
 		return new PositionValue( temporaryPosition.getX(), temporaryPosition.getY() );
 	}
@@ -129,7 +145,7 @@ public class Sprite {
 		this.permanentPosition.setX( temporaryPosition.getX() );
 		this.permanentPosition.setY( temporaryPosition.getY() );
 	}
-
+*/
 	public void changeWidthTo( double xMin, double xMax ){
 		
 		this.setBoundBoxXMin(xMin);
@@ -145,17 +161,21 @@ public class Sprite {
 		}		
 	}
 	
-	public void drawPermanent( MGraphics g2 ){
+	/**
+	 * 
+	 * @param g2
+	 */
+	public void draw( MGraphics g2 ){
 		
 		if( isShadow() ){
-			for( ASpriteElement element: elements){
-				element.setPosition(permanentPosition);
-				element.drawShadow(g2);
-			}			
+			//for( ASpriteElement element: elements){
+			//	element.setPosition(position);
+			//	element.drawShadow(g2);
+			//}			
 		}else if( isSelected() ){
 			
 			for( ASpriteElement element: elements){
-				element.setPosition(permanentPosition);
+				element.setPosition(position);
 				element.drawSelected(g2);
 			}
 			
@@ -169,7 +189,7 @@ public class Sprite {
 		}else if( isConnected() ){
 			
 			for( ASpriteElement element: elements){
-				element.setPosition(permanentPosition);
+				element.setPosition(position);
 				element.drawConnected(g2);
 			}
 			
@@ -182,7 +202,7 @@ public class Sprite {
 			}			
 		}else{
 			for( ASpriteElement element: elements){
-				element.setPosition(permanentPosition);
+				element.setPosition(position);
 				element.draw(g2);
 			}			
 			for( Magnet magnet: magnetList){		
@@ -191,10 +211,14 @@ public class Sprite {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param g2
+	 */
 	public void drawTemporary( MGraphics g2){
 		if( isInFocus() ){		
 			for( ASpriteElement element: elements){
-				element.setPosition(temporaryPosition);
+				element.setPosition(position);
 				element.drawFocus(g2);
 			}
 			for( Magnet magnet: magnetList){
@@ -206,7 +230,7 @@ public class Sprite {
 			}
 		}else{
 			for( ASpriteElement element: elements){
-				element.setPosition(temporaryPosition);
+				element.setPosition(position);
 				element.draw(g2);
 			}
 			for( Magnet magnet: magnetList){

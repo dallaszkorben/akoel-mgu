@@ -12,7 +12,6 @@ public class FillOvalElement  extends ASpriteElement{
 	private Appearance focusAppearance;
 	private Appearance connectedAppearance;
 	private Appearance selectedAppearance;
-	private Appearance shadowAppearance;
 	
 	public FillOvalElement( double x, double y, double radius, Appearance normalAppearance ){
 		this.normalAppearance = normalAppearance;
@@ -36,10 +35,6 @@ public class FillOvalElement  extends ASpriteElement{
 	
 	public void setSelectedAppearance( Appearance selectedAppearance ){
 		this.selectedAppearance = selectedAppearance;
-	}
-
-	public void setShadowAppearance( Appearance shadowAppearance ){
-		this.shadowAppearance = shadowAppearance;
 	}
 	
 	@Override
@@ -69,13 +64,5 @@ public class FillOvalElement  extends ASpriteElement{
 		g2.setStroke( selectedAppearance.getStroke() );
 		g2.fillOval( x + getPositionX(), y + getPositionY(), radius );		
 	}	
-	
-	@Override
-	public void drawShadow(MGraphics g2) {
-		if( null != shadowAppearance ){
-			g2.setColor( shadowAppearance.getColor() );
-			g2.setStroke( shadowAppearance.getStroke() );
-			g2.fillOval( x + getPositionX(), y + getPositionY(), radius );	
-		}		
-	}
+
 }
