@@ -24,10 +24,16 @@ public class FillRectangleElement extends ASpriteElement{
 		this.x = x;
 		this.y = y;
 		this.width = width;
-		this.height = height;
-		
+		this.height = height;		
 	}
 
+	public void setSize( double x, double y, double width, double height ){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+	}
+	
 	public void setFocusAppearance( Appearance focusAppearance ){
 		this.focusAppearance = focusAppearance;
 	}
@@ -66,6 +72,5 @@ public class FillRectangleElement extends ASpriteElement{
 		g2.setColor( selectedAppearance.getColor() );
 		g2.setStroke( selectedAppearance.getStroke() );
 		g2.fillRectangle(x + getPositionX(), y + getPositionY(), x + getPositionX() + width, y + getPositionY() + height);		
-	}
-	
+	}	
 }

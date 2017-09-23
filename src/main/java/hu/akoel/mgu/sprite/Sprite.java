@@ -61,6 +61,10 @@ public class Sprite {
 		this.boundBox.setYMax(yMax);
 	}
 		
+	public void setBoudBox( SizeValue boundBox ){
+		this.boundBox = boundBox;
+	}
+	
 	public void addChangeWidthListener( ChangeSizeListener changeWidthListener ){
 		this.changeWidthListenerList.add( changeWidthListener );
 	}

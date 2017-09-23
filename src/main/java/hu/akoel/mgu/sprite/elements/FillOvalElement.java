@@ -24,6 +24,10 @@ public class FillOvalElement  extends ASpriteElement{
 		this.radius = radius;
 		
 	}
+	
+	public void setRadius( double radius ){
+		this.radius = radius;
+	}
 
 	public void setFocusAppearance( Appearance focusAppearance ){
 		this.focusAppearance = focusAppearance;

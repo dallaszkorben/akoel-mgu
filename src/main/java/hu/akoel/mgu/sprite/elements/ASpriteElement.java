@@ -12,8 +12,7 @@ public abstract class ASpriteElement {
 	}
 	
 	public void setPositionY( double y ){
-		this.position.setY(y);
-		
+		this.position.setY(y);		
 	}
 	
 	/**

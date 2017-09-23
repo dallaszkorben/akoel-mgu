@@ -3,10 +3,6 @@ package hu.akoel.mgu.sprite.elements;
 import hu.akoel.mgu.MGraphics;
 import hu.akoel.mgu.sprite.Appearance;
 
-import java.awt.Color;
-import java.awt.Stroke;
-
-
 public class RectangleElement extends ASpriteElement{
 	
 	private double x;
@@ -27,8 +23,14 @@ public class RectangleElement extends ASpriteElement{
 		this.x = x;
 		this.y = y;
 		this.width = width;
-		this.height = height;
-		
+		this.height = height;		
+	}
+	
+	public void setSize( double x, double y, double width, double height ){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;	
 	}
 
 	public void setFocusAppearance( Appearance focusAppearance ){

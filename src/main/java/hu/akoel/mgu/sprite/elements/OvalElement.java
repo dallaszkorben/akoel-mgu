@@ -25,6 +25,10 @@ public class OvalElement  extends ASpriteElement{
 		
 	}
 
+	public void setRadius( double radius ){
+		this.radius = radius;
+	}
+	
 	public void setFocusAppearance( Appearance focusAppearance ){
 		this.focusAppearance = focusAppearance;
 	}
