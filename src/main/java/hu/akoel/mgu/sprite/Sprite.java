@@ -19,7 +19,7 @@ public class Sprite {
 	//private PositionValue temporaryPosition = new PositionValue(0,0);
 	private PositionValue position = new PositionValue(0,0);
 	private ArrayList<ASpriteElement> elements = new ArrayList<ASpriteElement>();
-	private HashSet<Magnet> magnetList = new HashSet<Magnet>();
+	private ArrayList<Magnet> magnetList = new ArrayList<Magnet>();
 	private HashSet<ChangeSizeListener> changeWidthListenerList = new HashSet<ChangeSizeListener>();
 	private HashSet<ChangeSizeListener> changeHeightListenerList = new HashSet<ChangeSizeListener>();
 
@@ -90,7 +90,7 @@ public class Sprite {
 		this.magnetList.add(magnet);
 	}
 	
-	public HashSet<Magnet> getMagnetList(){
+	public ArrayList<Magnet> getMagnetList(){
 		return magnetList;
 	}
 	
@@ -112,44 +112,6 @@ public class Sprite {
 		return new PositionValue( position.getX(), position.getY() );
 	}	
 	
-/*	public void setPermanentPosition( PositionValue position ){
-		this.permanentPosition.setX( position.getX() );
-		this.permanentPosition.setY( position.getY() );
-	}
-	
-	public void setPermanentPosition( double positionX, double positionY ){
-		this.permanentPosition.setX( positionX );
-		this.permanentPosition.setY( positionY );
-	}
-	
-	public PositionValue getPermanentPosition(){
-		return new PositionValue( permanentPosition.getX(), permanentPosition.getY() );
-	}
-	
-	public void setTemporaryPosition( PositionValue position ){
-		this.temporaryPosition.setX( position.getX() );
-		this.temporaryPosition.setY( position.getY() );
-	}
-*/	
-	/*public void setTemporaryPosition( double positionX, double positionY ){
-		this.temporaryPosition.setX( positionX );
-		this.temporaryPosition.setY( positionY );
-	}*/
-/*	
-	public PositionValue getTemporaryPosition(){
-		return new PositionValue( temporaryPosition.getX(), temporaryPosition.getY() );
-	}
-	
-	public void copyPermanentPositionToTemporary(){
-		this.temporaryPosition.setX( permanentPosition.getX() );
-		this.temporaryPosition.setY( permanentPosition.getY() );
-	}
-
-	public void copyTemporaryPositionToPermanent(){
-		this.permanentPosition.setX( temporaryPosition.getX() );
-		this.permanentPosition.setY( temporaryPosition.getY() );
-	}
-*/
 	public void changeWidthTo( double xMin, double xMax ){
 		
 		this.setBoundBoxXMin(xMin);
