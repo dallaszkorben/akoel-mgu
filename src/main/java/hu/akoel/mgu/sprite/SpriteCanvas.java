@@ -388,8 +388,8 @@ public class SpriteCanvas extends MCanvas{
 				double yCursorPosition = getWorldYByPixel(e.getY());
 				
 				//A mozgatando Sprite Elozetes uj pozicioba helyezese
-sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
-//sprite.setTemporaryPosition( new PositionValue( xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY() ) );
+				sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY()));
+				//sprite.setTemporaryPosition( new PositionValue( xCursorPosition-initialDelta.getX(), yCursorPosition-initialDelta.getY() ) );
 				
 				boolean needToRepaintPermanent = false;				
 
@@ -879,6 +879,8 @@ sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCurso
 			
 			if( needFocus() ){
 			
+				spriteSetWithFocus = new HashSet<Sprite>();
+				
 				double xValue = getWorldXByPixel(e.getX() );			
 				double yValue = getWorldYByPixel(e.getY());
 				boolean needToPrint = false;
@@ -889,9 +891,8 @@ sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCurso
 				//There is a Sprite under the Cursor
 				if( null != spriteInFocus ){
 
-					biggestBoundBox = spriteInFocus.getBoundBoxAbsolute();
+					biggestBoundBox = spriteInFocus.getBoundBoxAbsolute();					
 					
-					spriteSetWithFocus = new HashSet<Sprite>();
 					spriteSetWithFocus.add( spriteInFocus );
 				}
 				
@@ -928,7 +929,7 @@ sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCurso
 					}					
 				}
 				if( null != spriteSetWithFocus ){
-					addTemporarySprites(spriteSetWithFocus);
+					addTemporarySprites( spriteSetWithFocus );
 					repaintCoreCanvas();
 				}
 			}
@@ -1152,7 +1153,7 @@ sprite.setPosition(new PositionValue(xCursorPosition-initialDelta.getX(), yCurso
 		    	   Sprite sprite = spriteIterator.next();
 		    	   sprite.drawTemporary(g2);
 		       }
-		    }
+		    }		    
 		}
 	}
 }

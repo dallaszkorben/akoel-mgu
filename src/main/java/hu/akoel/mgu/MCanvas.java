@@ -154,6 +154,10 @@ public class MCanvas extends JPanel {
 		coreCanvas.repaint();
 	}
 	
+	public void invalidateCoreCanvas(){
+		coreCanvas.invalidate();
+	}
+	
 	public void repaintCoreCanvas(){
 		coreCanvas.repaint();
 	}
@@ -959,11 +963,10 @@ public class MCanvas extends JPanel {
 		}
 		
 		public void paintComponent(Graphics g) {
-
 			if( !getWasTransferedToMiddle() ){
 				setWasTransferedToMiddle( true );
-				setWorldTranslate( new TranslateValue( 
-						( getWorldXLengthByPixel( (int)(getViewerWidth()/2) ) - getPositionToMiddleX() ), 
+				setWorldTranslate( new TranslateValue(
+						( getWorldXLengthByPixel( (int)(getViewerWidth()/2) ) - getPositionToMiddleX() ),
 						( getWorldYLengthByPixel( (int)(getViewerHeight()/2) ) - getPositionToMiddleY() )  
 						) );
 			}

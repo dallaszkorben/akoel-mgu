@@ -7,6 +7,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -91,6 +92,9 @@ public class ExampleOverlappedSprite extends JFrame {
 	
 	private static final double SPACE_FOR_ONE_NEURON = 1.0;
 	
+	HashSet<Sprite> sprites = new HashSet<Sprite>(); 
+	
+	
 	public static void main(String[] args) {
 
 		new ExampleOverlappedSprite();
@@ -148,6 +152,8 @@ public class ExampleOverlappedSprite extends JFrame {
 				//Define Layer
 				//
 				Sprite layerSprite = new Sprite( 0, new SizeValue( layerMinX, layerMinY, layerMinX + layerWidth, layerMinY + layerHeight ) );
+sprites.add(layerSprite);
+				
 				
 				FillRectangleElement layerBaseElement = new FillRectangleElement(	layerMinX, layerMinY, layerWidth, layerHeight, new Appearance( new Color( 40, 140, 180), new BasicStroke(1f) ) );
 				layerBaseElement.setSelectedAppearance( new Appearance( new Color( 0, 0, 255 ), new BasicStroke(1f) ));
@@ -185,6 +191,7 @@ public class ExampleOverlappedSprite extends JFrame {
 					double neuronMinX = -( neuronRadius );
 					
 					Sprite neuronSprite = new Sprite( 1, new SizeValue( neuronMinX, neuronMinY, neuronMinX + neuronDiameter, neuronMinY + neuronDiameter ), false );
+sprites.add(neuronSprite);					
 					
 					FillOvalElement neuronBaseElement = new FillOvalElement( toLayerMagnetX, toLayerMagnetY, neuronRadius, new Appearance( Color.yellow, new BasicStroke(1f) ) );
 					neuronBaseElement.setSelectedAppearance( new Appearance( Color.green, new BasicStroke(5) ) );
@@ -223,12 +230,22 @@ public class ExampleOverlappedSprite extends JFrame {
 			}
 		});
 		
+		JButton removeLayerButton = new JButton("Remove Layer");
+		removeLayerButton.addActionListener(new ActionListener(){
+			
+			public void actionPerformed(ActionEvent arg0) {
+				myCanvas.removeSprites(sprites);
+myCanvas.invalidateCoreCanvas();
+				myCanvas.revalidateAndRepaintCoreCanvas();				
+			}
+		});
 		
 
 		//Parancsgomb panel
 		JPanel commandButtonPanel = new JPanel();
 		commandButtonPanel.setLayout( new FlowLayout(FlowLayout.LEFT));
 		commandButtonPanel.add(addLayerButton );
+		commandButtonPanel.add(removeLayerButton );
 		
 		//-------------
 		//
