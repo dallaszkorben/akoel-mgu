@@ -154,10 +154,6 @@ public class MCanvas extends JPanel {
 		coreCanvas.repaint();
 	}
 	
-	public void invalidateCoreCanvas(){
-		coreCanvas.invalidate();
-	}
-	
 	public void repaintCoreCanvas(){
 		coreCanvas.repaint();
 	}
