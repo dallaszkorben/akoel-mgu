@@ -25,7 +25,6 @@ import hu.akoel.mgu.grid.Grid;
 import hu.akoel.mgu.scale.Scale;
 import hu.akoel.mgu.scale.ScaleChangeListener;
 import hu.akoel.mgu.sprite.Appearance;
-import hu.akoel.mgu.sprite.ChangeSizeListener;
 import hu.akoel.mgu.sprite.Magnet;
 import hu.akoel.mgu.sprite.MagnetType;
 import hu.akoel.mgu.sprite.Sprite;
@@ -235,7 +234,6 @@ sprites.add(neuronSprite);
 			
 			public void actionPerformed(ActionEvent arg0) {
 				myCanvas.removeSprites(sprites);
-myCanvas.invalidateCoreCanvas();
 				myCanvas.revalidateAndRepaintCoreCanvas();				
 			}
 		});
